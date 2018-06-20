@@ -1,6 +1,6 @@
 ﻿import collections
 import logging
-import subprocess
+import subprocess  # nosec
 import time
 
 import requests
@@ -22,7 +22,7 @@ class MountebankServer(object):
     IMPOSTERS_URL = furl().set(scheme="http", host="localhost", port=2525, path="imposters").url
 
     def __init__(self):
-        self.mb_process = subprocess.Popen(["./node_modules/.bin/mb", "--debug"], stdout=subprocess.PIPE)
+        self.mb_process = subprocess.Popen(["./node_modules/.bin/mb", "--debug"], stdout=subprocess.PIPE)  # nosec
         self._await_start()
         logger.info("Spawned mb process.")
 

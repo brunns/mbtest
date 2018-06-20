@@ -2,7 +2,6 @@ import os
 
 from setuptools import find_packages, setup
 
-
 setup(name='mbtest',
       zip_safe=False,
       version='0.0.1',
@@ -34,4 +33,4 @@ setup(name='mbtest',
           'furl',
           'more_itertools',
       ],
-)
+      )
