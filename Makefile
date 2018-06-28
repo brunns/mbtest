@@ -15,7 +15,7 @@ alltests: ## Run all tests, including slow ones.
 	#pytest --durations=10 test/
 
 coverage: ## Test coverage report
-	#pytest --cov uc/ --durations=10 --hypothesis-show-statistics --cov-report term-missing --cov-fail-under 95 test/unit/
+	tox -e coverage
 
 lint: flake8 bandit safety ## Lint code
 
