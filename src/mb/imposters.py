@@ -5,7 +5,6 @@ from furl import furl
 
 
 class JsonSerializable(object):
-
     def json_serialize(self):
         return json.dumps(self.as_structure())
 
@@ -63,7 +62,6 @@ class Stub(JsonSerializable):
 
 
 class BasePredicate(JsonSerializable):
-
     def as_structure(self):
         raise NotImplementedError()
 
@@ -95,7 +93,6 @@ class Predicate(BasePredicate):
 
 
 class AndPredicate(BasePredicate):
-
     def __init__(self, left, right):
         self.left = left
         self.right = right
@@ -105,7 +102,6 @@ class AndPredicate(BasePredicate):
 
 
 class OrPredicate(BasePredicate):
-
     def __init__(self, left, right):
         self.left = left
         self.right = right
@@ -115,7 +111,6 @@ class OrPredicate(BasePredicate):
 
 
 class Proxy(JsonSerializable):
-
     def __init__(self, to):
         self.to = to
 
@@ -124,7 +119,6 @@ class Proxy(JsonSerializable):
 
 
 class Response(JsonSerializable):
-
     def __init__(self, body="", status_code=200, query=None, wait=None, repeat=None):
         self.body = body
         self.status_code = status_code

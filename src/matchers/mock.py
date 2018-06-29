@@ -9,7 +9,6 @@ def call_has_arg(index, expected):
 
 
 class CallHasArg(BaseMatcher):
-
     def __init__(self, index, expected):
         super(CallHasArg, self).__init__()
         self.index = index
@@ -30,7 +29,6 @@ def has_call(call_matcher):
 
 
 class HasCall(BaseMatcher):
-
     def __init__(self, call_matcher):
         super(HasCall, self).__init__()
         self.call_matcher = call_matcher

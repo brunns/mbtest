@@ -26,7 +26,6 @@ def has_identical_properties_to(expected):
 
 
 class HasIdenticalPropertiesTo(BaseMatcher):
-
     def __init__(self, expected):
         self.expected = expected
 
@@ -41,7 +40,6 @@ class HasIdenticalPropertiesTo(BaseMatcher):
 
 
 class Truthy(BaseMatcher):
-
     def describe_to(self, description):
         description.append_text("Truthy value ")
 

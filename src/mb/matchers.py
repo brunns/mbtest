@@ -13,7 +13,6 @@ def has_request(
 
 
 class HasRequest(BaseMatcher):
-
     def __init__(
         self,
         method=anything(),
@@ -77,7 +76,6 @@ def email_sent(text=anything(), subject=anything(), to=anything()):
 
 
 class EmailSent(BaseMatcher):
-
     def __init__(self, text=anything(), subject=anything(), to=anything()):
         self.text = text if isinstance(text, Matcher) else equal_to(text)
         self.subject = subject if isinstance(subject, Matcher) else equal_to(subject)

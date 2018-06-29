@@ -8,7 +8,6 @@ def has_response_code(code):
 
 
 class HasResponseCode(BaseMatcher):
-
     def __init__(self, code):
         super(HasResponseCode).__init__()
         self.code = code if isinstance(code, Matcher) else equal_to(code)
@@ -28,7 +27,6 @@ def has_body_containing(matcher):
 
 
 class HasBodyContaining(BaseMatcher):
-
     def __init__(self, matcher):
         super(HasBodyContaining).__init__()
         self.matcher = matcher if isinstance(matcher, Matcher) else equal_to(matcher)

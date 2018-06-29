@@ -10,7 +10,6 @@ def json_matching(matcher):
 
 
 class JsonMatching(BaseMatcher):
-
     def __init__(self, matcher):
         self.matcher = matcher if isinstance(matcher, Matcher) else equal_to(matcher)
 

@@ -11,7 +11,6 @@ def email_with(to_name, subject, body_text):
 
 
 class EmailWith(BaseMatcher):
-
     def __init__(self, to_name, subject, body_text):
         self.to_name = to_name if isinstance(to_name, Matcher) else equal_to(to_name)
         self.subject = subject if isinstance(subject, Matcher) else equal_to(subject)
