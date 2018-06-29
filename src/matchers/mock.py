@@ -5,12 +5,12 @@ from six.moves import zip_longest
 
 
 def call_has_arg(index, expected):
-    return CallHasArg(index, expected)
+    return CallHasPositionalArg(index, expected)
 
 
-class CallHasArg(BaseMatcher):
+class CallHasPositionalArg(BaseMatcher):
     def __init__(self, index, expected):
-        super(CallHasArg, self).__init__()
+        super(CallHasPositionalArg, self).__init__()
         self.index = index
         self.expected = expected if isinstance(expected, Matcher) else equal_to(expected)
 
@@ -19,21 +19,21 @@ class CallHasArg(BaseMatcher):
         return len(args) > self.index and self.expected.matches(args[self.index])
 
     def describe_to(self, description):
-        description.append_text("mock.call with positional argument index ").append_description_of(
-            self.index
-        ).append_text(" matching ")
+        description.append_text("mock.call with argument index ").append_description_of(self.index).append_text(
+            " matching "
+        )
         self.expected.describe_to(description)
 
     def describe_mismatch(self, actual_call, mismatch_description):
         args = actual_call[1]
         if len(args) > self.index:
-            mismatch_description.append_text("got mock.call with positional argument index ").append_description_of(
+            mismatch_description.append_text("got mock.call with argument index ").append_description_of(
                 self.index
             ).append_text(" with value ").append_description_of(args[self.index])
         else:
-            mismatch_description.append_text(
-                "got mock.call with without positional argument index "
-            ).append_description_of(self.index)
+            mismatch_description.append_text("got mock.call with without argument index ").append_description_of(
+                self.index
+            )
 
 
 def has_call(call_matcher):
