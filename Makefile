@@ -3,7 +3,8 @@ SHELL = /bin/bash
 default: help
 .PHONY: help
 
-test: tox ## Run tests
+test: ## Run tests
+	tox
 
 unit:
 	#pytest --durations=10 --hypothesis-show-statistics test/unit/
@@ -27,6 +28,9 @@ bandit:
 
 safety:
 	tox -e safety
+
+format: ## Format code
+	tox -e format
 
 piprot: ## Check for outdated dependencies
 	piprot requirements.txt
