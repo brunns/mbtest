@@ -15,13 +15,25 @@ class CallHasArg(BaseMatcher):
         self.expected = expected if isinstance(expected, Matcher) else equal_to(expected)
 
     def _matches(self, actual_call):
-        return self.expected.matches(actual_call[1][self.index])
+        args = actual_call[1]
+        return len(args) > self.index and self.expected.matches(args[self.index])
 
     def describe_to(self, description):
-        description.append_text("mock.call with positional argument {} matching {}.".format(self.index, self.expected))
+        description.append_text("mock.call with positional argument index ").append_description_of(
+            self.index
+        ).append_text(" matching ")
+        self.expected.describe_to(description)
 
     def describe_mismatch(self, actual_call, mismatch_description):
-        mismatch_description.append_text("got  {} {}.".format(actual_call.call_args[0], actual_call.call_args[1]))
+        args = actual_call[1]
+        if len(args) > self.index:
+            mismatch_description.append_text("got mock.call with positional argument index ").append_description_of(
+                self.index
+            ).append_text(" with value ").append_description_of(args[self.index])
+        else:
+            mismatch_description.append_text(
+                "got mock.call with without positional argument index "
+            ).append_description_of(self.index)
 
 
 def has_call(call_matcher):
