@@ -1,6 +1,6 @@
 import email
-
 import re
+
 from hamcrest import equal_to
 from hamcrest.core.base_matcher import BaseMatcher
 from hamcrest.core.matcher import Matcher

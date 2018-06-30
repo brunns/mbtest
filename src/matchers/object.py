@@ -18,7 +18,8 @@ class HasRepr(BaseMatcher):
         return self.expected.matches(repr(actual))
 
     def describe_to(self, description):
-        description.append_text("object with repr() matching ").append_description_of(self.expected)
+        description.append_text("an object with repr() matching ")
+        self.expected.describe_to(description)
 
 
 def has_identical_properties_to(expected):
@@ -29,9 +30,6 @@ class HasIdenticalPropertiesTo(BaseMatcher):
     def __init__(self, expected):
         self.expected = expected
 
-    def describe_mismatch(self, actual, description):
-        description.append_text("got ").append_description_of(actual)
-
     def _matches(self, actual):
         return actual.__dict__ == self.expected.__dict__
 
@@ -41,7 +39,7 @@ class HasIdenticalPropertiesTo(BaseMatcher):
 
 class Truthy(BaseMatcher):
     def describe_to(self, description):
-        description.append_text("Truthy value ")
+        description.append_text("Truthy value")
 
     def _matches(self, item):
         return bool(item)
