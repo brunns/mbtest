@@ -1,4 +1,4 @@
-from hamcrest import assert_that, contains_string, has_string, not_, matches_regexp
+from hamcrest import assert_that, contains_string, has_string, not_, matches_regexp, all_of
 
 from junkdrawer.bunch import Bunch
 from matchers.matcher import mismatches_with
@@ -31,9 +31,18 @@ def test_identical_properties():
     assert_that(a, not_(has_identical_properties_to(c)))
     assert_that(
         has_identical_properties_to(a),
-        has_string(matches_regexp(r"object with identical properties to object .*Bunch\(a=1, b=2\)")),
+        has_string(
+            all_of(
+                matches_regexp(r"object with identical properties to object .*Bunch\("),
+                contains_string("a=1"),
+                contains_string("b=2"),
+            )
+        ),
     )
-    assert_that(has_identical_properties_to(a), mismatches_with(c, matches_regexp(r"was .*Bunch\(a=1, b=3\)")))
+    assert_that(
+        has_identical_properties_to(a),
+        mismatches_with(c, all_of(matches_regexp(r"was .*Bunch\("), contains_string("a=1"), contains_string("b=3"))),
+    )
 
 
 def test_truthy():

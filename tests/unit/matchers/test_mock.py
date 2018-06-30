@@ -1,4 +1,4 @@
-from hamcrest import assert_that, contains_string, has_string, not_
+from hamcrest import assert_that, contains_string, has_string, not_, matches_regexp
 from mock import MagicMock
 
 from matchers.matcher import mismatches_with
@@ -75,5 +75,6 @@ def test_has_call():
     assert_that(method, not_(has_call(call_has_args("chips"))))
     assert_that(has_call(call_has_args("first")), has_string("has call matching mock.call with arguments ('first')"))
     assert_that(
-        has_call(call_has_args("chips")), mismatches_with(method, contains_string("got calls ['call('first')'"))
+        has_call(call_has_args("chips")),
+        mismatches_with(method, matches_regexp(r"""got calls \[['"]call\(['"]first['"]""")),
     )
