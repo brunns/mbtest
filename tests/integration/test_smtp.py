@@ -18,7 +18,7 @@ def test_email(mock_server):
 
     to_email = random_email()
     from_email = random_email()
-    text = random_string()
+    body_text = random_string()
 
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
@@ -28,10 +28,12 @@ def test_email(mock_server):
         server.connect(host=imposter.host, port=imposter.port)
         try:
             server.sendmail(
-                to_email, [from_email], message(to_email=to_email, from_email=from_email, text=text).as_string()
+                to_email,
+                [from_email],
+                message(to_email=to_email, from_email=from_email, body_text=body_text).as_string(),
             )
         finally:
             server.quit()
 
         # Then
-        assert_that(s, email_sent(text=text))
+        assert_that(s, email_sent(body_text=body_text))

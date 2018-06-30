@@ -71,13 +71,13 @@ class HasRequest(BaseMatcher):
         return self.times.matches(len(self.matching_requests))
 
 
-def email_sent(text=anything(), subject=anything(), to=anything()):
-    return EmailSent(text, subject, to)
+def email_sent(to=anything(), subject=anything(), body_text=anything()):
+    return EmailSent(to, subject, body_text)
 
 
 class EmailSent(BaseMatcher):
-    def __init__(self, text=anything(), subject=anything(), to=anything()):
-        self.text = text if isinstance(text, Matcher) else equal_to(text)
+    def __init__(self, to=anything(), subject=anything(), body_text=anything()):
+        self.body_text = body_text if isinstance(body_text, Matcher) else equal_to(body_text)
         self.subject = subject if isinstance(subject, Matcher) else equal_to(subject)
         self.to = to if isinstance(to, Matcher) else equal_to(to)
 
@@ -86,7 +86,7 @@ class EmailSent(BaseMatcher):
         self._optional_description(description)
 
     def _optional_description(self, description):
-        self._append_matcher_descrption(description, self.text, "text")
+        self._append_matcher_descrption(description, self.body_text, "body text")
         self._append_matcher_descrption(description, self.subject, "subject")
         self._append_matcher_descrption(description, self.to, "to")
 
@@ -105,7 +105,7 @@ class EmailSent(BaseMatcher):
             request
             for request in self.all_requests
             if "envelopeFrom" in request
-            and self.text.matches(request.get("text", None))
+            and self.body_text.matches(request.get("text", None))
             and self.subject.matches(request.get("subject", None))
             and self.to.matches(request.get("to", None))
         ]

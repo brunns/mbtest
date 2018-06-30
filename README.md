@@ -1,2 +1,3 @@
 # mbtest
-Python wrapper &amp; utils for the Mountebank over the wire test double tool
+
+Python wrapper and utils for the [Mountebank](http://www.mbtest.org/) over the wire test double tool.
