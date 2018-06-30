@@ -4,8 +4,8 @@ from setuptools import find_packages, setup
 
 setup(name='mbtest',
       zip_safe=False,
-      version='0.0.1',
-      description='Python wrapper & utils for the Mountebank over the wire test double tool',
+      version='0.1.0',
+      description='Python wrapper & utils for the Mountebank over the wire test double tool.',
       long_description=open(
           os.path.join(
               os.path.dirname(__file__),
@@ -31,6 +31,7 @@ setup(name='mbtest',
       install_requires=[
           'requests',
           'furl',
+          'attrs',
           'more_itertools',
       ],
       )
