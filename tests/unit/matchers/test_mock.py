@@ -51,6 +51,10 @@ def test_call_has_args():
         call_has_args("first", "second", key="banana"),
         has_string("mock.call with arguments ('first', 'second', key='banana')"),
     )
+    assert_that(
+        call_has_args("first", "second", "third", key="banana"),
+        mismatches_with(call, "got arguments ('first', 'second', 'third', key='forth')"),
+    )
 
 
 def test_call_has_exactly_args():
@@ -61,10 +65,15 @@ def test_call_has_exactly_args():
 def test_has_call():
     # Given
     m = MagicMock()
+    method = m.m
 
     # When
-    m("first", "second", "third", key="forth")
+    method("first")
 
     # Then
-    assert_that(m, has_call(call_has_args("first", "second", "third", key="forth")))
-    # TODO
+    assert_that(method, has_call(call_has_args("first")))
+    assert_that(method, not_(has_call(call_has_args("chips"))))
+    assert_that(has_call(call_has_args("first")), has_string("has call matching mock.call with arguments ('first')"))
+    assert_that(
+        has_call(call_has_args("chips")), mismatches_with(method, contains_string("got calls ['call('first')'"))
+    )

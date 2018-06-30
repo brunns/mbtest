@@ -1,3 +1,5 @@
+from itertools import chain
+
 from hamcrest import equal_to
 from hamcrest.core.base_matcher import BaseMatcher
 from hamcrest.core.matcher import Matcher
@@ -52,7 +54,8 @@ class HasCall(BaseMatcher):
         return False
 
     def describe_to(self, description):
-        description.append_text("mock instance has mock.call matching ").append_description_of(self.call_matcher)
+        description.append_text("has call matching ")
+        self.call_matcher.describe_to(description)
 
     def describe_mismatch(self, mock, mismatch_description):
         mismatch_description.append_list("got calls [", ", ", "]", [str(c) for c in mock.mock_calls])
@@ -79,18 +82,11 @@ class CallHasArgs(BaseMatcher):
         )
 
     def describe_to(self, description):
-        description.append_text("mock.call with arguments (")
-        for arg in self.args:
-            description.append_description_of(arg).append_text(' ,"')
-        description.append_text(") {")
-        for key, value in self.kwargs.items():
-            description.append_value(key).append_text(": ").append_description_of(value).append_text(' ,"')
-        description.append_text("}")
+        description.append_text("mock.call with arguments (").append_text(
+            ", ".join(chain((str(a) for a in self.args), ("{}={}".format(k, v) for k, v in self.kwargs.items())))
+        ).append_text(")")
 
-    def describe_mismatch(self, actual_call, mismatch_description):
-        if actual_call.call_args:
-            mismatch_description.append_text(
-                "got arguments {} {}".format(actual_call.call_args[0], actual_call.call_args[1])
-            )
-        else:
-            mismatch_description.append_text("not called")
+    def describe_mismatch(self, call, mismatch_description):
+        mismatch_description.append_text("got arguments (").append_text(
+            ", ".join(chain((repr(a) for a in call[1]), ("{}={!r}".format(k, v) for k, v in call[2].items())))
+        ).append_text(")")
