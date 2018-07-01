@@ -1,14 +1,14 @@
 import collections
-import json
+from abc import ABCMeta, abstractmethod
 
 from furl import furl
 
 
 class JsonSerializable(object):
-    def json_serialize(self):
-        return json.dumps(self.as_structure())
+    __metaclass__ = ABCMeta
 
-    def as_structure(self):
+    @abstractmethod
+    def as_structure(self):  # pragma: no cover
         raise NotImplementedError()
 
 
@@ -62,7 +62,8 @@ class Stub(JsonSerializable):
 
 
 class BasePredicate(JsonSerializable):
-    def as_structure(self):
+    @abstractmethod
+    def as_structure(self):  # pragma: no cover
         raise NotImplementedError()
 
     def __and__(self, other):
