@@ -5,7 +5,7 @@ import requests
 from hamcrest import assert_that, is_, not_
 
 from matchers.request import had_request
-from matchers.response import has_body_containing, has_status_code, response_with
+from matchers.response import response_with
 from mb.imposters import Imposter, Predicate, Response, Stub
 
 logger = logging.getLogger(__name__)
@@ -36,10 +36,8 @@ def test_multiple_imposters(mock_server):
         r1 = requests.get("{}/test1".format(imposters[0].url))
         r2 = requests.get("{}/test2".format(imposters[1].url))
 
-    assert_that(r1, has_status_code(200))
-    assert_that(r1, has_body_containing("sausages"))
-    assert_that(r2, has_status_code(201))
-    assert_that(r2, has_body_containing("chips"))
+    assert_that(r1, response_with(status_code=200, body="sausages"))
+    assert_that(r2, response_with(status_code=201, body="chips"))
 
 
 @pytest.mark.usefixtures("mock_server")

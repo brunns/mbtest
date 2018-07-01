@@ -1,4 +1,4 @@
-from hamcrest import equal_to, anything, contains_string
+from hamcrest import equal_to, anything
 from hamcrest.core.base_matcher import BaseMatcher
 from hamcrest.core.core.isanything import IsAnything
 from hamcrest.core.matcher import Matcher
@@ -23,7 +23,7 @@ class ResponseMatcher(BaseMatcher):
         )
 
     def describe_to(self, description):
-        description.append_text("call with")
+        description.append_text("response with")
         self._optional_description(description)
 
     def _optional_description(self, description):
@@ -39,11 +39,3 @@ class ResponseMatcher(BaseMatcher):
         mismatch_description.append_text("was response with status code: ").append_value(
             response.status_code
         ).append_text(" body: ").append_value(response.text).append_text(" headers: ").append_value(response.headers)
-
-
-def has_status_code(status_code):
-    return response_with(status_code=status_code)
-
-
-def has_body_containing(substring):
-    return response_with(body=contains_string(substring))
