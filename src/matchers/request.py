@@ -5,14 +5,16 @@ from hamcrest.core.matcher import Matcher
 from more_itertools import flatten
 
 
-def has_request(
+def had_request(
     method=anything(), path=anything(), query=anything(), headers=anything(), body=anything(), times=anything()
 ):
     """Mountebank server has recorded call matching"""
-    return HasRequest(method=method, path=path, query=query, headers=headers, body=body, times=times)
+    return HadRequest(method=method, path=path, query=query, headers=headers, body=body, times=times)
 
 
-class HasRequest(BaseMatcher):
+class HadRequest(BaseMatcher):
+    """Mountebank server has recorded call matching"""
+
     def __init__(
         self,
         method=anything(),

@@ -2,7 +2,7 @@ from hamcrest import assert_that, not_, has_string, contains_string, all_of
 from mock import MagicMock
 
 from matchers.matcher import mismatches_with
-from matchers.request import has_request, email_sent
+from matchers.request import had_request, email_sent
 
 
 def test_request_matcher():
@@ -14,13 +14,13 @@ def test_request_matcher():
     # When
 
     # Then
-    assert_that(server, has_request(path="/test", method="GET"))
-    assert_that(server, has_request(path="/test", method="GET", times=2))
-    assert_that(server, not_(has_request(path="/somewhereelse", method="GET")))
-    assert_that(has_request(path="/sausages", method="PUT"), has_string("call with method: 'PUT' path: '/sausages'"))
-    assert_that(has_request(path="/sausages", times=4), has_string("<4> call(s) with path: '/sausages'"))
+    assert_that(server, had_request(path="/test", method="GET"))
+    assert_that(server, had_request(path="/test", method="GET", times=2))
+    assert_that(server, not_(had_request(path="/somewhereelse", method="GET")))
+    assert_that(had_request(path="/sausages", method="PUT"), has_string("call with method: 'PUT' path: '/sausages'"))
+    assert_that(had_request(path="/sausages", times=4), has_string("<4> call(s) with path: '/sausages'"))
     assert_that(
-        has_request(path="/sausages", method="PUT"),
+        had_request(path="/sausages", method="PUT"),
         mismatches_with(
             server,
             all_of(

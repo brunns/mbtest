@@ -2,9 +2,9 @@ import logging
 
 import pytest
 import requests
-from hamcrest import assert_that
+from hamcrest import assert_that, is_
 
-from matchers.request import has_request
+from matchers.request import had_request
 from matchers.response import has_body_containing, has_status_code, response_with
 from mb.imposters import Imposter, Predicate, Response, Stub
 
@@ -12,17 +12,16 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.mark.usefixtures("mock_server")
-def test_1_imposter(mock_server):
-    imposter = Imposter(Stub(Predicate(path="/test"), Response("sausages")), record_requests=True)
+def test_request_to_mock_server(mock_server):
+    # Start mock server with required behavior
+    imposter = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")), record_requests=True)
 
-    with mock_server(imposter) as s:
-        logger.debug("server: %s", s)
-        r = requests.get("{}/test".format(imposter.url))
+    with mock_server(imposter) as server:
+        # Make request to mock server
+        response = requests.get("{}/test".format(imposter.url))
 
-        assert r.text == "sausages"
-        assert_that(s, has_request(path="/test", method="GET"))
-
-    assert_that(r, response_with(status_code=200, body="sausages"))
+        assert_that("We got the expected response", response, is_(response_with(status_code=200, body="sausages")))
+        assert_that("The mock server recorded the request", server, had_request(path="/test", method="GET"))
 
 
 @pytest.mark.usefixtures("mock_server")
