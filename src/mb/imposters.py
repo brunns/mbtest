@@ -120,17 +120,14 @@ class Proxy(JsonSerializable):
 
 
 class Response(JsonSerializable):
-    def __init__(self, body="", status_code=200, query=None, wait=None, repeat=None):
+    def __init__(self, body="", status_code=200, wait=None, repeat=None):
         self.body = body
         self.status_code = status_code
-        self.query = query
         self.wait = wait
         self.repeat = repeat
 
     def as_structure(self):
         inner = {"statusCode": self.status_code, "body": self.body}
-        if self.query:
-            inner["query"] = self.query
         if self.body:
             inner["body"] = self.body
         result = {"is": inner, "_behaviors": {}}

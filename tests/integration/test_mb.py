@@ -2,7 +2,7 @@ import logging
 
 import pytest
 import requests
-from hamcrest import assert_that, is_
+from hamcrest import assert_that, is_, not_
 
 from matchers.request import had_request
 from matchers.response import has_body_containing, has_status_code, response_with
@@ -51,3 +51,35 @@ def test_default_imposter(mock_server):
         r = requests.get("{}/".format(imposter.url))
 
     assert_that(r, response_with(status_code=200, body=""))
+
+
+@pytest.mark.usefixtures("mock_server")
+def test_and_predicate_and_query_strings(mock_server):
+    imposter = Imposter(
+        Stub(Predicate(query={"foo": "bar"}) & Predicate(query={"dinner": "chips"}), Response(body="black pudding"))
+    )
+
+    with mock_server(imposter) as s:
+        logger.debug("server: %s", s)
+
+        r1 = requests.get("{}/".format(imposter.url), params=dict(dinner="chips", foo="bar"))
+        r2 = requests.get("{}/".format(imposter.url), params=dict(dinner="chips"))
+
+        assert_that(r1, is_(response_with(status_code=200, body="black pudding")))
+        assert_that(r2, not_(response_with(status_code=200, body="black pudding")))
+
+
+@pytest.mark.usefixtures("mock_server")
+def test_or_predicate_and_body(mock_server):
+    imposter = Imposter(Stub(Predicate(body="foo") | Predicate(body="bar"), Response(body="oranges")))
+
+    with mock_server(imposter) as s:
+        logger.debug("server: %s", s)
+
+        r1 = requests.get("{}/".format(imposter.url), data="foo")
+        r2 = requests.get("{}/".format(imposter.url), data="bar")
+        r3 = requests.get("{}/".format(imposter.url), data="baz")
+
+        assert_that(r1, is_(response_with(status_code=200, body="oranges")))
+        assert_that(r2, is_(response_with(status_code=200, body="oranges")))
+        assert_that(r3, not_(response_with(status_code=200, body="oranges")))
