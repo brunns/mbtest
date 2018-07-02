@@ -4,6 +4,16 @@ Python wrapper & utils for the [Mountebank](http://www.mbtest.org/) over the wir
 
 Includes [pytest](https://pytest.org) fixture and [PyHamcrest](https://pyhamcrest.readthedocs.io) matchers.
 
+## Setup
+
+Install with pip:
+
+    pip install mbtest
+
+(As usual, use of a [venv](https://docs.python.org/3/library/venv.html) or [virtualenv](https://virtualenv.pypa.io) is recommended.) Also requires [Mountebank](http://www.mbtest.org/) to have been installed:
+
+    npm install mountebank@1.14.1 --prodution
+
 ## Basic example
 
 ```python
@@ -39,3 +49,9 @@ def mock_server(request):
 ```
 
 Examples of more complex predicates can be found in the [integration tests](tests/integration/).
+
+## Developing
+
+Requires [tox](https://tox.readthedocs.io). Run `make precommit` tels you if you're OK to commit. For more options, run:
+
+    make help
