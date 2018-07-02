@@ -27,14 +27,18 @@ from mbtest.imposters import Imposter, Predicate, Response, Stub
 @pytest.mark.usefixtures("mock_server")
 def test_request_to_mock_server(mock_server):
     # Start mock server with required behavior
-    imposter = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")), record_requests=True)
+    imposter = Imposter(Stub(Predicate(path="/test"), 
+                             Response(body="sausages")), 
+                        record_requests=True)
 
     with mock_server(imposter) as server:
         # Make request to mock server
         response = requests.get("{}/test".format(imposter.url))
 
-        assert_that("We got the expected response", response, is_(response_with(status_code=200, body="sausages")))
-        assert_that("The mock server recorded the request", server, had_request(path="/test", method="GET"))
+        assert_that("We got the expected response", 
+                    response, is_(response_with(status_code=200, body="sausages")))
+        assert_that("The mock server recorded the request", 
+                    server, had_request(path="/test", method="GET"))
 ```
 
 Needs a pytest fixture, usually defined in a [`conftest.py`](https://docs.pytest.org/en/latest/fixture.html#fixture-function):
@@ -52,6 +56,6 @@ Examples of more complex predicates can be found in the [integration tests](test
 
 ## Developing
 
-Requires [tox](https://tox.readthedocs.io). Run `make precommit` tels you if you're OK to commit. For more options, run:
+Requires [tox](https://tox.readthedocs.io). Run `make precommit` tells you if you're OK to commit. For more options, run:
 
     make help
