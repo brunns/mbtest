@@ -37,3 +37,5 @@ from mbtest import server
 def mock_server(request):
     return server.mock_server(request)
 ```
+
+Examples of more complex predicates can be found in the [integration tests](tests/integration/).
