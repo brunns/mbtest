@@ -1,6 +1,7 @@
 import collections
 from abc import ABCMeta, abstractmethod
 
+from enum import Enum
 from furl import furl
 
 
@@ -15,15 +16,20 @@ class JsonSerializable(object):
 class Imposter(JsonSerializable):
     """See http://www.mbtest.org/docs/api/mocks"""
 
-    def __init__(self, stubs, port=None, protocol="http", name=None, record_requests=False):
+    class Protocol(Enum):
+        HTTP = "http"
+        HTTPS = "https"
+        SMTP = "smtp"
+
+    def __init__(self, stubs, port=None, protocol=Protocol.HTTP, name=None, record_requests=False):
         self.stubs = stubs if isinstance(stubs, collections.Sequence) else [stubs]
         self.port = port
-        self.protocol = protocol
+        self.protocol = protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
         self.name = name
         self.record_requests = record_requests
 
     def as_structure(self):
-        structure = {"protocol": self.protocol, "recordRequests": self.record_requests}
+        structure = {"protocol": self.protocol.value, "recordRequests": self.record_requests}
         if self.port:
             structure["port"] = self.port
         if self.name:
@@ -38,7 +44,7 @@ class Imposter(JsonSerializable):
 
     @property
     def url(self):
-        return furl().set(scheme=self.protocol, host=self.host, port=self.port).url
+        return furl().set(scheme=self.protocol.value, host=self.host, port=self.port).url
 
 
 class Stub(JsonSerializable):
@@ -76,21 +82,38 @@ class BasePredicate(JsonSerializable):
 class Predicate(BasePredicate):
     """See http://www.mbtest.org/docs/api/predicates"""
 
-    def __init__(self, path="/", method="GET", query=None, body=None, operator="equals", case_sensitive=True):
+    class Method(Enum):
+        GET = "GET"
+        PUT = "PUT"
+        POST = "POST"
+        DELETE = "DELETE"
+
+    class Operator(Enum):
+        EQUALS = "equals"
+        DEEP_EQUALS = "deepEquals"
+        CONTAINS = "contains"
+        STARTS_WITH = "startsWith"
+        ENDS_WITH = "endsWith"
+        MATCHES = "matches"
+        EXISTS = "exists"
+
+    def __init__(
+        self, path="/", method=Method.GET, query=None, body=None, operator=Operator.EQUALS, case_sensitive=True
+    ):
         self.path = path
-        self.method = method
+        self.method = method if isinstance(method, Predicate.Method) else Predicate.Method(method)
         self.query = query
         self.body = body
-        self.operator = operator
+        self.operator = operator if isinstance(operator, Predicate.Operator) else Predicate.Operator(operator)
         self.case_sensitive = case_sensitive
 
     def as_structure(self):
-        fields = {"path": self.path, "method": self.method}
+        fields = {"path": self.path, "method": self.method.value}
         if self.query:
             fields["query"] = self.query
         if self.body:
             fields["body"] = self.body
-        return {self.operator: fields, "caseSensitive": self.case_sensitive}
+        return {self.operator.value: fields, "caseSensitive": self.case_sensitive}
 
 
 class AndPredicate(BasePredicate):
@@ -139,4 +162,4 @@ class Response(JsonSerializable):
 
 
 def smtp_imposter(record_requests=True):
-    return Imposter([], 4525, name="smtp", protocol="smtp", record_requests=record_requests)
+    return Imposter([], 4525, name="smtp", protocol=Imposter.Protocol.SMTP, record_requests=record_requests)
