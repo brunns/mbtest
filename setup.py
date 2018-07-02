@@ -33,5 +33,7 @@ setup(name='mbtest',
           'furl',
           'attrs',
           'more_itertools',
+          'pyhamcrest',
+          'pytest',
       ],
       )
