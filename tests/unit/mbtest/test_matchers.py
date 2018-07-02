@@ -2,7 +2,7 @@ from hamcrest import assert_that, not_, has_string, contains_string, all_of
 from mock import MagicMock
 
 from matchers.matcher import mismatches_with
-from matchers.request import had_request, email_sent
+from mbtest.matchers import had_request, email_sent
 
 
 def test_request_matcher():

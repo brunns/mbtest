@@ -4,9 +4,9 @@ import pytest
 import requests
 from hamcrest import assert_that, is_, not_
 
-from matchers.request import had_request
+from mbtest.matchers import had_request
 from matchers.response import response_with
-from mb.imposters import Imposter, Predicate, Response, Stub
+from mbtest.imposters import Imposter, Predicate, Response, Stub
 
 logger = logging.getLogger(__name__)
 

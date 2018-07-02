@@ -1,6 +1,6 @@
 from hamcrest import assert_that, has_entries
 
-from mb.imposters import Predicate
+from mbtest.imposters import Predicate
 
 
 def test_default_predicate():

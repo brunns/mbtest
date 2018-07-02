@@ -4,8 +4,8 @@ import smtplib
 import pytest
 from hamcrest import assert_that
 
-from matchers.request import email_sent
-from mb.imposters import smtp_imposter
+from mbtest.matchers import email_sent
+from mbtest.imposters import smtp_imposter
 from tests.utils.builders import message, random_email, random_string
 
 logger = logging.getLogger(__name__)

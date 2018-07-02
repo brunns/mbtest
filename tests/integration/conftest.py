@@ -2,7 +2,7 @@
 # pragma: no cover
 import pytest
 
-from mb import server
+from mbtest import server
 
 
 @pytest.fixture(scope="session")
