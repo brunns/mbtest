@@ -4,10 +4,10 @@ from hamcrest.core.core.isanything import IsAnything
 from hamcrest.core.matcher import Matcher
 from more_itertools import flatten
 
+ANYTHING = anything()
 
-def had_request(
-    method=anything(), path=anything(), query=anything(), headers=anything(), body=anything(), times=anything()
-):
+
+def had_request(method=ANYTHING, path=ANYTHING, query=ANYTHING, headers=ANYTHING, body=ANYTHING, times=ANYTHING):
     """Mountebank server has recorded call matching"""
     return HadRequest(method=method, path=path, query=query, headers=headers, body=body, times=times)
 
@@ -15,15 +15,7 @@ def had_request(
 class HadRequest(BaseMatcher):
     """Mountebank server has recorded call matching"""
 
-    def __init__(
-        self,
-        method=anything(),
-        path=anything(),
-        query=anything(),
-        headers=anything(),
-        body=anything(),
-        times=anything(),
-    ):
+    def __init__(self, method=ANYTHING, path=ANYTHING, query=ANYTHING, headers=ANYTHING, body=ANYTHING, times=ANYTHING):
         self.method = method if isinstance(method, Matcher) else equal_to(method)
         self.path = path if isinstance(path, Matcher) else equal_to(path)
         self.query = query if isinstance(query, Matcher) else equal_to(query)
@@ -73,12 +65,12 @@ class HadRequest(BaseMatcher):
         return self.times.matches(len(self.matching_requests))
 
 
-def email_sent(to=anything(), subject=anything(), body_text=anything()):
+def email_sent(to=ANYTHING, subject=ANYTHING, body_text=ANYTHING):
     return EmailSent(to, subject, body_text)
 
 
 class EmailSent(BaseMatcher):
-    def __init__(self, to=anything(), subject=anything(), body_text=anything()):
+    def __init__(self, to=ANYTHING, subject=ANYTHING, body_text=ANYTHING):
         self.body_text = body_text if isinstance(body_text, Matcher) else equal_to(body_text)
         self.subject = subject if isinstance(subject, Matcher) else equal_to(subject)
         self.to = to if isinstance(to, Matcher) else equal_to(to)

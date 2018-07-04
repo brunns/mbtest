@@ -3,13 +3,15 @@ from hamcrest.core.base_matcher import BaseMatcher
 from hamcrest.core.core.isanything import IsAnything
 from hamcrest.core.matcher import Matcher
 
+ANYTHING = anything()
 
-def response_with(status_code=anything(), body=anything(), headers=anything()):
+
+def response_with(status_code=ANYTHING, body=ANYTHING, headers=ANYTHING):
     return ResponseMatcher(status_code=status_code, body=body, headers=headers)
 
 
 class ResponseMatcher(BaseMatcher):
-    def __init__(self, status_code=anything(), body=anything(), headers=anything()):
+    def __init__(self, status_code=ANYTHING, body=ANYTHING, headers=ANYTHING):
         super(ResponseMatcher, self).__init__()
         self.status_code = status_code if isinstance(status_code, Matcher) else equal_to(status_code)
         self.body = body if isinstance(body, Matcher) else equal_to(body)

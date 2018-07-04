@@ -84,7 +84,9 @@ class MountebankServer(object):
 
 
 def mock_server(request):
-    """Use in a pytest conftest.py fixture as follows:
+    """A mock server, running one or more impostors, one for each site being mocked.
+
+    Use in a pytest conftest.py fixture as follows:
 
     @pytest.fixture(scope="session")
     def mock_server(request):

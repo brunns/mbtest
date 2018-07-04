@@ -5,13 +5,15 @@ from hamcrest import equal_to, anything
 from hamcrest.core.base_matcher import BaseMatcher
 from hamcrest.core.matcher import Matcher
 
+ANYTHING = anything()
 
-def email_with(to_name=anything(), subject=anything(), body_text=anything()):
+
+def email_with(to_name=ANYTHING, subject=ANYTHING, body_text=ANYTHING):
     return EmailWith(to_name, subject, body_text)
 
 
 class EmailWith(BaseMatcher):
-    def __init__(self, to_name=anything(), subject=anything(), body_text=anything()):
+    def __init__(self, to_name=ANYTHING, subject=ANYTHING, body_text=ANYTHING):
         self.to_name = to_name if isinstance(to_name, Matcher) else equal_to(to_name)
         self.subject = subject if isinstance(subject, Matcher) else equal_to(subject)
         self.body_text = body_text if isinstance(body_text, Matcher) else equal_to(body_text)

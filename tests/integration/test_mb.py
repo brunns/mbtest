@@ -4,9 +4,9 @@ import pytest
 import requests
 from hamcrest import assert_that, is_, not_
 
-from mbtest.matchers import had_request
 from matchers.response import response_with
 from mbtest.imposters import Imposter, Predicate, Response, Stub
+from mbtest.matchers import had_request
 
 logger = logging.getLogger(__name__)
 
@@ -60,8 +60,8 @@ def test_and_predicate_and_query_strings(mock_server):
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
 
-        r1 = requests.get("{}/".format(imposter.url), params=dict(dinner="chips", foo="bar"))
-        r2 = requests.get("{}/".format(imposter.url), params=dict(dinner="chips"))
+        r1 = requests.get("{}/".format(imposter.url), params={"dinner": "chips", "foo": "bar"})
+        r2 = requests.get("{}/".format(imposter.url), params={"dinner": "chips"})
 
         assert_that(r1, is_(response_with(status_code=200, body="black pudding")))
         assert_that(r2, not_(response_with(status_code=200, body="black pudding")))

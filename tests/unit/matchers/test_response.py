@@ -1,5 +1,9 @@
 from hamcrest import assert_that, has_string, not_
-from mock import MagicMock
+
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import MagicMock
 
 from matchers.matcher import mismatches_with
 from matchers.response import response_with

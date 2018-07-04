@@ -1,5 +1,9 @@
 from hamcrest import assert_that, not_, has_string, contains_string, all_of
-from mock import MagicMock
+
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import MagicMock
 
 from matchers.matcher import mismatches_with
 from mbtest.matchers import had_request, email_sent
@@ -8,7 +12,7 @@ from mbtest.matchers import had_request, email_sent
 def test_request_matcher():
     # Given
     server = MagicMock()
-    request = dict(path="/test", method="GET")
+    request = {"path": "/test", "method": "GET"}
     server.get_actual_requests.return_value = {"someport": [request, request]}
 
     # When
@@ -35,7 +39,7 @@ def test_request_matcher():
 def test_email_sent():
     # Given
     server = MagicMock()
-    request = dict(envelopeFrom="", text="sausages")
+    request = {"envelopeFrom": "", "text": "sausages"}
     server.get_actual_requests.return_value = {"someport": [request, request]}
 
     # When

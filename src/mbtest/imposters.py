@@ -1,20 +1,29 @@
 import collections
 from abc import ABCMeta, abstractmethod
-
 from enum import Enum
+
 from furl import furl
+from six import add_metaclass
 
 
+@add_metaclass(ABCMeta)
 class JsonSerializable(object):
-    __metaclass__ = ABCMeta
-
     @abstractmethod
     def as_structure(self):  # pragma: no cover
+        """
+        :returns Structure suitable for JSON serialisation.
+        :rtype: dict
+        """
         raise NotImplementedError()
 
 
 class Imposter(JsonSerializable):
-    """See http://www.mbtest.org/docs/api/mocks"""
+    """Represents a Mountebank imposter - see http://www.mbtest.org/docs/api/mocks.
+    Think of an imposter as a mock website, running a protocol, on a specific port.
+    The specific behaviors require
+
+    Pass to an :mbtest.server.mock_server:.
+    """
 
     class Protocol(Enum):
         HTTP = "http"
@@ -22,6 +31,18 @@ class Imposter(JsonSerializable):
         SMTP = "smtp"
 
     def __init__(self, stubs, port=None, protocol=Protocol.HTTP, name=None, record_requests=False):
+        """
+        :param stubs: One or more Stubs.
+        :type stubs: Stub or list(Stub)
+        :param port: Port.
+        :type port: int
+        :param protocol: :Imposter.Protocol: to run on.
+        :type protocol: Imposter.Protocol
+        :param name: Impostor name - useful for interactive exploration of impostors on http://localhost:2525/impostors
+        :type str
+        :param record_requests: Record requests made against this impostor, so they can be asserted against later.
+        :type record_requests: bool
+        """
         self.stubs = stubs if isinstance(stubs, collections.Sequence) else [stubs]
         self.port = port
         self.protocol = protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
@@ -48,9 +69,17 @@ class Imposter(JsonSerializable):
 
 
 class Stub(JsonSerializable):
-    """See http://www.mbtest.org/docs/api/stubs"""
+    """Represents a Mountebank stub - see http://www.mbtest.org/docs/api/stubs.
+    Think of a stub as a behavior, triggered by a matching predicate.
+    """
 
     def __init__(self, predicates=None, responses=None):
+        """
+        :param predicates:
+        :type predicates: Predicate or list(Predicate)
+        :param responses:
+        :type responses: Response or list(Response)
+        """
         if responses:
             self.responses = responses if isinstance(responses, collections.Sequence) else [responses]
         else:
@@ -67,6 +96,7 @@ class Stub(JsonSerializable):
         }
 
 
+@add_metaclass(ABCMeta)
 class BasePredicate(JsonSerializable):
     @abstractmethod
     def as_structure(self):  # pragma: no cover
@@ -100,6 +130,20 @@ class Predicate(BasePredicate):
     def __init__(
         self, path="/", method=Method.GET, query=None, body=None, operator=Operator.EQUALS, case_sensitive=True
     ):
+        """
+        :param path:
+        :type path: str or furl.furl.furl
+        :param method:
+        :type method: Predicate.Method
+        :param query:
+        :type query: dict
+        :param body:
+        :type body: str
+        :param operator:
+        :type operator: Predicate.Operator
+        :param case_sensitive:
+        :type case_sensitive: bool
+        """
         self.path = path
         self.method = method if isinstance(method, Predicate.Method) else Predicate.Method(method)
         self.query = query
@@ -143,7 +187,18 @@ class Proxy(JsonSerializable):
 
 
 class Response(JsonSerializable):
+    """TODO"""
     def __init__(self, body="", status_code=200, wait=None, repeat=None):
+        """
+        :param body:
+        :type body: str
+        :param status_code:
+        :type status_code: int
+        :param wait:
+        :type wait: bool
+        :param repeat:
+        :type repeat: int
+        """
         self.body = body
         self.status_code = status_code
         self.wait = wait
@@ -162,4 +217,5 @@ class Response(JsonSerializable):
 
 
 def smtp_imposter(record_requests=True):
+    """TODO"""
     return Imposter([], 4525, name="smtp", protocol=Imposter.Protocol.SMTP, record_requests=record_requests)
