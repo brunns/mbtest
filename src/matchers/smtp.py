@@ -35,7 +35,7 @@ class EmailWith(BaseMatcher):
 
     def describe_to(self, description):
         description.append_text(
-            "email with to_name {} subject {} body_text {}".format(self.to_name, self.subject, self.body_text)
+            "email with to_name {0} subject {1} body_text {2}".format(self.to_name, self.subject, self.body_text)
         )
 
     def describe_mismatch(self, actual_email, mismatch_description):

@@ -40,7 +40,7 @@ class HadRequest(BaseMatcher):
 
     def _append_matcher_descrption(self, description, matcher, text):
         if not isinstance(matcher, IsAnything):
-            description.append_text(" {}: ".format(text)).append_description_of(matcher)
+            description.append_text(" {0}: ".format(text)).append_description_of(matcher)
 
     def describe_mismatch(self, server, description):
         description.append_text("found ").append_description_of(len(self.matching_requests))
@@ -86,7 +86,7 @@ class EmailSent(BaseMatcher):
 
     def _append_matcher_descrption(self, description, matcher, text):
         if not isinstance(matcher, IsAnything):
-            description.append_text(" {}: ".format(text)).append_description_of(matcher)
+            description.append_text(" {0}: ".format(text)).append_description_of(matcher)
 
     def describe_mismatch(self, server, description):
         description.append_text("found ").append_description_of(len(self.matching_requests))

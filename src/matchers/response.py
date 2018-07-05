@@ -35,7 +35,7 @@ class ResponseMatcher(BaseMatcher):
 
     def _append_matcher_descrption(self, description, matcher, text):
         if not isinstance(matcher, IsAnything):
-            description.append_text(" {}: ".format(text)).append_description_of(matcher)
+            description.append_text(" {0}: ".format(text)).append_description_of(matcher)
 
     def describe_mismatch(self, response, mismatch_description):
         mismatch_description.append_text("was response with status code: ").append_value(

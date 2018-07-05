@@ -83,10 +83,10 @@ class CallHasArgs(BaseMatcher):
 
     def describe_to(self, description):
         description.append_text("mock.call with arguments (").append_text(
-            ", ".join(chain((str(a) for a in self.args), ("{}={}".format(k, v) for k, v in self.kwargs.items())))
+            ", ".join(chain((str(a) for a in self.args), ("{0}={1}".format(k, v) for k, v in self.kwargs.items())))
         ).append_text(")")
 
     def describe_mismatch(self, call, mismatch_description):
         mismatch_description.append_text("got arguments (").append_text(
-            ", ".join(chain((repr(a) for a in call[1]), ("{}={!r}".format(k, v) for k, v in call[2].items())))
+            ", ".join(chain((repr(a) for a in call[1]), ("{0}={1!r}".format(k, v) for k, v in call[2].items())))
         ).append_text(")")

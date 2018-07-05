@@ -18,7 +18,7 @@ def test_request_to_mock_server(mock_server):
 
     with mock_server(imposter) as server:
         # Make request to mock server
-        response = requests.get("{}/test".format(imposter.url))
+        response = requests.get("{0}/test".format(imposter.url))
 
         assert_that("We got the expected response", response, is_(response_with(status_code=200, body="sausages")))
         assert_that("The mock server recorded the request", server, had_request(path="/test", method="GET"))
@@ -33,8 +33,8 @@ def test_multiple_imposters(mock_server):
 
     with mock_server(imposters) as s:
         logger.debug("server: %s", s)
-        r1 = requests.get("{}/test1".format(imposters[0].url))
-        r2 = requests.get("{}/test2".format(imposters[1].url))
+        r1 = requests.get("{0}/test1".format(imposters[0].url))
+        r2 = requests.get("{0}/test2".format(imposters[1].url))
 
     assert_that(r1, response_with(status_code=200, body="sausages"))
     assert_that(r2, response_with(status_code=201, body="chips"))
@@ -46,7 +46,7 @@ def test_default_imposter(mock_server):
 
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
-        r = requests.get("{}/".format(imposter.url))
+        r = requests.get("{0}/".format(imposter.url))
 
     assert_that(r, response_with(status_code=200, body=""))
 
@@ -60,8 +60,8 @@ def test_and_predicate_and_query_strings(mock_server):
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
 
-        r1 = requests.get("{}/".format(imposter.url), params={"dinner": "chips", "foo": "bar"})
-        r2 = requests.get("{}/".format(imposter.url), params={"dinner": "chips"})
+        r1 = requests.get("{0}/".format(imposter.url), params={"dinner": "chips", "foo": "bar"})
+        r2 = requests.get("{0}/".format(imposter.url), params={"dinner": "chips"})
 
         assert_that(r1, is_(response_with(status_code=200, body="black pudding")))
         assert_that(r2, not_(response_with(status_code=200, body="black pudding")))
@@ -74,9 +74,9 @@ def test_or_predicate_and_body(mock_server):
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
 
-        r1 = requests.get("{}/".format(imposter.url), data="foo")
-        r2 = requests.get("{}/".format(imposter.url), data="bar")
-        r3 = requests.get("{}/".format(imposter.url), data="baz")
+        r1 = requests.get("{0}/".format(imposter.url), data="foo")
+        r2 = requests.get("{0}/".format(imposter.url), data="bar")
+        r3 = requests.get("{0}/".format(imposter.url), data="baz")
 
         assert_that(r1, is_(response_with(status_code=200, body="oranges")))
         assert_that(r2, is_(response_with(status_code=200, body="oranges")))

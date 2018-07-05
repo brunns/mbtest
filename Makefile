@@ -36,7 +36,7 @@ piprot: ## Check for outdated dependencies
 	piprot requirements.txt
 	piprot test_requirements.txt
 
-precommit: format lint test coverage ## Pre-commit targets
+precommit: format test lint coverage ## Pre-commit targets
 
 clean: ## Clean generated files
 	find . -name '*.pyc' -delete

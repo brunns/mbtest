@@ -20,7 +20,7 @@ def message(to_name=None, to_email=None, from_name=None, from_email=None, subjec
 
 
 def random_email():
-    return "{}@example.com".format(random_string())
+    return "{0}@example.com".format(random_string())
 
 
 def random_string(length=10, characters=string.ascii_letters + string.digits):

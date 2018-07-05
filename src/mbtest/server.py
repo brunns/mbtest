@@ -77,7 +77,7 @@ class MountebankServer(object):
         return impostors
 
     def imposter_url(self, port):
-        return furl(self.IMPOSTERS_URL).add(path="{}".format(port)).url
+        return furl(self.IMPOSTERS_URL).add(path="{0}".format(port)).url
 
     def close(self):
         self.mb_process.terminate()
@@ -101,7 +101,7 @@ def mock_server(request):
                             record_requests=True)
 
         with mock_server(imposter) as s:
-            r = requests.get('{}/test'.format(imposter.url))
+            r = requests.get('{0}/test'.format(imposter.url))
 
             assert r.text == "sausages"
             assert_that(s, has_request(path='/test', method="GET"))

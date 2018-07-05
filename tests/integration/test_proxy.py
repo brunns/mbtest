@@ -18,7 +18,7 @@ def test_proxy(mock_server):
 
     with mock_server(imposter) as server:
         # Make request to mock server
-        response = requests.get("{}/".format(imposter.url))
+        response = requests.get("{0}/".format(imposter.url))
 
         assert_that(response, is_(response_with(status_code=200, body=contains_string("<h1>Example Domain</h1>"))))
         assert_that(server, had_request(path="/", method="GET"))
