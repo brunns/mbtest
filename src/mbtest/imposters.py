@@ -80,19 +80,19 @@ class Stub(JsonSerializable):
         :param responses:
         :type responses: Response or list(Response)
         """
-        if responses:
-            self.responses = responses if isinstance(responses, collections.Sequence) else [responses]
-        else:
-            self.responses = [Response()]
         if predicates:
             self.predicates = predicates if isinstance(predicates, collections.Sequence) else [predicates]
         else:
             self.predicates = [Predicate()]
+        if responses:
+            self.responses = responses if isinstance(responses, collections.Sequence) else [responses]
+        else:
+            self.responses = [Response()]
 
     def as_structure(self):
         return {
-            "responses": [response.as_structure() for response in self.responses],
             "predicates": [predicate.as_structure() for predicate in self.predicates],
+            "responses": [response.as_structure() for response in self.responses],
         }
 
 
@@ -188,6 +188,7 @@ class Proxy(JsonSerializable):
 
 class Response(JsonSerializable):
     """TODO"""
+
     def __init__(self, body="", status_code=200, wait=None, repeat=None):
         """
         :param body:
