@@ -33,8 +33,26 @@ def test_call_has_positional_arg():
 
 
 def test_call_has_keyword_arg():
-    # TODO
-    pass
+    # Given
+    m = MagicMock()
+
+    # When
+    m(f="first", s="second", t="third")
+    call = m.mock_calls[0]
+
+    # Then
+    assert_that(call, call_has_arg("s", "second"))
+    assert_that(call, not_(call_has_arg("s", "nope")))
+    assert_that(call, not_(call_has_arg("w", "nope")))
+    assert_that(call, call_has_arg("s", contains_string("eco")))
+    assert_that(
+        call_has_arg("s", contains_string("eco")),
+        has_string("mock.call with keyword argument 's' matching a string containing 'eco'"),
+    )
+    assert_that(
+        call_has_arg("s", "fifth"), mismatches_with(call, "got mock.call with keyword argument 's' with value 'second'")
+    )
+    assert_that(call_has_arg("n", "nope"), mismatches_with(call, "got mock.call with without keyword argument 'n'"))
 
 
 def test_call_has_args():

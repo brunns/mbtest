@@ -1,4 +1,5 @@
 from itertools import chain
+from numbers import Number
 
 from hamcrest import equal_to
 from hamcrest.core.base_matcher import BaseMatcher
@@ -6,8 +7,11 @@ from hamcrest.core.matcher import Matcher
 from six.moves import zip_longest
 
 
-def call_has_arg(index, expected):
-    return CallHasPositionalArg(index, expected)
+def call_has_arg(arg, expected):
+    if isinstance(arg, Number):
+        return CallHasPositionalArg(arg, expected)
+    else:
+        return CallHasKeywordArg(arg, expected)
 
 
 class CallHasPositionalArg(BaseMatcher):
@@ -35,6 +39,34 @@ class CallHasPositionalArg(BaseMatcher):
         else:
             mismatch_description.append_text("got mock.call with without argument index ").append_description_of(
                 self.index
+            )
+
+
+class CallHasKeywordArg(BaseMatcher):
+    def __init__(self, key, expected):
+        super(CallHasKeywordArg, self).__init__()
+        self.key = key
+        self.expected = expected if isinstance(expected, Matcher) else equal_to(expected)
+
+    def _matches(self, actual_call):
+        args = actual_call[2]
+        return self.key in args and self.expected.matches(args[self.key])
+
+    def describe_to(self, description):
+        description.append_text("mock.call with keyword argument ").append_description_of(self.key).append_text(
+            " matching "
+        )
+        self.expected.describe_to(description)
+
+    def describe_mismatch(self, actual_call, mismatch_description):
+        args = actual_call[2]
+        if self.key in args:
+            mismatch_description.append_text("got mock.call with keyword argument ").append_description_of(
+                self.key
+            ).append_text(" with value ").append_description_of(args[self.key])
+        else:
+            mismatch_description.append_text("got mock.call with without keyword argument ").append_description_of(
+                self.key
             )
 
 
