@@ -57,5 +57,8 @@ pydeps:
 jsdeps:
 	npm install mountebank@1.14.1 --production
 
+publish: ## Publish to pypi
+	python setup.py sdist upload -r pypi
+
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1,$$2}'
