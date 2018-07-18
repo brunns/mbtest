@@ -75,9 +75,9 @@ class Stub(JsonSerializable):
 
     def __init__(self, predicates=None, responses=None):
         """
-        :param predicates:
+        :param predicates: Trigger this stub if one of these predicates matches the request
         :type predicates: Predicate or list(Predicate)
-        :param responses:
+        :param responses: Use these response behaviors (in order)
         :type responses: Response or list(Response)
         """
         if predicates:
@@ -110,7 +110,8 @@ class BasePredicate(JsonSerializable):
 
 
 class Predicate(BasePredicate):
-    """See http://www.mbtest.org/docs/api/predicates"""
+    """"Represents a Mountebank predicate - see http://www.mbtest.org/docs/api/predicates
+    A predicate can be thought of as a trigger, which may or may not match a request."""
 
     class Method(Enum):
         GET = "GET"
@@ -131,13 +132,13 @@ class Predicate(BasePredicate):
         self, path="/", method=Method.GET, query=None, body=None, operator=Operator.EQUALS, case_sensitive=True
     ):
         """
-        :param path:
+        :param path: URL path.
         :type path: str or furl.furl.furl
-        :param method:
+        :param method: HTTP method.
         :type method: Predicate.Method
-        :param query:
+        :param query: Query arguments, keys and values.
         :type query: dict
-        :param body:
+        :param body: Body text
         :type body: str
         :param operator:
         :type operator: Predicate.Operator
@@ -187,17 +188,17 @@ class Proxy(JsonSerializable):
 
 
 class Response(JsonSerializable):
-    """TODO"""
+    """Represents a Mountebank 'is' response behavior - see http://www.mbtest.org/docs/api/stubs"""
 
     def __init__(self, body="", status_code=200, wait=None, repeat=None):
         """
-        :param body:
+        :param body: Body text for response
         :type body: str
-        :param status_code:
+        :param status_code: HTTP status code
         :type status_code: int
-        :param wait:
-        :type wait: bool
-        :param repeat:
+        :param wait: Add latency, in ms
+        :type wait: int
+        :param repeat: Repeat this many times before moving on to next response.
         :type repeat: int
         """
         self.body = body
@@ -217,6 +218,6 @@ class Response(JsonSerializable):
         return result
 
 
-def smtp_imposter(record_requests=True):
-    """TODO"""
-    return Imposter([], 4525, name="smtp", protocol=Imposter.Protocol.SMTP, record_requests=record_requests)
+def smtp_imposter(name="smtp", record_requests=True):
+    """Canned SMTP server impostor."""
+    return Imposter([], 4525, name=name, protocol=Imposter.Protocol.SMTP, record_requests=record_requests)
