@@ -138,8 +138,8 @@ class Predicate(BasePredicate):
         :type method: Predicate.Method
         :param query: Query arguments, keys and values.
         :type query: dict
-        :param body: Body text
-        :type body: str
+        :param body: Body text. Can be a string, or a JSON serialisable data structure.
+        :type body: str or dict or list
         :param operator:
         :type operator: Predicate.Operator
         :param case_sensitive:
@@ -192,8 +192,8 @@ class Response(JsonSerializable):
 
     def __init__(self, body="", status_code=200, wait=None, repeat=None):
         """
-        :param body: Body text for response
-        :type body: str
+        :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
+        :type body: str or dict or list
         :param status_code: HTTP status code
         :type status_code: int
         :param wait: Add latency, in ms
