@@ -37,5 +37,8 @@ setup(
         "six~=1.0",
         "pendulum~=2.0",
         "beautifulsoup4~=4.0",
+        'singledispatch~=3.4;python_version<"3.4"',
+        'pathlib~=1.0;python_version<"3.4"',
+        'functools32~=3.2;python_version<"3.2"',
     ],
 )

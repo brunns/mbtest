@@ -1,7 +1,9 @@
 import collections
+import xml.etree.ElementTree as et  # nosec - We are creating, not parsing XML.
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 
+import six
 from furl import furl
 from six import add_metaclass
 
@@ -201,10 +203,16 @@ class Response(JsonSerializable):
         :param repeat: Repeat this many times before moving on to next response.
         :type repeat: int
         """
-        self.body = body
+        self._body = body
         self.status_code = status_code
         self.wait = wait
         self.repeat = repeat
+
+    @property
+    def body(self):
+        if isinstance(self._body, et.Element):
+            return et.tostring(self._body, encoding="unicode" if six.PY3 else "utf-8")
+        return self._body
 
     def as_structure(self):
         inner = {"statusCode": self.status_code, "body": self.body}
