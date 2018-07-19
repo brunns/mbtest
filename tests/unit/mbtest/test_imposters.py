@@ -11,4 +11,4 @@ def test_default_predicate():
     structure = predicate.as_structure()
 
     # Then
-    assert_that(structure, has_entries(caseSensitive=True, equals=has_entries(path="/", method="GET")))
+    assert_that(structure, has_entries(caseSensitive=True, equals=has_entries()))

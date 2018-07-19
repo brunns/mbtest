@@ -2,11 +2,11 @@ import logging
 
 import pytest
 import requests
-from hamcrest import assert_that, is_
+from hamcrest import assert_that, is_, not_
 
 from matchers.response import response_with
 from mbtest.imposters import Imposter, Stub, Predicate, Response
-from tests.utils.data2xml import data2xml
+from tests.utils.data2xml import data2xml, et2string
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +14,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.usefixtures("mock_server")
 def test_xml_response(mock_server):
     # Given
-    body = data2xml({"foo": {"bar": "baz"}})
-    imposter = Imposter(Stub(Predicate(), Response(body=body)))
+    imposter = Imposter(Stub(Predicate(), Response(body=data2xml({"foo": {"bar": "baz"}}))))
 
     with mock_server(imposter):
         # When
@@ -23,3 +22,21 @@ def test_xml_response(mock_server):
 
         # Then
         assert_that(r, is_(response_with(body="<foo><bar>baz</bar></foo>")))
+
+
+@pytest.mark.usefixtures("mock_server")
+def test_xml_payload(mock_server):
+    # Given
+    imposter = Imposter(
+        Stub(Predicate(xpath="//foo", body="bar", operator=Predicate.Operator.EQUALS), Response(body="sausages")),
+        record_requests=True,
+    )
+
+    with mock_server(imposter):
+        # When
+        r1 = requests.get(imposter.url, data=et2string(data2xml({"foo": "bar"})))
+        r2 = requests.get(imposter.url, data=et2string(data2xml({"foo": "baz"})))
+
+        # Then
+        assert_that(r1, is_(response_with(body="sausages")))
+        assert_that(r2, is_(response_with(body=not_("sausages"))))

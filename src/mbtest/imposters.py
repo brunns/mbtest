@@ -131,7 +131,14 @@ class Predicate(BasePredicate):
         EXISTS = "exists"
 
     def __init__(
-        self, path="/", method=Method.GET, query=None, body=None, operator=Operator.EQUALS, case_sensitive=True
+        self,
+        path=None,
+        method=Method.GET,
+        query=None,
+        body=None,
+        xpath=None,
+        operator=Operator.EQUALS,
+        case_sensitive=True,
     ):
         """
         :param path: URL path.
@@ -142,6 +149,8 @@ class Predicate(BasePredicate):
         :type query: dict
         :param body: Body text. Can be a string, or a JSON serialisable data structure.
         :type body: str or dict or list
+        :param xpath: xpath query
+        :type xpath: str
         :param operator:
         :type operator: Predicate.Operator
         :param case_sensitive:
@@ -151,16 +160,27 @@ class Predicate(BasePredicate):
         self.method = method if isinstance(method, Predicate.Method) else Predicate.Method(method)
         self.query = query
         self.body = body
+        self.xpath = xpath
         self.operator = operator if isinstance(operator, Predicate.Operator) else Predicate.Operator(operator)
         self.case_sensitive = case_sensitive
 
     def as_structure(self):
-        fields = {"path": self.path, "method": self.method.value}
+        predicate = {self.operator.value: self.fields_as_structure(), "caseSensitive": self.case_sensitive}
+        if self.path:
+            predicate["path"] = self.path
+        if self.method:
+            predicate["method"] = self.method.value
+        if self.xpath:
+            predicate["xpath"] = {"selector": self.xpath}
+        return predicate
+
+    def fields_as_structure(self):
+        fields = {}
         if self.query:
             fields["query"] = self.query
         if self.body:
             fields["body"] = self.body
-        return {self.operator.value: fields, "caseSensitive": self.case_sensitive}
+        return fields
 
 
 class AndPredicate(BasePredicate):
