@@ -118,3 +118,22 @@ def test_wait(mock_server):
         # Then
         assert_that(r, is_(response_with(body="oranges")))
         assert_that(t.elapsed, close_to(0.5, 0.1))
+
+
+@pytest.mark.usefixtures("mock_server")
+def test_repeat(mock_server):
+    # Given
+    imposter = Imposter(Stub(Predicate(), [Response(body="oranges", repeat=2), Response(body="apples")]))
+
+    with mock_server(imposter) as s:
+        logger.debug("server: %s", s)
+
+        # When
+        r1 = requests.get(imposter.url)
+        r2 = requests.get(imposter.url)
+        r3 = requests.get(imposter.url)
+
+        # Then
+        assert_that(r1, is_(response_with(body="oranges")))
+        assert_that(r2, is_(response_with(body="oranges")))
+        assert_that(r3, is_(response_with(body="apples")))
