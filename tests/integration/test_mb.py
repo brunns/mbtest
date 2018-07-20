@@ -137,3 +137,31 @@ def test_repeat(mock_server):
         assert_that(r1, is_(response_with(body="oranges")))
         assert_that(r2, is_(response_with(body="oranges")))
         assert_that(r3, is_(response_with(body="apples")))
+
+
+@pytest.mark.usefixtures("mock_server")
+def test_methods(mock_server):
+    # Given
+    imposter = Imposter(
+        [
+            Stub(Predicate(method=Predicate.Method.GET), Response(body="get")),
+            Stub(Predicate(method=Predicate.Method.PUT), Response(body="put")),
+            Stub(Predicate(method=Predicate.Method.POST), Response(body="post")),
+            Stub(Predicate(method=Predicate.Method.DELETE), Response(body="delete")),
+        ]
+    )
+
+    with mock_server(imposter) as s:
+        logger.debug("server: %s", s)
+
+        # When
+        delete = requests.delete(imposter.url)
+        post = requests.post(imposter.url)
+        put = requests.put(imposter.url)
+        get = requests.get(imposter.url)
+
+        # Then
+        assert_that(delete, is_(response_with(body="delete")))
+        assert_that(post, is_(response_with(body="post")))
+        assert_that(put, is_(response_with(body="put")))
+        assert_that(get, is_(response_with(body="get")))

@@ -38,7 +38,7 @@ class MountebankServer(object):
     def __exit__(self, ex_type, ex_value, ex_traceback):
         self.delete_imposters()
 
-    def _await_start(self, timeout=5):
+    def _await_start(self, timeout=5):  # pragma: no cover
         start_time = time.time()
 
         while time.time() - start_time < timeout:
@@ -97,14 +97,14 @@ def mock_server(request):
     @pytest.mark.usefixtures("mock_server")
     def test_1_imposter(mock_server):
         imposter = Imposter(Stub(Predicate(path='/test'),
-                                 Response('sausages')),
+                                 Response(body='sausages')),
                             record_requests=True)
 
         with mock_server(imposter) as s:
             r = requests.get('{0}/test'.format(imposter.url))
 
-            assert r.text == "sausages"
-            assert_that(s, has_request(path='/test', method="GET"))
+            assert_that(r, is_(response_with(status_code=200, body="sausages")))
+            assert_that(s, had_request(path='/test', method="GET"))
     """
     server = MountebankServer()
 

@@ -131,14 +131,8 @@ class Predicate(BasePredicate):
         EXISTS = "exists"
 
     def __init__(
-        self,
-        path=None,
-        method=Method.GET,
-        query=None,
-        body=None,
-        xpath=None,
-        operator=Operator.EQUALS,
-        case_sensitive=True,
+            self, path=None, method=None, query=None, body=None, xpath=None, operator=Operator.EQUALS,
+            case_sensitive=True
     ):
         """
         :param path: URL path.
@@ -157,7 +151,7 @@ class Predicate(BasePredicate):
         :type case_sensitive: bool
         """
         self.path = path
-        self.method = method if isinstance(method, Predicate.Method) else Predicate.Method(method)
+        self.method = method if isinstance(method, Predicate.Method) else Predicate.Method(method) if method else None
         self.query = query
         self.body = body
         self.xpath = xpath
@@ -168,8 +162,6 @@ class Predicate(BasePredicate):
         predicate = {self.operator.value: self.fields_as_structure(), "caseSensitive": self.case_sensitive}
         if self.path:
             predicate["path"] = self.path
-        if self.method:
-            predicate["method"] = self.method.value
         if self.xpath:
             predicate["xpath"] = {"selector": self.xpath}
         return predicate
@@ -180,6 +172,8 @@ class Predicate(BasePredicate):
             fields["query"] = self.query
         if self.body:
             fields["body"] = self.body
+        if self.method:
+            fields["method"] = self.method.value
         return fields
 
 
