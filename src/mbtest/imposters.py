@@ -131,8 +131,7 @@ class Predicate(BasePredicate):
         EXISTS = "exists"
 
     def __init__(
-            self, path=None, method=None, query=None, body=None, xpath=None, operator=Operator.EQUALS,
-            case_sensitive=True
+        self, path=None, method=None, query=None, body=None, xpath=None, operator=Operator.EQUALS, case_sensitive=True
     ):
         """
         :param path: URL path.
