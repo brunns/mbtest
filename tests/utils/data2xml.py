@@ -10,6 +10,13 @@ except ImportError:
 
 
 def data2xml(data, default_namespace=None):
+    """ Convert data structure to XML
+    :param data: data to convert to XML
+    :type data: dict
+    :param default_namespace: Namespace
+    :type default_namespace: str
+    :rtype: xml.etree.ElementTree.Element
+    """
     root, body = data.popitem()
     root = et.Element(root)
     if default_namespace:

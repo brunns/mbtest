@@ -146,7 +146,7 @@ class Predicate(BasePredicate):
         :param method: HTTP method.
         :type method: Predicate.Method
         :param query: Query arguments, keys and values.
-        :type query: dict
+        :type query: dict(str, str)
         :param body: Body text. Can be a string, or a JSON serialisable data structure.
         :type body: str or dict or list
         :param xpath: xpath query
@@ -215,7 +215,7 @@ class Response(JsonSerializable):
     def __init__(self, body="", status_code=200, wait=None, repeat=None):
         """
         :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
-        :type body: str or dict or list
+        :type body: str or dict or list or xml.etree.ElementTree.Element
         :param status_code: HTTP status code
         :type status_code: int
         :param wait: Add latency, in ms

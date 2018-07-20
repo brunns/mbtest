@@ -2,7 +2,8 @@ import logging
 
 import pytest
 import requests
-from hamcrest import assert_that, is_, not_
+from contexttimer import Timer
+from hamcrest import assert_that, is_, not_, close_to
 
 from matchers.response import response_with
 from mbtest.imposters import Imposter, Predicate, Response, Stub
@@ -74,10 +75,46 @@ def test_or_predicate_and_body(mock_server):
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
 
-        r1 = requests.get("{0}/".format(imposter.url), data="foo")
-        r2 = requests.get("{0}/".format(imposter.url), data="bar")
-        r3 = requests.get("{0}/".format(imposter.url), data="baz")
+        r1 = requests.get(imposter.url, data="foo")
+        r2 = requests.get(imposter.url, data="bar")
+        r3 = requests.get(imposter.url, data="baz")
 
         assert_that(r1, is_(response_with(status_code=200, body="oranges")))
         assert_that(r2, is_(response_with(status_code=200, body="oranges")))
         assert_that(r3, not_(response_with(status_code=200, body="oranges")))
+
+
+@pytest.mark.usefixtures("mock_server")
+def test_query_predicate(mock_server):
+    # Given
+    imposter = Imposter(Stub(Predicate(query={"foo": "bar"}), Response(body="oranges")))
+
+    with mock_server(imposter) as s:
+        logger.debug("server: %s", s)
+
+        # When
+        r1 = requests.get(imposter.url, params={"foo": "bar"})
+        r2 = requests.get(imposter.url, params={"foo": "baz"})
+        r3 = requests.get(imposter.url)
+
+        # Then
+        assert_that(r1, is_(response_with(body="oranges")))
+        assert_that(r2, is_(response_with(body=not_("oranges"))))
+        assert_that(r3, is_(response_with(body=not_("oranges"))))
+
+
+@pytest.mark.usefixtures("mock_server")
+def test_wait(mock_server):
+    # Given
+    imposter = Imposter(Stub(Predicate(), Response(body="oranges", wait=500)))
+
+    with mock_server(imposter) as s:
+        logger.debug("server: %s", s)
+
+        # When
+        with Timer() as t:
+            r = requests.get(imposter.url)
+
+        # Then
+        assert_that(r, is_(response_with(body="oranges")))
+        assert_that(t.elapsed, close_to(0.5, 0.1))
