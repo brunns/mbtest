@@ -4,6 +4,8 @@ Python wrapper & utils for the [Mountebank](http://www.mbtest.org/) over the wir
 
 Includes [pytest](https://pytest.org) fixture and [PyHamcrest](https://pyhamcrest.readthedocs.io) matchers.
 
+[![Build Status](https://travis-ci.org/brunns/mbtest.svg?branch=master)](https://travis-ci.org/brunns/mbtest)
+
 ## Setup
 
 Install with pip:
