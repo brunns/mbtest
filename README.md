@@ -43,7 +43,7 @@ def test_request_to_mock_server(mock_server):
                     server, had_request(path="/test", method="GET"))
 ```
 
-Needs a pytest fixture, usually defined in a [`conftest.py`](https://docs.pytest.org/en/latest/fixture.html#fixture-function):
+Needs a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily defined in [`conftest.py`](https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions):
 
 ```python
 import pytest
