@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 setup(
     name="mbtest",
     zip_safe=False,
-    version="0.2.2",
+    version="0.2.3",
     description="Python wrapper & utils for the Mountebank over the wire test double tool.",
     author="Simon Brunning",
     author_email="simon@brunningonline.net",
