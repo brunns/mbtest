@@ -1,13 +1,10 @@
-import os
-
 from setuptools import find_packages, setup
 
 setup(
     name="mbtest",
     zip_safe=False,
-    version="0.2.0",
+    version="0.2.1",
     description="Python wrapper & utils for the Mountebank over the wire test double tool.",
-    long_description=open(os.path.join(os.path.dirname(__file__), "README.md")).read(),
     author="Simon Brunning",
     author_email="simon@brunningonline.net",
     url="https://github.com/brunns/mbtest/",
