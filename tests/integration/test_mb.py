@@ -42,6 +42,27 @@ def test_multiple_imposters(mock_server):
 
 
 @pytest.mark.usefixtures("mock_server")
+def test_multiple_stubs(mock_server):
+    imposter = Imposter(
+        [
+            Stub(Predicate(path="/test1"), Response(body="sausages")),
+            Stub(Predicate(path="/test2"), Response(body="chips")),
+        ],
+        port=4567,
+        name="bill",
+    )
+
+    with mock_server(imposter) as s:
+        logger.debug("server: %s", s)
+        r1 = requests.get("{0}/test1".format(imposter.url))
+        r2 = requests.get("{0}/test2".format(imposter.url))
+
+        pass
+    assert_that(r1, response_with(body="sausages"))
+    assert_that(r2, response_with(body="chips"))
+
+
+@pytest.mark.usefixtures("mock_server")
 def test_default_imposter(mock_server):
     imposter = Imposter(Stub())
 

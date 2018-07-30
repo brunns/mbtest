@@ -159,14 +159,14 @@ class Predicate(BasePredicate):
 
     def as_structure(self):
         predicate = {self.operator.value: self.fields_as_structure(), "caseSensitive": self.case_sensitive}
-        if self.path:
-            predicate["path"] = self.path
         if self.xpath:
             predicate["xpath"] = {"selector": self.xpath}
         return predicate
 
     def fields_as_structure(self):
         fields = {}
+        if self.path:
+            fields["path"] = self.path
         if self.query:
             fields["query"] = self.query
         if self.body:
