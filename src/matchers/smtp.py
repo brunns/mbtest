@@ -9,6 +9,16 @@ ANYTHING = anything()
 
 
 def email_with(to_name=ANYTHING, subject=ANYTHING, body_text=ANYTHING):
+    """Match email with
+    :param to_name:
+    :type to_name: Matcher(str) or str
+    :param subject:
+    :type subject: Matcher(str) or str
+    :param body_text:
+    :type body_text: Matcher(str) or str
+    :return: Matcher
+    :rtype: Matcher(str)
+    """
     return EmailWith(to_name, subject, body_text)
 
 

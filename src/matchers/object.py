@@ -4,7 +4,11 @@ from hamcrest.core.matcher import Matcher
 
 
 def has_repr(expected):
-    """object with repr() matching"""
+    """object with repr() matching
+    :param expected: Expected value.
+    :type expected: str or Matcher(str)
+    :return: Matcher(object)
+    """
     return HasRepr(expected)
 
 
@@ -23,6 +27,10 @@ class HasRepr(BaseMatcher):
 
 
 def has_identical_properties_to(expected):
+    """Matches object with identical properties to
+    :param expected: Expected object
+    :return: Matcher(object)
+    """
     return HasIdenticalPropertiesTo(expected)
 
 
@@ -46,8 +54,14 @@ class Truthy(BaseMatcher):
 
 
 def true():
+    """Matches truthy values.
+    :return: Matcher(object)
+    """
     return Truthy()
 
 
 def false():
+    """Matches falsey values.
+    :return: Matcher(object)
+    """
     return not_(true())

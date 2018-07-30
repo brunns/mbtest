@@ -6,6 +6,11 @@ from hamcrest.core.matcher import Matcher
 
 
 def json_matching(matcher):
+    """Matches string containing JSON data.
+    :param matcher: Expected JSON
+    :type matcher: Matcher or dict or list
+    :return: Matcher(str)
+    """
     return JsonMatching(matcher)
 
 

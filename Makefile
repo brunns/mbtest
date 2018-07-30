@@ -33,8 +33,7 @@ format: ## Format code
 	tox -e format
 
 piprot: ## Check for outdated dependencies
-	piprot requirements.txt
-	piprot test_requirements.txt
+	tox -e piprot
 
 precommit: format test lint coverage ## Pre-commit targets
 
@@ -62,6 +61,9 @@ publish: ## Publish to pypi
 
 repl: ## Python REPL
 	tox -e py36 -- python
+
+outdated: ## List outdated dependancies
+	tox -e py36 -- pip list --outdated
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1,$$2}'

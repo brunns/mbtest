@@ -28,7 +28,7 @@ from mbtest.imposters import Imposter, Predicate, Response, Stub
 
 @pytest.mark.usefixtures("mock_server")
 def test_request_to_mock_server(mock_server):
-    # Start mock server with required behavior
+    # Set up mock server with required behavior
     imposter = Imposter(Stub(Predicate(path="/test"), 
                              Response(body="sausages")), 
                         record_requests=True)

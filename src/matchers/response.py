@@ -7,6 +7,16 @@ ANYTHING = anything()
 
 
 def response_with(status_code=ANYTHING, body=ANYTHING, headers=ANYTHING):
+    """Matches :requests.models.Response:.
+    :param status_code: Expected status code
+    :type status_code: int or Matcher
+    :param body: Expected body
+    :type body: str or Matcher
+    :param headers: Expected headers
+    :type headers: dict or Matcher
+    :return: Matcher
+    :rtype: Matcher(requests.models.Response)
+    """
     return ResponseMatcher(status_code=status_code, body=body, headers=headers)
 
 

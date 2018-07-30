@@ -1,6 +1,6 @@
 from hamcrest import assert_that, contains_string, has_string, not_, matches_regexp, all_of
 
-from junkdrawer.bunch import Bunch
+from junkdrawer.bunch import ReprFromDict
 from matchers.matcher import mismatches_with
 from matchers.object import has_repr, has_identical_properties_to, false, true
 
@@ -20,9 +20,24 @@ def test_has_repr():
 
 def test_identical_properties():
     # Given
-    a = Bunch(a=1, b=2)
-    b = Bunch(a=1, b=2)
-    c = Bunch(a=1, b=3)
+    class SomeClass(ReprFromDict):
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+
+    class OtherClass(ReprFromDict):
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+
+    class YetAnotherClass(ReprFromDict):
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+
+    a = SomeClass(1, 2)
+    b = OtherClass(1, 2)
+    c = YetAnotherClass(1, 3)
 
     # When
 
@@ -33,7 +48,7 @@ def test_identical_properties():
         has_identical_properties_to(a),
         has_string(
             all_of(
-                matches_regexp(r"object with identical properties to object .*Bunch\("),
+                matches_regexp(r"object with identical properties to object .*SomeClass\("),
                 contains_string("a=1"),
                 contains_string("b=2"),
             )
@@ -41,7 +56,9 @@ def test_identical_properties():
     )
     assert_that(
         has_identical_properties_to(a),
-        mismatches_with(c, all_of(matches_regexp(r"was .*Bunch\("), contains_string("a=1"), contains_string("b=3"))),
+        mismatches_with(
+            c, all_of(matches_regexp(r"was .*YetAnotherClass\("), contains_string("a=1"), contains_string("b=3"))
+        ),
     )
 
 
