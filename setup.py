@@ -1,13 +1,30 @@
+import logging
 import os
 
 from setuptools import find_packages, setup
 
+logger = logging.getLogger(__name__)
+
+# Get the base directory
+here = os.path.dirname(__file__)
+if not here:
+    here = os.path.curdir
+here = os.path.abspath(here)
+
+# Text describing the module (reStructured text)
+try:
+    readme = os.path.join(here, 'README.md')
+    long_description = open(readme, 'r').read()
+except IOError:
+    logger.warning("README file not found or unreadable!")
+    long_description = """See https://github.com/brunns/mbtest/"""
+
 setup(
     name="mbtest",
     zip_safe=False,
-    version="0.2.4",
+    version="0.2.5",
     description="Python wrapper & utils for the Mountebank over the wire test double tool.",
-    long_description=open(os.path.join(os.path.dirname(__file__), "README.md")).read(),
+    long_description=long_description,
     author="Simon Brunning",
     author_email="simon@brunningonline.net",
     url="https://github.com/brunns/mbtest/",
