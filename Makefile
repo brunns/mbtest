@@ -57,7 +57,8 @@ jsdeps:
 	npm install mountebank@1.14.1 --production
 
 publish: ## Publish to pypi
-	python setup.py sdist upload -r pypi
+	python setup.py sdist
+	twine update dist/*
 
 repl: ## Python REPL
 	tox -e py36 -- python
