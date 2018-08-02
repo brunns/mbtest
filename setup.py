@@ -12,8 +12,8 @@ if not here:
 here = os.path.abspath(here)
 
 try:
-    readme = os.path.join(here, 'README.md')
-    long_description = open(readme, 'r').read()
+    readme = os.path.join(here, "README.md")
+    long_description = open(readme, "r").read()
 except IOError:
     logger.warning("README file not found or unreadable.")
     long_description = "See https://github.com/brunns/mbtest/"
@@ -21,7 +21,7 @@ except IOError:
 setup(
     name="mbtest",
     zip_safe=False,
-    version="0.2.6",
+    version="1.0.0",
     description="Python wrapper & utils for the Mountebank over the wire test double tool.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -49,22 +49,8 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
-        "Topic :: Utilities",
+        "Topic :: Software Development :: Testing",
     ],
     python_requires=">=2.7",
-    install_requires=[
-        "requests~=2.0",
-        "furl~=1.0",
-        "attrs~=18.0",
-        "more_itertools~=4.0",
-        "pyhamcrest~=1.9",
-        "pytest~=3.0",
-        'enum34~=1.0;python_version<"3.4"',
-        "six~=1.0",
-        "pendulum~=2.0",
-        "beautifulsoup4~=4.0",
-        'singledispatch~=3.4;python_version<"3.4"',
-        'pathlib~=1.0;python_version<"3.4"',
-        'functools32~=3.2;python_version<"3.2"',
-    ],
+    install_requires=["requests~=2.0", "furl~=1.0", "pyhamcrest~=1.9", "pytest~=3.0"],
 )

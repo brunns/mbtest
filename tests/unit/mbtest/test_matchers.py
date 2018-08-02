@@ -5,7 +5,7 @@ try:
 except ImportError:
     from mock import MagicMock
 
-from matchers.matcher import mismatches_with
+from brunns.matchers.matcher import mismatches_with
 from mbtest.matchers import had_request, email_sent
 
 

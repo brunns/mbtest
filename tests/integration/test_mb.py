@@ -2,10 +2,10 @@ import logging
 
 import pytest
 import requests
+from brunns.matchers.response import response_with
 from contexttimer import Timer
 from hamcrest import assert_that, is_, not_, close_to
 
-from matchers.response import response_with
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 from mbtest.matchers import had_request
 

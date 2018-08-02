@@ -2,9 +2,9 @@ import logging
 
 import pytest
 import requests
+from brunns.matchers.response import response_with
 from hamcrest import assert_that, is_, not_
 
-from matchers.response import response_with
 from mbtest.imposters import Imposter, Stub, Predicate, Response
 from tests.utils.data2xml import data2xml, et2string
 

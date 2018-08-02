@@ -2,10 +2,10 @@ import logging
 
 import pytest
 import requests
+from brunns.matchers.data import json_matching
+from brunns.matchers.response import response_with
 from hamcrest import assert_that, is_, not_
 
-from matchers.data import json_matching
-from matchers.response import response_with
 from mbtest.imposters import Imposter, Stub, Predicate, Response
 
 logger = logging.getLogger(__name__)
