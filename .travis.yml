@@ -10,6 +10,8 @@ env:
  - TOX_ENV=py35
  - TOX_ENV=py36
  - TOX_ENV=py37
+ - TOX_ENV=pypy
+ - TOX_ENV=jython
  - TOX_ENV=flake8
  - TOX_ENV=bandit
  - TOX_ENV=safety
