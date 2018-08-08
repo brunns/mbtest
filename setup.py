@@ -21,7 +21,7 @@ except IOError:
 setup(
     name="mbtest",
     zip_safe=False,
-    version="1.0.0",
+    version="1.0.1",
     description="Python wrapper & utils for the Mountebank over the wire test double tool.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -35,7 +35,7 @@ setup(
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: BSD License",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2",
@@ -49,6 +49,8 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        "Programming Language :: Python :: Implementation :: Jython",
         "Topic :: Software Development :: Testing",
     ],
     python_requires=">=2.7",
