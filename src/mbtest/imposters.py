@@ -195,11 +195,15 @@ class OrPredicate(BasePredicate):
 
 
 class Proxy(JsonSerializable):
-    def __init__(self, to):
+    def __init__(self, to, wait=None):
         self.to = to
+        self.wait = wait
 
     def as_structure(self):
-        return {"responses": [{"proxy": {"to": self.to}}]}
+        response = {"proxy": {"to": self.to}}
+        if self.wait:
+            response["_behaviors"] = {"wait": self.wait}
+        return {"responses": [response]}
 
 
 class Response(JsonSerializable):
