@@ -54,7 +54,7 @@ def mock_server(request):
     return server.mock_server(request)
 ```
 
-Examples of more complex predicates can be found in the [integration tests](tests/integration/).
+Examples of more complex predicates can be found in the [integration tests](https://github.com/brunns/mbtest/tree/master/tests/integration/).
 
 ## Developing
 
