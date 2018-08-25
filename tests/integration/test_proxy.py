@@ -2,9 +2,10 @@ import logging
 
 import pytest
 import requests
+from brunns.matchers.html import has_title
 from brunns.matchers.response import response_with
 from contexttimer import Timer
-from hamcrest import assert_that, is_, contains_string, close_to
+from hamcrest import assert_that, is_, close_to
 
 from mbtest.imposters import Imposter, Proxy
 from mbtest.matchers import had_request
@@ -19,7 +20,7 @@ def test_proxy(mock_server):
     with mock_server(imposter) as server:
         response = requests.get("{0}/".format(imposter.url))
 
-        assert_that(response, is_(response_with(status_code=200, body=contains_string("<h1>Example Domain</h1>"))))
+        assert_that(response, is_(response_with(status_code=200, body=has_title("Example Domain"))))
         assert_that(server, had_request(path="/", method="GET"))
 
 
