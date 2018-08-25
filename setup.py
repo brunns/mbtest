@@ -21,7 +21,7 @@ except IOError:
 setup(
     name="mbtest",
     zip_safe=False,
-    version="1.0.1",
+    version="1.0.2",
     description="Python wrapper & utils for the Mountebank over the wire test double tool.",
     long_description=long_description,
     long_description_content_type="text/markdown",
