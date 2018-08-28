@@ -4,7 +4,21 @@ Python wrapper & utils for the [Mountebank](http://www.mbtest.org/) over the wir
 
 Includes [pytest](https://pytest.org) fixture and [PyHamcrest](https://pyhamcrest.readthedocs.io) matchers.
 
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 [![Build Status](https://travis-ci.org/brunns/mbtest.svg?branch=master)](https://travis-ci.org/brunns/mbtest)
+[![PyPi Version](https://img.shields.io/pypi/v/mbtest.svg)](https://pypi.org/project/mbtest/releases/)
+[![Licence](https://img.shields.io/github/license/brunns/mbtest.svg)](https://pypi.org/project/mbtest/)
+[![Wheel](https://img.shields.io/pypi/wheel/mbtest.svg)](https://pypi.org/project/mbtest/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/mbtest.svg)](https://pypi.org/project/mbtest/)
+[![Github all releases](https://img.shields.io/github/downloads/brunns/mbtest/total.svg)](https://GitHub.com/brunns/mbtest/releases/)
+[![GitHub forks](https://img.shields.io/github/forks/brunns/mbtest.svg?style=social&label=Fork&maxAge=2592000)](https://GitHub.com/brunns/mbtest/network/)
+[![GitHub stars](https://img.shields.io/github/stars/brunns/mbtest.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/brunns/mbtest/stargazers/)
+[![GitHub watchers](https://img.shields.io/github/watchers/brunns/mbtest.svg?style=social&label=Watch&maxAge=2592000)](https://GitHub.com/brunns/mbtest/watchers/)
+[![GitHub contributors](https://img.shields.io/github/contributors/brunns/mbtest.svg)](https://GitHub.com/brunns/mbtest/graphs/contributors/)
+[![GitHub issues](https://img.shields.io/github/issues/brunns/mbtest.svg)](https://GitHub.com/brunns/mbtest/issues/)
+[![GitHub issues-closed](https://img.shields.io/github/issues-closed/brunns/mbtest.svg)](https://GitHub.com/brunns/mbtest/issues?q=is%3Aissue+is%3Aclosed)
+[![GitHub pull-requests](https://img.shields.io/github/issues-pr/brunns/mbtest.svg)](https://GitHub.com/brunns/mbtest/pull/)
+[![GitHub pull-requests closed](https://img.shields.io/github/issues-pr-closed/brunns/mbtest.svg)](https://GitHub.com/brunns/mbtest/pull/)
 
 ## Setup
 
