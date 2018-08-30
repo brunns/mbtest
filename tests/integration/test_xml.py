@@ -28,8 +28,7 @@ def test_xml_response(mock_server):
 def test_xml_payload(mock_server):
     # Given
     imposter = Imposter(
-        Stub(Predicate(xpath="//foo", body="bar", operator=Predicate.Operator.EQUALS), Response(body="sausages")),
-        record_requests=True,
+        Stub(Predicate(xpath="//foo", body="bar", operator=Predicate.Operator.EQUALS), Response(body="sausages"))
     )
 
     with mock_server(imposter):

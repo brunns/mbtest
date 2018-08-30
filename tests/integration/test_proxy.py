@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.usefixtures("mock_server")
 def test_proxy(mock_server):
-    imposter = Imposter(Proxy(to="http://example.com"), record_requests=True)
+    imposter = Imposter(Proxy(to="http://example.com"))
 
     with mock_server(imposter) as server:
         response = requests.get("{0}/".format(imposter.url))
@@ -26,7 +26,7 @@ def test_proxy(mock_server):
 
 @pytest.mark.usefixtures("mock_server")
 def test_proxy_delay(mock_server):
-    imposter = Imposter(Proxy(to="http://example.com", wait=500), record_requests=True)
+    imposter = Imposter(Proxy(to="http://example.com", wait=500))
 
     with mock_server(imposter):
         with Timer() as t:

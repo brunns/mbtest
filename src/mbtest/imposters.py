@@ -32,7 +32,7 @@ class Imposter(JsonSerializable):
         HTTPS = "https"
         SMTP = "smtp"
 
-    def __init__(self, stubs, port=None, protocol=Protocol.HTTP, name=None, record_requests=False):
+    def __init__(self, stubs, port=None, protocol=Protocol.HTTP, name=None, record_requests=True):
         """
         :param stubs: One or more Stubs.
         :type stubs: Stub or list(Stub)
@@ -245,4 +245,4 @@ class Response(JsonSerializable):
 
 def smtp_imposter(name="smtp", record_requests=True):
     """Canned SMTP server impostor."""
-    return Imposter([], 4525, name=name, protocol=Imposter.Protocol.SMTP, record_requests=record_requests)
+    return Imposter([], 4525, protocol=Imposter.Protocol.SMTP, name=name, record_requests=record_requests)
