@@ -14,7 +14,7 @@ class MountebankException(Exception):
     pass
 
 
-class TimeoutError(BaseException):
+class MountebankTimeoutError(MountebankException):
     pass
 
 
@@ -51,7 +51,7 @@ class MountebankServer(object):
                 time.sleep(0.1)
 
         if not started:
-            raise TimeoutError("Mountebank failed to start within the defined timeout")
+            raise MountebankTimeoutError("Mountebank failed to start within the defined timeout")
 
     def create_imposters(self, definition):
         if isinstance(definition, collections.Sequence):
