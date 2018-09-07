@@ -33,5 +33,5 @@ def test_proxy_delay(mock_server):
         requests.get("{0}/".format(imposter.url))
 
     assert_that(
-        t.elapsed, between(0.55, 0.85)
+        t.elapsed, between(0.5, 0.9)
     )  # Slightly longer than the wait time, to give example.com and the 'net time to work.
