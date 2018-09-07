@@ -21,10 +21,14 @@ class MountebankTimeoutError(MountebankException):
 class MountebankServer(object):
     IMPOSTERS_URL = furl().set(scheme="http", host="localhost", port=2525, path="imposters").url
 
-    def __init__(self):
-        self.mb_process = subprocess.Popen(["./node_modules/.bin/mb", "--debug"], stdout=subprocess.PIPE)  # nosec
-        self._await_start()
-        logger.info("Spawned mb process.")
+    def __init__(self, timeout=5):
+        try:
+            self.mb_process = subprocess.Popen(["./node_modules/.bin/mb", "--debug"], stdout=subprocess.PIPE)  # nosec
+            self._await_start(timeout)
+            logger.info("Spawned mb process.")
+        except OSError:  # pragma: no cover
+            logger.error("Failed to spawn mb process. Have you installed Mountebank?")
+            raise
 
     def __call__(self, imposters):
         self.imposters = imposters
@@ -38,7 +42,7 @@ class MountebankServer(object):
     def __exit__(self, ex_type, ex_value, ex_traceback):
         self.delete_imposters()
 
-    def _await_start(self, timeout=5):  # pragma: no cover
+    def _await_start(self, timeout):
         start_time = time.time()
 
         while time.time() - start_time < timeout:
@@ -50,8 +54,8 @@ class MountebankServer(object):
                 started = False
                 time.sleep(0.1)
 
-        if not started:
-            raise MountebankTimeoutError("Mountebank failed to start within the defined timeout")
+        if not started:  # pragma: no cover
+            raise MountebankTimeoutError("Mountebank failed to start within {0} seconds.".format(timeout))
 
     def create_imposters(self, definition):
         if isinstance(definition, collections.Sequence):
@@ -81,6 +85,7 @@ class MountebankServer(object):
 
     def close(self):
         self.mb_process.terminate()
+        logger.info("Terminated mb process.")
 
 
 def mock_server(request):
