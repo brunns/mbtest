@@ -3,9 +3,10 @@ import logging
 import pytest
 import requests
 from brunns.matchers.html import has_title
+from brunns.matchers.object import between
 from brunns.matchers.response import response_with
 from contexttimer import Timer
-from hamcrest import assert_that, is_, close_to
+from hamcrest import assert_that, is_
 
 from mbtest.imposters import Imposter, Proxy
 from mbtest.matchers import had_request
@@ -28,10 +29,9 @@ def test_proxy(mock_server):
 def test_proxy_delay(mock_server):
     imposter = Imposter(Proxy(to="http://example.com", wait=500))
 
-    with mock_server(imposter):
-        with Timer() as t:
-            requests.get("{0}/".format(imposter.url))
+    with mock_server(imposter), Timer() as t:
+        requests.get("{0}/".format(imposter.url))
 
     assert_that(
-        t.elapsed, close_to(0.6, 0.2)
+        t.elapsed, between(0.55, 0.85)
     )  # Slightly longer than the wait time, to give example.com and the 'net time to work.
