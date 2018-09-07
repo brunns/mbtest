@@ -21,9 +21,9 @@ class MountebankTimeoutError(MountebankException):
 class MountebankServer(object):
     IMPOSTERS_URL = furl().set(scheme="http", host="localhost", port=2525, path="imposters").url
 
-    def __init__(self, timeout=5):
+    def __init__(self, timeout=5, executable="./node_modules/.bin/mb"):
         try:
-            self.mb_process = subprocess.Popen(["./node_modules/.bin/mb", "--debug"], stdout=subprocess.PIPE)  # nosec
+            self.mb_process = subprocess.Popen([executable, "--debug"], stdout=subprocess.PIPE)  # nosec
             self._await_start(timeout)
             logger.info("Spawned mb process.")
         except OSError:  # pragma: no cover
@@ -88,7 +88,7 @@ class MountebankServer(object):
         logger.info("Terminated mb process.")
 
 
-def mock_server(request):
+def mock_server(request, **kwargs):
     """A mock server, running one or more impostors, one for each site being mocked.
 
     Use in a pytest conftest.py fixture as follows:
@@ -110,8 +110,13 @@ def mock_server(request):
 
             assert_that(r, is_(response_with(status_code=200, body="sausages")))
             assert_that(s, had_request(path='/test', method="GET"))
+
+    This function can take two optional keyword arguments:
+
+    * timeout - specifies how long to wait for the Mountebank server to start.
+    * executable - Alternate location for the Mountebank executable.
     """
-    server = MountebankServer()
+    server = MountebankServer(**kwargs)
 
     def close():
         server.close()
