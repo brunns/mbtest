@@ -41,7 +41,7 @@ class Imposter(JsonSerializable):
         :param protocol: :Imposter.Protocol: to run on.
         :type protocol: Imposter.Protocol
         :param name: Impostor name - useful for interactive exploration of impostors on http://localhost:2525/impostors
-        :type str
+        :type name: str
         :param record_requests: Record requests made against this impostor, so they can be asserted against later.
         :type record_requests: bool
         """
