@@ -1,4 +1,7 @@
-﻿import collections
+﻿# encoding=utf-8
+from __future__ import unicode_literals, absolute_import, division, print_function
+
+import collections
 import logging
 import subprocess  # nosec
 import time

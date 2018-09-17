@@ -1,3 +1,6 @@
+# encoding=utf-8
+from __future__ import unicode_literals, absolute_import, division, print_function
+
 from hamcrest import anything, equal_to
 from hamcrest.core.base_matcher import BaseMatcher
 from hamcrest.core.core.isanything import IsAnything

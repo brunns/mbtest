@@ -1,11 +1,14 @@
+# encoding=utf-8
+from __future__ import unicode_literals, absolute_import, division, print_function
+
 import logging
 import smtplib
 
 import pytest
 from hamcrest import assert_that
 
-from mbtest.matchers import email_sent
 from mbtest.imposters import smtp_imposter
+from mbtest.matchers import email_sent
 from tests.utils.builders import message, random_email, random_string
 
 logger = logging.getLogger(__name__)

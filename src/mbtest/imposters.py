@@ -1,3 +1,6 @@
+# encoding=utf-8
+from __future__ import unicode_literals, absolute_import, division, print_function
+
 import collections
 import xml.etree.ElementTree as et  # nosec - We are creating, not parsing XML.
 from abc import ABCMeta, abstractmethod
