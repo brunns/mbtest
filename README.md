@@ -27,7 +27,7 @@ Install with pip:
 
 (As usual, use of a [venv](https://docs.python.org/3/library/venv.html) or [virtualenv](https://virtualenv.pypa.io) is recommended.) Also requires [Mountebank](http://www.mbtest.org/) to have been installed:
 
-    npm install mountebank@1.14.1 --production
+    npm install mountebank@1.15 --production
 
 ## Basic example
 
