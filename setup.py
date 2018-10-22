@@ -56,7 +56,7 @@ setup(
     python_requires=">=2.7",
     install_requires=[
         "requests~=2.0",
-        "furl~=1.0",
+        "furl~=2.0",
         "pyhamcrest~=1.9",
         "pytest~=3.0",
         'singledispatch~=3.4;python_version<"3.4"',
