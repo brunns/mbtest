@@ -18,7 +18,7 @@ alltests: ## Run all tests, including slow ones.
 coverage: ## Test coverage report
 	tox -e coverage
 
-lint: flake8 bandit safety ## Lint code
+lint: check-format flake8 bandit safety ## Lint code
 
 flake8:
 	tox -e flake8
@@ -28,6 +28,9 @@ bandit:
 
 safety:
 	tox -e safety
+
+check-format:
+	tox -e check-format
 
 format: ## Format code
 	tox -e format
