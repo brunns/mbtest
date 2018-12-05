@@ -2,17 +2,10 @@ language: python
 python: 3.6
 env:
  - TOX_ENV=py27
- - TOX_ENV=py30
- - TOX_ENV=py31
- - TOX_ENV=py32
- - TOX_ENV=py33
  - TOX_ENV=py34
  - TOX_ENV=py35
  - TOX_ENV=py36
  - TOX_ENV=py37
- - TOX_ENV=pypy2.7
- - TOX_ENV=pypy3.6
- - TOX_ENV=jython
  - TOX_ENV=check-format
  - TOX_ENV=flake8
  - TOX_ENV=bandit

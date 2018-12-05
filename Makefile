@@ -4,7 +4,7 @@ default: help
 .PHONY: help
 
 test: ## Run tests
-	tox
+	tox -e py27,py34,py37
 
 unit:
 	#pytest --durations=10 --hypothesis-show-statistics test/unit/
