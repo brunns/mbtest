@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import logging
 
-import pytest
 import requests
 from brunns.matchers.response import response_with
 from hamcrest import assert_that, is_, not_
@@ -13,7 +12,6 @@ from mbtest.imposters import Imposter, Stub, Predicate, Response
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_and_predicate_and_query_strings(mock_server):
     imposter = Imposter(
         Stub(Predicate(query={"foo": "bar"}) & Predicate(query={"dinner": "chips"}), Response(body="black pudding"))
@@ -29,7 +27,6 @@ def test_and_predicate_and_query_strings(mock_server):
         assert_that(r2, not_(response_with(status_code=200, body="black pudding")))
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_or_predicate_and_body(mock_server):
     imposter = Imposter(Stub(Predicate(body="foo") | Predicate(body="bar"), Response(body="oranges")))
 
@@ -45,7 +42,6 @@ def test_or_predicate_and_body(mock_server):
         assert_that(r3, not_(response_with(status_code=200, body="oranges")))
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_query_predicate(mock_server):
     # Given
     imposter = Imposter(Stub(Predicate(query={"foo": "bar"}), Response(body="oranges")))
@@ -64,7 +60,6 @@ def test_query_predicate(mock_server):
         assert_that(r3, is_(response_with(body=not_("oranges"))))
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_methods(mock_server):
     # Given
     imposter = Imposter(

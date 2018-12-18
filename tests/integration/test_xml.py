@@ -3,7 +3,6 @@ from __future__ import unicode_literals, absolute_import, division, print_functi
 
 import logging
 
-import pytest
 import requests
 from brunns.matchers.response import response_with
 from hamcrest import assert_that, is_, not_
@@ -14,7 +13,6 @@ from tests.utils.data2xml import data2xml, et2string
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_xml_response(mock_server):
     # Given
     imposter = Imposter(Stub(Predicate(), Response(body=data2xml({"foo": {"bar": "baz"}}))))
@@ -27,7 +25,6 @@ def test_xml_response(mock_server):
         assert_that(r, is_(response_with(body="<foo><bar>baz</bar></foo>")))
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_xml_payload(mock_server):
     # Given
     imposter = Imposter(

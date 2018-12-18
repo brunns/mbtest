@@ -3,7 +3,6 @@ from __future__ import unicode_literals, absolute_import, division, print_functi
 
 import logging
 
-import pytest
 import requests
 from brunns.matchers.html import has_title
 from brunns.matchers.object import between
@@ -17,7 +16,6 @@ from mbtest.matchers import had_request
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_proxy(mock_server):
     imposter = Imposter(Proxy(to="http://example.com"))
 
@@ -28,7 +26,6 @@ def test_proxy(mock_server):
         assert_that(server, had_request(path="/", method="GET"))
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_proxy_delay(mock_server):
     imposter = Imposter(Proxy(to="http://example.com", wait=500))
 

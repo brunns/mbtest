@@ -3,7 +3,6 @@ from __future__ import unicode_literals, absolute_import, division, print_functi
 
 import logging
 
-import pytest
 import requests
 from brunns.matchers.response import response_with
 from hamcrest import assert_that, is_
@@ -14,7 +13,6 @@ from mbtest.matchers import had_request
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_request_to_mock_server(mock_server):
     # Start mock server with required behavior
     imposter = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")))
@@ -27,7 +25,6 @@ def test_request_to_mock_server(mock_server):
         assert_that("The mock server recorded the request", server, had_request(path="/test", method="GET"))
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_multiple_imposters(mock_server):
     imposters = [
         Imposter(Stub(Predicate(path="/test1"), Response("sausages")), port=4567, name="bill"),
@@ -43,7 +40,6 @@ def test_multiple_imposters(mock_server):
     assert_that(r2, response_with(status_code=201, body="chips"))
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_multiple_stubs(mock_server):
     imposter = Imposter(
         [
@@ -64,7 +60,6 @@ def test_multiple_stubs(mock_server):
     assert_that(r2, response_with(body="chips"))
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_default_imposter(mock_server):
     imposter = Imposter(Stub())
 

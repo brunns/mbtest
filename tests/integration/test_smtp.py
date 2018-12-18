@@ -4,7 +4,6 @@ from __future__ import unicode_literals, absolute_import, division, print_functi
 import logging
 import smtplib
 
-import pytest
 from hamcrest import assert_that
 
 from mbtest.imposters import smtp_imposter
@@ -14,7 +13,6 @@ from tests.utils.builders import message, random_email, random_string
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_email(mock_server):
     # Given
     imposter = smtp_imposter()

@@ -3,7 +3,6 @@ from __future__ import unicode_literals, absolute_import, division, print_functi
 
 import logging
 
-import pytest
 import requests
 from brunns.matchers.data import json_matching
 from brunns.matchers.response import response_with
@@ -14,7 +13,6 @@ from mbtest.imposters import Imposter, Stub, Predicate, Response
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_json_payload(mock_server):
     # Given
     imposter = Imposter(Stub(Predicate(body={"foo": ["bar", "baz"]}), Response(body="sausages")))
@@ -29,7 +27,6 @@ def test_json_payload(mock_server):
         assert_that(r2, not_(response_with(body="sausages")))
 
 
-@pytest.mark.usefixtures("mock_server")
 def test_json_response(mock_server):
     # Given
     imposter = Imposter(Stub(Predicate(), Response(body={"foo": ["bar", "baz"]})))
