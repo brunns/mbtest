@@ -52,7 +52,7 @@ setup(
         "requests~=2.0",
         "furl~=2.0",
         "pyhamcrest~=1.9",
-        "pytest~=3.0",
+        "pytest~=4.0",
         'singledispatch~=3.4;python_version<"3.4"',
         'enum34~=1.0;python_version<"3.4"',
     ],
