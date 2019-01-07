@@ -35,6 +35,6 @@ matrix:
      - TOX_ENV=coverage
 install:
  - pip install tox
- - npm install mountebank@1.15 --production
+ - npm install mountebank@1.16 --production
 script:
  - tox -e $TOX_ENV
