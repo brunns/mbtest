@@ -1,10 +1,14 @@
 # encoding=utf-8
 from __future__ import unicode_literals, absolute_import, division, print_function
 
-import collections
 import xml.etree.ElementTree as et
 
-import six
+from six import PY3
+
+if PY3:
+    from collections.abc import Mapping
+else:  # pragma: no cover
+    from collections import Mapping
 
 try:
     from functools import singledispatch
@@ -28,7 +32,7 @@ def data2xml(data, default_namespace=None):
 
 
 def et2string(element):
-    return et.tostring(element, encoding="unicode" if six.PY3 else "utf-8")
+    return et.tostring(element, encoding="unicode" if PY3 else "utf-8")
 
 
 @singledispatch
@@ -37,7 +41,7 @@ def buildxml(data, root):
     return root
 
 
-@buildxml.register(collections.Mapping)
+@buildxml.register(Mapping)
 def buildxml_mapping(data, root):
     for key, value in data.items():
         s = et.SubElement(root, key)

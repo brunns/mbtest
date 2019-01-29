@@ -1,14 +1,17 @@
 # encoding=utf-8
 from __future__ import unicode_literals, absolute_import, division, print_function
 
-import collections
 import xml.etree.ElementTree as et  # nosec - We are creating, not parsing XML.
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 
-import six
 from furl import furl
-from six import add_metaclass
+from six import PY3, add_metaclass
+
+if PY3:
+    from collections.abc import Sequence
+else:  # pragma: no cover
+    from collections import Sequence
 
 
 @add_metaclass(ABCMeta)
@@ -48,7 +51,7 @@ class Imposter(JsonSerializable):
         :param record_requests: Record requests made against this impostor, so they can be asserted against later.
         :type record_requests: bool
         """
-        self.stubs = stubs if isinstance(stubs, collections.Sequence) else [stubs]
+        self.stubs = stubs if isinstance(stubs, Sequence) else [stubs]
         self.port = port
         self.protocol = protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
         self.name = name
@@ -86,11 +89,11 @@ class Stub(JsonSerializable):
         :type responses: Response or list(Response)
         """
         if predicates:
-            self.predicates = predicates if isinstance(predicates, collections.Sequence) else [predicates]
+            self.predicates = predicates if isinstance(predicates, Sequence) else [predicates]
         else:
             self.predicates = [Predicate()]
         if responses:
-            self.responses = responses if isinstance(responses, collections.Sequence) else [responses]
+            self.responses = responses if isinstance(responses, Sequence) else [responses]
         else:
             self.responses = [Response()]
 
@@ -231,7 +234,7 @@ class Response(JsonSerializable):
     @property
     def body(self):
         if isinstance(self._body, et.Element):
-            return et.tostring(self._body, encoding="unicode" if six.PY3 else "utf-8")
+            return et.tostring(self._body, encoding="unicode" if PY3 else "utf-8")
         return self._body
 
     def as_structure(self):

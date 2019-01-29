@@ -1,7 +1,6 @@
 ﻿# encoding=utf-8
 from __future__ import unicode_literals, absolute_import, division, print_function
 
-import collections
 import logging
 import subprocess  # nosec
 import time
@@ -9,6 +8,12 @@ import time
 import requests
 from furl import furl
 from more_itertools import flatten
+from six import PY3
+
+if PY3:
+    from collections.abc import Sequence
+else:  # pragma: no cover
+    from collections import Sequence
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +66,7 @@ class MountebankServer(object):
             raise MountebankTimeoutError("Mountebank failed to start within {0} seconds.".format(timeout))
 
     def create_imposters(self, definition):
-        if isinstance(definition, collections.Sequence):
+        if isinstance(definition, Sequence):
             return list(flatten(self.create_imposters(imposter) for imposter in definition))
         else:
             json = definition.as_structure()
