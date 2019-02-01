@@ -215,7 +215,7 @@ class Proxy(JsonSerializable):
 class Response(JsonSerializable):
     """Represents a Mountebank 'is' response behavior - see http://www.mbtest.org/docs/api/stubs"""
 
-    def __init__(self, body="", status_code=200, wait=None, repeat=None):
+    def __init__(self, body="", status_code=200, wait=None, repeat=None, headers=None):
         """
         :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
         :type body: str or dict or list or xml.etree.ElementTree.Element
@@ -225,11 +225,14 @@ class Response(JsonSerializable):
         :type wait: int
         :param repeat: Repeat this many times before moving on to next response.
         :type repeat: int
+        :param headers: Response HTTP headers
+        :type headers: dict mapping from HTTP header name to header value
         """
         self._body = body
         self.status_code = status_code
         self.wait = wait
         self.repeat = repeat
+        self.headers = headers
 
     @property
     def body(self):
@@ -238,9 +241,11 @@ class Response(JsonSerializable):
         return self._body
 
     def as_structure(self):
-        inner = {"statusCode": self.status_code, "body": self.body}
-        if self.body:
-            inner["body"] = self.body
+        inner = {
+            "statusCode": self.status_code,
+            "body": self.body,
+            "headers": self.headers,
+        }
         result = {"is": inner, "_behaviors": {}}
         if self.wait:
             result["_behaviors"]["wait"] = self.wait
