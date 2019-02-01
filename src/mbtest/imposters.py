@@ -241,11 +241,11 @@ class Response(JsonSerializable):
         return self._body
 
     def as_structure(self):
-        inner = {
-            "statusCode": self.status_code,
-            "body": self.body,
-            "headers": self.headers,
-        }
+        inner = { "statusCode": self.status_code }
+        if self.body:
+            inner['body'] = self.body
+        if self.headers:
+            inner['headers'] = self.headers
         result = {"is": inner, "_behaviors": {}}
         if self.wait:
             result["_behaviors"]["wait"] = self.wait
