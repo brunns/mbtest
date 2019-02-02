@@ -69,7 +69,7 @@ Examples of more complex predicates can be found in the [integration tests](http
 
 ## Developing
 
-Requires [tox](https://tox.readthedocs.io). Run `make precommit` tells you if you're OK to commit. For more options, run:
+Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html) and [tox](https://tox.readthedocs.io). Run `make precommit` tells you if you're OK to commit. For more options, run:
 
     make help
 
