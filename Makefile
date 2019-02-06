@@ -4,16 +4,7 @@ default: help
 .PHONY: help
 
 test: ## Run tests
-	tox -r -e py27,py34,py37
-
-unit:
-	#pytest --durations=10 --hypothesis-show-statistics test/unit/
-
-integration:
-	#pytest -m"not slow" --durations=10 --hypothesis-show-statistics test/integration/
-
-alltests: ## Run all tests, including slow ones.
-	#pytest --durations=10 test/
+	tox -e py27,py34,py37
 
 coverage: ## Test coverage report
 	tox -e coverage
@@ -40,6 +31,9 @@ piprot: ## Check for outdated dependencies
 
 precommit: format test lint coverage ## Pre-commit targets
 	@ python -m this
+
+recreate: ## Recreate tox environments
+	tox --recreate --notest -e py27,py34,py37,format,flake8,bandit,safety,piprot
 
 clean: ## Clean generated files
 	find . -name '*.pyc' -delete
