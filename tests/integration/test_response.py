@@ -37,7 +37,7 @@ def test_headers(mock_server):
 
         assert_that(response, is_(response_with(headers=has_entry("X-Clacks-Overhead", "GNU Terry Pratchett"))))
 
-        
+
 def test_binary_mode(mock_server):
     imposter = Imposter(Stub(responses=Response(mode=Response.Mode.BINARY, body=b"c2F1c2FnZXM=")))
 
@@ -45,8 +45,8 @@ def test_binary_mode(mock_server):
         response = requests.get(imposter.url)
 
         assert_that(response, is_(response_with(content=b"sausages")))
-        
-        
+
+
 def test_structure_headers():
     expected_response = Response(headers={"X-Clacks-Overhead": "GNU Terry Pratchett"})
     response_structure = expected_response.as_structure()
