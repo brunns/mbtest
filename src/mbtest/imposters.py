@@ -215,10 +215,14 @@ class Proxy(JsonSerializable):
 class Response(JsonSerializable):
     """Represents a Mountebank 'is' response behavior - see http://www.mbtest.org/docs/api/stubs"""
 
-    def __init__(self, body="", status_code=200, wait=None, repeat=None, headers=None):
+    class Mode(Enum):
+        TEXT = "text"
+        BINARY = "binary"
+
+    def __init__(self, body="", status_code=200, wait=None, repeat=None, headers=None, mode=None):
         """
         :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
-        :type body: str or dict or list or xml.etree.ElementTree.Element
+        :type body: str or dict or list or xml.etree.ElementTree.Element or bytes
         :param status_code: HTTP status code
         :type status_code: int
         :param wait: Add latency, in ms
@@ -233,15 +237,18 @@ class Response(JsonSerializable):
         self.wait = wait
         self.repeat = repeat
         self.headers = headers
+        self.mode = mode if isinstance(mode, Response.Mode) else Response.Mode(mode) if mode else Response.Mode.TEXT
 
     @property
     def body(self):
         if isinstance(self._body, et.Element):
             return et.tostring(self._body, encoding="unicode" if PY3 else "utf-8")
+        elif isinstance(self._body, bytes):
+            return self._body.decode("utf-8")
         return self._body
 
     def as_structure(self):
-        inner = {"statusCode": self.status_code}
+        inner = {"statusCode": self.status_code, "_mode": self.mode.value}
         if self.body:
             inner["body"] = self.body
         if self.headers:
