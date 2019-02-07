@@ -1,19 +1,12 @@
 ﻿# encoding=utf-8
-from __future__ import unicode_literals, absolute_import, division, print_function
-
 import logging
 import subprocess  # nosec
 import time
+from collections.abc import Sequence
 
 import requests
 from furl import furl
 from more_itertools import flatten
-from six import PY3
-
-if PY3:
-    from collections.abc import Sequence
-else:  # pragma: no cover
-    from collections import Sequence
 
 logger = logging.getLogger(__name__)
 

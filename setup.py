@@ -38,8 +38,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
@@ -47,12 +45,6 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Topic :: Software Development :: Testing",
     ],
-    python_requires=">=2.7",
-    install_requires=[
-        "requests~=2.0",
-        "furl~=2.0",
-        "pyhamcrest~=1.9",
-        'singledispatch~=3.4;python_version<"3.4"',
-        'enum34~=1.0;python_version<"3.4"',
-    ],
+    python_requires=">=3.4",
+    install_requires=["requests~=2.0", "furl~=2.0", "pyhamcrest~=1.9"],
 )
