@@ -4,16 +4,7 @@ default: help
 .PHONY: help
 
 test: ## Run tests
-	tox -r -e py27,py34,py37
-
-unit:
-	#pytest --durations=10 --hypothesis-show-statistics test/unit/
-
-integration:
-	#pytest -m"not slow" --durations=10 --hypothesis-show-statistics test/integration/
-
-alltests: ## Run all tests, including slow ones.
-	#pytest --durations=10 test/
+	tox -e py34,py37
 
 coverage: ## Test coverage report
 	tox -e coverage
@@ -38,8 +29,11 @@ format: ## Format code
 piprot: ## Check for outdated dependencies
 	tox -e piprot
 
-precommit: format test lint coverage ## Pre-commit targets
+precommit: test lint coverage ## Pre-commit targets
 	@ python -m this
+
+recreate: ## Recreate tox environments
+	tox --recreate --notest -e py34,py37,format,flake8,bandit,safety,piprot
 
 clean: ## Clean generated files
 	find . -name '*.pyc' -delete
@@ -61,10 +55,10 @@ jsdeps:
 	npm install mountebank@1.16 --production
 
 repl: ## Python REPL
-	tox -e py36 -- python
+	tox -e py37 -- python
 
 outdated: ## List outdated dependancies
-	tox -e py36 -- pip list --outdated
+	tox -e py37 -- pip list --outdated
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1,$$2}'

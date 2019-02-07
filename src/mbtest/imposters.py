@@ -1,21 +1,13 @@
 # encoding=utf-8
-from __future__ import unicode_literals, absolute_import, division, print_function
-
 import xml.etree.ElementTree as et  # nosec - We are creating, not parsing XML.
 from abc import ABCMeta, abstractmethod
+from collections.abc import Sequence
 from enum import Enum
 
 from furl import furl
-from six import PY3, add_metaclass
-
-if PY3:
-    from collections.abc import Sequence
-else:  # pragma: no cover
-    from collections import Sequence
 
 
-@add_metaclass(ABCMeta)
-class JsonSerializable(object):
+class JsonSerializable(object, metaclass=ABCMeta):
     @abstractmethod
     def as_structure(self):  # pragma: no cover
         """
@@ -125,8 +117,7 @@ class Stub(JsonSerializable):
         return Stub([Predicate.from_structure(predicate) for predicate in structure.get("predicates", ())], responses)
 
 
-@add_metaclass(ABCMeta)
-class BasePredicate(JsonSerializable):
+class BasePredicate(JsonSerializable, metaclass=ABCMeta):
     @abstractmethod
     def as_structure(self):  # pragma: no cover
         raise NotImplementedError()
@@ -277,10 +268,14 @@ class Response(JsonSerializable):
     class InvalidResponse(Exception):
         pass
 
-    def __init__(self, body="", status_code=200, wait=None, repeat=None, headers=None):
+    class Mode(Enum):
+        TEXT = "text"
+        BINARY = "binary"
+
+    def __init__(self, body="", status_code=200, wait=None, repeat=None, headers=None, mode=None):
         """
         :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
-        :type body: str or dict or list or xml.etree.ElementTree.Element
+        :type body: str or dict or list or xml.etree.ElementTree.Element or bytes
         :param status_code: HTTP status code
         :type status_code: int
         :param wait: Add latency, in ms
@@ -295,15 +290,18 @@ class Response(JsonSerializable):
         self.wait = wait
         self.repeat = repeat
         self.headers = headers
+        self.mode = mode if isinstance(mode, Response.Mode) else Response.Mode(mode) if mode else Response.Mode.TEXT
 
     @property
     def body(self):
         if isinstance(self._body, et.Element):
-            return et.tostring(self._body, encoding="unicode" if PY3 else "utf-8")
+            return et.tostring(self._body, encoding="unicode")
+        elif isinstance(self._body, bytes):
+            return self._body.decode("utf-8")
         return self._body
 
     def as_structure(self):
-        inner = {"statusCode": self.status_code}
+        inner = {"statusCode": self.status_code, "_mode": self.mode.value}
         if self.body:
             inner["body"] = self.body
         if self.headers:

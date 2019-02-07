@@ -1,14 +1,9 @@
 # encoding=utf-8
-from __future__ import unicode_literals, absolute_import, division, print_function
-
-from hamcrest import assert_that, not_, has_string, contains_string, all_of, matches_regexp
-
-try:
-    from unittest.mock import MagicMock
-except ImportError:
-    from mock import MagicMock
+from unittest.mock import MagicMock
 
 from brunns.matchers.matcher import mismatches_with
+from hamcrest import assert_that, not_, has_string, contains_string, all_of
+
 from mbtest.matchers import had_request, email_sent
 
 
@@ -32,8 +27,8 @@ def test_request_matcher():
             server,
             all_of(
                 contains_string("found <0> matching requests: <[]>. All requests: <[{"),
-                matches_regexp(r"u?'path': u?'/test'"),
-                matches_regexp(r"u?'method': u?'GET'"),
+                contains_string("'path': '/test'"),
+                contains_string("'method': 'GET'"),
             ),
         ),
     )
@@ -57,7 +52,7 @@ def test_email_sent():
             server,
             all_of(
                 contains_string("found <0> matching requests: <[]>. All requests: <[{"),
-                matches_regexp(r"'u?text': u?'sausages'"),
+                contains_string("'text': 'sausages'"),
             ),
         ),
     )

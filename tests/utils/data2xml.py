@@ -1,19 +1,9 @@
 # encoding=utf-8
-from __future__ import unicode_literals, absolute_import, division, print_function
-
 import xml.etree.ElementTree as et
 
-from six import PY3
+from collections.abc import Mapping
 
-if PY3:
-    from collections.abc import Mapping
-else:  # pragma: no cover
-    from collections import Mapping
-
-try:
-    from functools import singledispatch
-except ImportError:
-    from singledispatch import singledispatch
+from functools import singledispatch
 
 
 def data2xml(data, default_namespace=None):
@@ -32,7 +22,7 @@ def data2xml(data, default_namespace=None):
 
 
 def et2string(element):
-    return et.tostring(element, encoding="unicode" if PY3 else "utf-8")
+    return et.tostring(element, encoding="unicode")
 
 
 @singledispatch
