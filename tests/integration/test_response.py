@@ -4,6 +4,7 @@ from __future__ import unicode_literals, absolute_import, division, print_functi
 import logging
 
 import requests
+import pytest
 from brunns.matchers.response import response_with
 from hamcrest import assert_that, is_, has_entry
 
@@ -37,3 +38,55 @@ def test_headers(mock_server):
         response = requests.get(imposter.url)
 
         assert_that(response, is_(response_with(headers=has_entry("X-Clacks-Overhead", "GNU Terry Pratchett"))))
+
+
+def test_structure_headers():
+    expected_response = Response(headers={"X-Clacks-Overhead": "GNU Terry Pratchett"})
+    response_structure = expected_response.as_structure()
+    response = Response.from_structure(response_structure)
+    assert response.headers == expected_response.headers
+
+
+def test_structure_body():
+    expected_response = Response(body="darwin")
+    response_structure = expected_response.as_structure()
+    response = Response.from_structure(response_structure)
+    assert response.body == expected_response.body
+
+
+def test_structure_status():
+    expected_response = Response(status_code=204)
+    response_structure = expected_response.as_structure()
+    response = Response.from_structure(response_structure)
+    assert response.status_code == expected_response.status_code
+
+
+def test_structure_no_status():
+    expected_response = Response()
+    response_structure = expected_response.as_structure()
+    del response_structure["is"]["statusCode"]
+    response = Response.from_structure(response_structure)
+    assert response.status_code == expected_response.status_code
+
+
+def test_structure_repeat():
+    expected_response = Response(repeat=1)
+    response_structure = expected_response.as_structure()
+    response = Response.from_structure(response_structure)
+    assert response.repeat == expected_response.repeat
+
+
+def test_structure_wait():
+    expected_response = Response(wait=300)
+    response_structure = expected_response.as_structure()
+    response = Response.from_structure(response_structure)
+    assert response.wait == expected_response.wait
+
+
+def test_structure_invalid_response():
+    expected_response = Response()
+    response_structure = expected_response.as_structure()
+    # Add another response type
+    response_structure["proxy"] = {}
+    with pytest.raises(Response.InvalidResponse):
+        Response.from_structure(response_structure)
