@@ -39,6 +39,7 @@ clean: ## Clean generated files
 	find . -name '*.pyc' -delete
 	find . -name '*.pyo' -delete
 	rm -rf build/ dist/ *.egg-info/ .cache .coverage .pytest_cache
+	find . -name "*.egg-info" -type d -print | xargs -t rm -r
 	find . -name "__pycache__" -type d -print | xargs -t rm -r
 	find . -name "test-output" -type d -print | xargs -t rm -r
 
