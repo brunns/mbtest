@@ -4,7 +4,6 @@ from __future__ import unicode_literals, absolute_import, division, print_functi
 import logging
 
 import requests
-import pytest
 from brunns.matchers.html import has_title
 from brunns.matchers.object import between
 from brunns.matchers.response import response_with
