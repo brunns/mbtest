@@ -38,7 +38,7 @@ class Imposter(JsonSerializable):
         HTTPS = "https"
         SMTP = "smtp"
 
-    def __init__(self, stubs, port=4545, protocol=Protocol.HTTP, name=None, record_requests=True):
+    def __init__(self, stubs, port=None, protocol=Protocol.HTTP, name=None, record_requests=True):
         """
         :param stubs: One or more Stubs.
         :type stubs: Stub or list(Stub)
@@ -51,14 +51,18 @@ class Imposter(JsonSerializable):
         :param record_requests: Record requests made against this impostor, so they can be asserted against later.
         :type record_requests: bool
         """
-        self.stubs = stubs if isinstance(stubs, Sequence) else [stubs]
+        stubs = stubs if isinstance(stubs, Sequence) else [stubs]
+        # For backwards compatability where previously a proxy may have been used directly as a stub.
+        self.stubs = [Stub(responses=stub) if isinstance(stub, Proxy) else stub for stub in stubs]
         self.port = port
         self.protocol = protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
         self.name = name
         self.record_requests = record_requests
 
     def as_structure(self):
-        structure = {"protocol": self.protocol.value, "recordRequests": self.record_requests, "port": self.port}
+        structure = {"protocol": self.protocol.value, "recordRequests": self.record_requests}
+        if self.port:
+            structure["port"] = self.port
         if self.name:
             structure["name"] = self.name
         if self.stubs:
