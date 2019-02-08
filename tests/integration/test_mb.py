@@ -27,8 +27,8 @@ def test_request_to_mock_server(mock_server):
 
 def test_multiple_imposters(mock_server):
     imposters = [
-        Imposter(Stub(Predicate(path="/test1"), Response("sausages")), port=4567, name="bill"),
-        Imposter([Stub([Predicate(path="/test2")], [Response("chips", status_code=201)])], port=4568),
+        Imposter(Stub(Predicate(path="/test1"), Response("sausages"))),
+        Imposter([Stub([Predicate(path="/test2")], [Response("chips", status_code=201)])]),
     ]
 
     with mock_server(imposters) as s:
