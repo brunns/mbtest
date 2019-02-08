@@ -136,4 +136,4 @@ def test_invalid_operator():
     # Adds another operator
     predicate_structure["equals"] = {}
     with pytest.raises(Predicate.InvalidPredicateOperator):
-        predicate = Predicate.from_structure(predicate_structure)
+        Predicate.from_structure(predicate_structure)
