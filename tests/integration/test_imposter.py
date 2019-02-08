@@ -15,6 +15,14 @@ def test_structure_port():
     assert imposter.port == expected_imposter.port
 
 
+def test_structure_no_port():
+    expected_imposter = Imposter(Stub())
+    imposter_structure = expected_imposter.as_structure()
+    del imposter_structure["port"]
+    imposter = Imposter.from_structure(imposter_structure)
+    assert imposter.port == expected_imposter.port
+
+
 def test_structure_response_port():
     expected_imposter = Imposter(Stub(responses=Response()), port=4546)
     imposter_structure = expected_imposter.as_structure()
@@ -32,6 +40,14 @@ def test_structure_proxy_port():
 def test_structure_protocol():
     expected_imposter = Imposter(Stub(), protocol="http")
     imposter_structure = expected_imposter.as_structure()
+    imposter = Imposter.from_structure(imposter_structure)
+    assert imposter.protocol == expected_imposter.protocol
+
+
+def test_structure_no_protocol():
+    expected_imposter = Imposter(Stub())
+    imposter_structure = expected_imposter.as_structure()
+    del imposter_structure["protocol"]
     imposter = Imposter.from_structure(imposter_structure)
     assert imposter.protocol == expected_imposter.protocol
 
