@@ -2,7 +2,6 @@
 import logging
 
 import requests
-import pytest
 from brunns.matchers.response import response_with
 from hamcrest import assert_that, is_, has_entry
 
