@@ -90,12 +90,3 @@ def test_structure_wait():
     response_structure = expected_response.as_structure()
     response = Response.from_structure(response_structure)
     assert response.wait == expected_response.wait
-
-
-def test_structure_invalid_response():
-    expected_response = Response()
-    response_structure = expected_response.as_structure()
-    # Add another response type
-    response_structure["proxy"] = {}
-    with pytest.raises(Response.InvalidResponse):
-        Response.from_structure(response_structure)

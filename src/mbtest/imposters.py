@@ -337,13 +337,7 @@ class Response(JsonSerializable):
         return response
 
     def fields_from_structure(self, structure):
-        types = tuple(filter(lambda key: key != "_behaviors", structure.keys()))
-        if len(types) != 1:
-            # TODO(@colinschoen) This is contradictory to the mountebank contract, but fixing
-            # it will require a more substantial refactor.
-            raise Response.InvalidResponse("Each response must specify exactly one type.")
-        response_type = types[0]
-        inner = structure[response_type]
+        inner = structure["is"]
         if "body" in inner:
             self._body = inner["body"]
         if "headers" in inner:
