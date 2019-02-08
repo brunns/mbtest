@@ -18,7 +18,6 @@ def test_structure_port():
 def test_structure_no_port():
     expected_imposter = Imposter(Stub())
     imposter_structure = expected_imposter.as_structure()
-    del imposter_structure["port"]
     imposter = Imposter.from_structure(imposter_structure)
     assert imposter.port == expected_imposter.port
 
