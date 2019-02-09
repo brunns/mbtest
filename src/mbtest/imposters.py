@@ -43,7 +43,9 @@ class Imposter(JsonSerializable):
         :param record_requests: Record requests made against this impostor, so they can be asserted against later.
         :type record_requests: bool
         """
-        self.stubs = stubs if isinstance(stubs, Sequence) else [stubs]
+        stubs = stubs if isinstance(stubs, Sequence) else [stubs]
+        # For backwards compatability where previously a proxy may have been used directly as a stub.
+        self.stubs = [Stub(responses=stub) if isinstance(stub, Proxy) else stub for stub in stubs]
         self.port = port
         self.protocol = protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
         self.name = name
@@ -58,6 +60,20 @@ class Imposter(JsonSerializable):
         if self.stubs:
             structure["stubs"] = [stub.as_structure() for stub in self.stubs]
         return structure
+
+    @staticmethod
+    def from_structure(structure):
+        imposter = Imposter([Stub.from_structure(stub) for stub in structure["stubs"]])
+        if "port" in structure:
+            imposter.port = structure["port"]
+        if "protocol" in structure:
+            protocol = structure["protocol"]
+            imposter.protocol = protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
+        if "recordRequests" in structure:
+            imposter.record_requests = structure["recordRequests"]
+        if "name" in structure:
+            imposter.name = structure["name"]
+        return imposter
 
     @property
     def host(self):
@@ -95,6 +111,16 @@ class Stub(JsonSerializable):
             "responses": [response.as_structure() for response in self.responses],
         }
 
+    @staticmethod
+    def from_structure(structure):
+        responses = []
+        for response in structure.get("responses", ()):
+            if "proxy" in response:
+                responses.append(Proxy.from_structure(response))
+            else:
+                responses.append(Response.from_structure(response))
+        return Stub([Predicate.from_structure(predicate) for predicate in structure.get("predicates", ())], responses)
+
 
 class BasePredicate(JsonSerializable, metaclass=ABCMeta):
     @abstractmethod
@@ -112,6 +138,9 @@ class Predicate(BasePredicate):
     """"Represents a Mountebank predicate - see http://www.mbtest.org/docs/api/predicates
     A predicate can be thought of as a trigger, which may or may not match a request."""
 
+    class InvalidPredicateOperator(Exception):
+        pass
+
     class Method(Enum):
         GET = "GET"
         PUT = "PUT"
@@ -126,6 +155,10 @@ class Predicate(BasePredicate):
         ENDS_WITH = "endsWith"
         MATCHES = "matches"
         EXISTS = "exists"
+
+        @classmethod
+        def has_value(cls, value):
+            return any(value == item.value for item in cls)
 
     def __init__(
         self, path=None, method=None, query=None, body=None, xpath=None, operator=Operator.EQUALS, case_sensitive=True
@@ -159,6 +192,28 @@ class Predicate(BasePredicate):
         if self.xpath:
             predicate["xpath"] = {"selector": self.xpath}
         return predicate
+
+    @staticmethod
+    def from_structure(structure):
+        operators = tuple(filter(lambda operator: Predicate.Operator.has_value(operator), structure.keys()))
+        if len(operators) != 1:
+            raise Predicate.InvalidPredicateOperator("Each predicate must define exactly one operator.")
+        operator = operators[0]
+        predicate = Predicate(operator=operator, case_sensitive=structure.get("caseSensitive", True))
+        predicate.fields_from_structure(structure[operator])
+        if "xpath" in structure:
+            predicate.xpath = structure["xpath"]["selector"]
+        return predicate
+
+    def fields_from_structure(self, inner):
+        if "path" in inner:
+            self.path = inner["path"]
+        if "query" in inner:
+            self.query = inner["query"]
+        if "body" in inner:
+            self.body = inner["body"]
+        if "method" in inner:
+            self.method = Predicate.Method(inner["method"])
 
     def fields_as_structure(self):
         fields = {}
@@ -200,7 +255,16 @@ class Proxy(JsonSerializable):
         response = {"proxy": {"to": self.to}}
         if self.wait:
             response["_behaviors"] = {"wait": self.wait}
-        return {"responses": [response]}
+        return response
+
+    @staticmethod
+    def from_structure(structure):
+        proxy_structure = structure["proxy"]
+        proxy = Proxy(proxy_structure["to"])
+        wait = structure.get("_behaviors", {}).get("wait")
+        if wait:
+            proxy.wait = wait
+        return proxy
 
 
 class Response(JsonSerializable):
@@ -250,6 +314,28 @@ class Response(JsonSerializable):
         if self.repeat:
             result["_behaviors"]["repeat"] = self.repeat
         return result
+
+    @staticmethod
+    def from_structure(structure):
+        response = Response()
+        response.fields_from_structure(structure)
+        behaviors = structure.get("_behaviors")
+        if not behaviors:
+            return response
+        if "wait" in behaviors:
+            response.wait = behaviors["wait"]
+        if "repeat" in behaviors:
+            response.repeat = behaviors["repeat"]
+        return response
+
+    def fields_from_structure(self, structure):
+        inner = structure["is"]
+        if "body" in inner:
+            self._body = inner["body"]
+        if "headers" in inner:
+            self.headers = inner["headers"]
+        if "statusCode" in inner:
+            self.status_code = inner["statusCode"]
 
 
 def smtp_imposter(name="smtp", record_requests=True):
