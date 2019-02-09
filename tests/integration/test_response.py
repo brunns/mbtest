@@ -46,3 +46,16 @@ def test_binary_mode(mock_server):
         response = requests.get(imposter.url)
 
         assert_that(response, is_(response_with(content=b"sausages")))
+
+
+def test_multiple_responses(mock_server):
+    imposter = Imposter(Stub(responses=[Response(body="sausages"), Response(body="egg")]))
+
+    with mock_server(imposter):
+        r1 = requests.get(imposter.url)
+        r2 = requests.get(imposter.url)
+        r3 = requests.get(imposter.url)
+
+        assert_that(r1, is_(response_with(body="sausages")))
+        assert_that(r2, is_(response_with(body="egg")))
+        assert_that(r3, is_(response_with(body="sausages")))
