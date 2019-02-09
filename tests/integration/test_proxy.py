@@ -15,13 +15,22 @@ logger = logging.getLogger(__name__)
 
 
 def test_proxy(mock_server):
-    imposter = Imposter(Stub(responses=Proxy(to="http://example.com")))
+    imposter = Imposter(Proxy(to="http://example.com"))
 
     with mock_server(imposter) as server:
         response = requests.get("{0}/".format(imposter.url))
 
         assert_that(response, is_(response_with(status_code=200, body=has_title("Example Domain"))))
         assert_that(server, had_request(path="/", method="GET"))
+
+
+def test_proxy_in_stub(mock_server):
+    imposter = Imposter(Stub(responses=Proxy(to="http://example.com")))
+
+    with mock_server(imposter):
+        response = requests.get("{0}/".format(imposter.url))
+
+        assert_that(response, is_(response_with(status_code=200, body=has_title("Example Domain"))))
 
 
 def test_proxy_delay(mock_server):
