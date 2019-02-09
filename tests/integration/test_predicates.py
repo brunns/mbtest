@@ -1,10 +1,8 @@
 # encoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import logging
 
-import requests
 import pytest
+import requests
 from brunns.matchers.response import response_with
 from hamcrest import assert_that, is_, not_
 
