@@ -15,6 +15,13 @@ matrix:
     sudo: yes
     env:
      - TOX_ENV=py37
+  - os: windows
+    language: sh
+    python: 3.7
+    before_install:
+      - choco install python3
+      - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
+      - python -m pip install --upgrade pip wheel
   - python: 3.6
     env:
      - TOX_ENV=check-format
@@ -31,7 +38,7 @@ matrix:
     env:
      - TOX_ENV=coverage
 install:
- - pip install tox
+ - pip install --upgrade tox
  - npm install mountebank@1.16 --production
 script:
  - tox -e $TOX_ENV
