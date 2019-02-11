@@ -1,5 +1,6 @@
 # encoding=utf-8
 import logging
+from pathlib import Path
 
 import pytest
 import requests
@@ -26,13 +27,13 @@ def test_request_to_mock_server(mock_server):
 
 
 def test_nonexistent_executable():
-    with pytest.raises(FileNotFoundError):
-        MountebankServer(executable="./no/such/path")
+    with pytest.raises(OSError):
+        MountebankServer(executable=str(Path(".") / "no" / "such" / "path"))
 
 
 def test_non_executable():
-    with pytest.raises(PermissionError):
-        MountebankServer(executable="./README.md")
+    with pytest.raises(OSError):
+        MountebankServer(executable=str(Path(".") / "README.md"))
 
 
 def test_executable_not_mb():

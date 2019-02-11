@@ -3,10 +3,18 @@ import logging
 import subprocess  # nosec
 import time
 from collections.abc import Sequence
+from pathlib import Path
 
+import platform
 import requests
 from furl import furl
 from more_itertools import flatten
+
+DEFAULT_MB_EXECUTABLE = (
+    str(Path(".") / "node_modules" / ".bin" / "mb.cmd")
+    if platform.system() == "Windows"
+    else str(Path(".") / "node_modules" / ".bin" / "mb")
+)
 
 logger = logging.getLogger(__name__)
 
@@ -20,14 +28,14 @@ class MountebankTimeoutError(MountebankException):
 
 
 class MountebankServer(object):
-    def __init__(self, executable="./node_modules/.bin/mb", port=2525, timeout=5):
+    def __init__(self, executable=DEFAULT_MB_EXECUTABLE, port=2525, timeout=5):
         self.server_port = port
         try:
             self.mb_process = subprocess.Popen([executable, "--port", str(port), "--debug"])  # nosec
             self._await_start(timeout)
             logger.info("Spawned mb process %s on port %s.", self.mb_process.pid, self.server_port)
         except OSError:
-            logger.error("Failed to spawn mb process. Have you installed Mountebank?")
+            logger.error("Failed to spawn mb process with executable at %s. Have you installed Mountebank?", executable)
             raise
 
     def __call__(self, imposters):
@@ -99,7 +107,7 @@ class MountebankServer(object):
         )
 
 
-def mock_server(request, executable="./node_modules/.bin/mb", port=2525, **kwargs):
+def mock_server(request, executable=DEFAULT_MB_EXECUTABLE, port=2525, **kwargs):
     """A mock server, running one or more impostors, one for each site being mocked.
 
     Use in a pytest conftest.py fixture as follows:
