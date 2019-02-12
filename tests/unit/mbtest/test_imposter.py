@@ -1,4 +1,6 @@
 # encoding=utf-8
+from __future__ import unicode_literals, absolute_import, division, print_function
+
 import logging
 
 from hamcrest import assert_that, has_entries
