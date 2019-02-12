@@ -10,11 +10,7 @@ import requests
 from furl import furl
 from more_itertools import flatten
 
-DEFAULT_MB_EXECUTABLE = (
-    str(Path(".") / "node_modules" / ".bin" / "mb.cmd")
-    if platform.system() == "Windows"
-    else str(Path(".") / "node_modules" / ".bin" / "mb")
-)
+DEFAULT_MB_EXECUTABLE = str(Path("node_modules") / ".bin" / ("mb.cmd" if platform.system() == "Windows" else "mb"))
 
 logger = logging.getLogger(__name__)
 
