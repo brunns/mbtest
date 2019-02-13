@@ -29,12 +29,12 @@ def test_request_to_mock_server(mock_server):
 
 def test_nonexistent_executable():
     with pytest.raises(OSError):
-        MountebankServer(executable=str(Path(".") / "no" / "such" / "path"))
+        MountebankServer(executable=str(Path(".") / "no" / "such" / "path"), port=2526)
 
 
 def test_non_executable():
     with pytest.raises(OSError):
-        MountebankServer(executable=str(Path(".") / "README.md"))
+        MountebankServer(executable=str(Path(".") / "README.md"), port=2526)
 
 
 def test_executable_not_mb():
@@ -42,7 +42,6 @@ def test_executable_not_mb():
         MountebankServer(executable="ls", port=2526, timeout=1)
 
 
-@pytest.mark.xfail
 def test_exception_running_multiple_servers_on_same_port():
     # Given
     with pytest.raises(MountebankException):
@@ -50,8 +49,19 @@ def test_exception_running_multiple_servers_on_same_port():
             server1 = MountebankServer(port=2526)
             server2 = MountebankServer(port=2526)
         finally:
-            server1.close()
-            server2.close()
+            try:
+                server1.close()
+                server2.close()
+            except UnboundLocalError:
+                pass
+
+
+def test_server_can_be_restarted_on_same_port():
+    server = MountebankServer(port=2526)
+    server.close()
+
+    server = MountebankServer(port=2526)
+    server.close()
 
 
 @pytest.mark.skipif(platform.system() == "Windows", reason="Can only run one server on Windows for some reason.")

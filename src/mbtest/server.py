@@ -24,11 +24,16 @@ class MountebankTimeoutError(MountebankException):
 
 
 class MountebankServer(object):
+    running = set()
+
     def __init__(self, executable=DEFAULT_MB_EXECUTABLE, port=2525, timeout=5):
         self.server_port = port
+        if self.server_port in self.running:
+            raise MountebankException("Already running on port %s.", self.server_port)
         try:
             self.mb_process = subprocess.Popen([executable, "--port", str(port), "--debug"])  # nosec
             self._await_start(timeout)
+            self.running.add(port)
             logger.info("Spawned mb process %s on port %s.", self.mb_process.pid, self.server_port)
         except OSError:
             logger.error("Failed to spawn mb process with executable at %s. Have you installed Mountebank?", executable)
@@ -95,6 +100,7 @@ class MountebankServer(object):
     def close(self):
         self.mb_process.terminate()
         self.mb_process.wait()
+        self.running.remove(self.server_port)
         logger.info(
             "Terminated mb process %s on port %s status %s.",
             self.mb_process.pid,
