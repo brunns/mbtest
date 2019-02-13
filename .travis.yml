@@ -24,6 +24,11 @@ matrix:
       - python -m pip install --upgrade pip wheel
     env:
      - TOX_ENV=py37
+  - os: osx
+    language: generic
+    python: 3.6
+    env:
+      - TOX_ENV=py36
   - python: 3.6
     env:
       - TOX_ENV=pypy3.6
