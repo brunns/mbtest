@@ -6,6 +6,8 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import platform
+from threading import Lock
+
 import requests
 from furl import furl
 from more_itertools import flatten
@@ -25,19 +27,23 @@ class MountebankTimeoutError(MountebankException):
 
 class MountebankServer(object):
     running = set()
+    start_lock = Lock()
 
     def __init__(self, executable=DEFAULT_MB_EXECUTABLE, port=2525, timeout=5):
         self.server_port = port
-        if self.server_port in self.running:
-            raise MountebankException("Already running on port %s.", self.server_port)
-        try:
-            self.mb_process = subprocess.Popen([executable, "--port", str(port), "--debug"])  # nosec
-            self._await_start(timeout)
-            self.running.add(port)
-            logger.info("Spawned mb process %s on port %s.", self.mb_process.pid, self.server_port)
-        except OSError:
-            logger.error("Failed to spawn mb process with executable at %s. Have you installed Mountebank?", executable)
-            raise
+        with self.start_lock:
+            if self.server_port in self.running:
+                raise MountebankException("Already running on port %s.", self.server_port)
+            try:
+                self.mb_process = subprocess.Popen([executable, "--port", str(port), "--debug"])  # nosec
+                self._await_start(timeout)
+                self.running.add(port)
+                logger.info("Spawned mb process %s on port %s.", self.mb_process.pid, self.server_port)
+            except OSError:
+                logger.error(
+                    "Failed to spawn mb process with executable at %s. Have you installed Mountebank?", executable
+                )
+                raise
 
     def __call__(self, imposters):
         self.imposters = imposters
