@@ -4,17 +4,16 @@ matrix:
   - python: 3.4
     env:
      - TOX_ENV=py34
-  - python: 3.5
-    env:
-     - TOX_ENV=py35
-  - python: 3.6
-    env:
-     - TOX_ENV=py36
   - python: 3.7
     dist: xenial
     sudo: yes
     env:
      - TOX_ENV=py37
+  - os: osx
+    language: generic
+    python: 3.6
+    env:
+      - TOX_ENV=py36
   - os: windows
     language: sh
     python: 3.7
@@ -24,11 +23,12 @@ matrix:
       - python -m pip install --upgrade pip wheel
     env:
      - TOX_ENV=py37
-  - os: osx
-    language: generic
-    python: 3.6
+  - python: 3.5
     env:
-      - TOX_ENV=py36
+     - TOX_ENV=py35
+  - python: 3.6
+    env:
+     - TOX_ENV=py36
   - python: 3.6
     env:
       - TOX_ENV=pypy3.6
