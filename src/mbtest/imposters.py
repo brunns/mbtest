@@ -29,6 +29,7 @@ class Imposter(JsonSerializable):
         HTTP = "http"
         HTTPS = "https"
         SMTP = "smtp"
+        TCP = "tcp"
 
     def __init__(self, stubs, port=None, protocol=Protocol.HTTP, name=None, record_requests=True):
         """
@@ -50,6 +51,14 @@ class Imposter(JsonSerializable):
         self.protocol = protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
         self.name = name
         self.record_requests = record_requests
+
+    @property
+    def host(self):
+        return "localhost"
+
+    @property
+    def url(self):
+        return furl().set(scheme=self.protocol.value, host=self.host, port=self.port).url
 
     def as_structure(self):
         structure = {"protocol": self.protocol.value, "recordRequests": self.record_requests}
@@ -74,14 +83,6 @@ class Imposter(JsonSerializable):
         if "name" in structure:
             imposter.name = structure["name"]
         return imposter
-
-    @property
-    def host(self):
-        return "localhost"
-
-    @property
-    def url(self):
-        return furl().set(scheme=self.protocol.value, host=self.host, port=self.port).url
 
 
 class Stub(JsonSerializable):
@@ -336,6 +337,22 @@ class Response(JsonSerializable):
             self.headers = inner["headers"]
         if "statusCode" in inner:
             self.status_code = inner["statusCode"]
+
+
+class TcpPredicate(BasePredicate):
+    def __init__(self, data):
+        self.data = data
+
+    def as_structure(self):
+        return {"contains": {"data": self.data}}
+
+
+class TcpResponse(JsonSerializable):
+    def __init__(self, data):
+        self.data = data
+
+    def as_structure(self):
+        return {"is": {"data": self.data}}
 
 
 def smtp_imposter(name="smtp", record_requests=True):
