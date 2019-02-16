@@ -48,13 +48,7 @@ def buildxml_mapping(data, root):
 #     return root
 
 
-try:
-    basestring
-except NameError:
-    basestring = str
-
-
-@buildxml.register(basestring)
+@buildxml.register(str)
 def buildxml_basestring(data, root):
     root.text = data
     return root
