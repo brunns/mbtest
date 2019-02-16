@@ -1,18 +1,19 @@
 ﻿# encoding=utf-8
 import logging
+import platform
 import subprocess  # nosec
 import time
 from collections.abc import Sequence
 from pathlib import Path
-
-import platform
 from threading import Lock
 
 import requests
 from furl import furl
 from more_itertools import flatten
 
-DEFAULT_MB_EXECUTABLE = str(Path("node_modules") / ".bin" / ("mb.cmd" if platform.system() == "Windows" else "mb"))
+DEFAULT_MB_EXECUTABLE = str(
+    Path("node_modules") / ".bin" / ("mb.cmd" if platform.system() == "Windows" else "mb")
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,13 +36,18 @@ class MountebankServer(object):
             if self.server_port in self.running:
                 raise MountebankException("Already running on port %s.", self.server_port)
             try:
-                self.mb_process = subprocess.Popen([executable, "--port", str(port), "--debug"])  # nosec
+                self.mb_process = subprocess.Popen(  # nosec
+                    [executable, "--port", str(port), "--debug"]
+                )
                 self._await_start(timeout)
                 self.running.add(port)
-                logger.info("Spawned mb process %s on port %s.", self.mb_process.pid, self.server_port)
+                logger.info(
+                    "Spawned mb process %s on port %s.", self.mb_process.pid, self.server_port
+                )
             except OSError:
                 logger.error(
-                    "Failed to spawn mb process with executable at %s. Have you installed Mountebank?", executable
+                    "Failed to spawn mb process with executable at %s. Have you installed Mountebank?",
+                    executable,
                 )
                 raise
 
@@ -69,7 +75,9 @@ class MountebankServer(object):
                 time.sleep(0.1)
 
         if not started:  # pragma: no cover
-            raise MountebankTimeoutError("Mountebank failed to start within {0} seconds.".format(timeout))
+            raise MountebankTimeoutError(
+                "Mountebank failed to start within {0} seconds.".format(timeout)
+            )
 
         logger.debug("Server started at %s.", self.server_url)
 

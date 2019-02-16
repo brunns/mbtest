@@ -41,7 +41,10 @@ class Stub(JsonSerializable):
                 responses.append(Proxy.from_structure(response))
             else:
                 responses.append(Response.from_structure(response))
-        return Stub([Predicate.from_structure(predicate) for predicate in structure.get("predicates", ())], responses)
+        return Stub(
+            [Predicate.from_structure(predicate) for predicate in structure.get("predicates", ())],
+            responses,
+        )
 
 
 class Proxy(JsonSerializable):

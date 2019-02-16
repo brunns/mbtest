@@ -1,28 +1,40 @@
 # encoding=utf-8
-from hamcrest import anything, equal_to
+from hamcrest import anything
 from hamcrest.core.base_matcher import BaseMatcher
 from hamcrest.core.core.isanything import IsAnything
-from hamcrest.core.matcher import Matcher
+from hamcrest.core.helpers.wrap_matcher import wrap_matcher
 from more_itertools import flatten
 
 ANYTHING = anything()
 
 
-def had_request(method=ANYTHING, path=ANYTHING, query=ANYTHING, headers=ANYTHING, body=ANYTHING, times=ANYTHING):
+def had_request(
+    method=ANYTHING, path=ANYTHING, query=ANYTHING, headers=ANYTHING, body=ANYTHING, times=ANYTHING
+):
     """Mountebank server has recorded call matching"""
-    return HadRequest(method=method, path=path, query=query, headers=headers, body=body, times=times)
+    return HadRequest(
+        method=method, path=path, query=query, headers=headers, body=body, times=times
+    )
 
 
 class HadRequest(BaseMatcher):
     """Mountebank server has recorded call matching"""
 
-    def __init__(self, method=ANYTHING, path=ANYTHING, query=ANYTHING, headers=ANYTHING, body=ANYTHING, times=ANYTHING):
-        self.method = method if isinstance(method, Matcher) else equal_to(method)
-        self.path = path if isinstance(path, Matcher) else equal_to(path)
-        self.query = query if isinstance(query, Matcher) else equal_to(query)
-        self.headers = headers if isinstance(headers, Matcher) else equal_to(headers)
-        self.body = body if isinstance(body, Matcher) else equal_to(body)
-        self.times = times if isinstance(times, Matcher) else equal_to(times)
+    def __init__(
+        self,
+        method=ANYTHING,
+        path=ANYTHING,
+        query=ANYTHING,
+        headers=ANYTHING,
+        body=ANYTHING,
+        times=ANYTHING,
+    ):
+        self.method = wrap_matcher(method)
+        self.path = wrap_matcher(path)
+        self.query = wrap_matcher(query)
+        self.headers = wrap_matcher(headers)
+        self.body = wrap_matcher(body)
+        self.times = wrap_matcher(times)
 
     def describe_to(self, description):
         if isinstance(self.times, IsAnything):
@@ -45,7 +57,9 @@ class HadRequest(BaseMatcher):
 
     def describe_mismatch(self, server, description):
         description.append_text("found ").append_description_of(len(self.matching_requests))
-        description.append_text(" matching requests: ").append_description_of(self.matching_requests)
+        description.append_text(" matching requests: ").append_description_of(
+            self.matching_requests
+        )
         description.append_text(". All requests: ").append_description_of(self.all_requests)
 
     def _matches(self, server):
@@ -72,9 +86,9 @@ def email_sent(to=ANYTHING, subject=ANYTHING, body_text=ANYTHING):
 
 class EmailSent(BaseMatcher):
     def __init__(self, to=ANYTHING, subject=ANYTHING, body_text=ANYTHING):
-        self.body_text = body_text if isinstance(body_text, Matcher) else equal_to(body_text)
-        self.subject = subject if isinstance(subject, Matcher) else equal_to(subject)
-        self.to = to if isinstance(to, Matcher) else equal_to(to)
+        self.body_text = wrap_matcher(body_text)
+        self.subject = wrap_matcher(subject)
+        self.to = wrap_matcher(to)
 
     def describe_to(self, description):
         description.append_text("email with")
@@ -91,7 +105,9 @@ class EmailSent(BaseMatcher):
 
     def describe_mismatch(self, server, description):
         description.append_text("found ").append_description_of(len(self.matching_requests))
-        description.append_text(" matching requests: ").append_description_of(self.matching_requests)
+        description.append_text(" matching requests: ").append_description_of(
+            self.matching_requests
+        )
         description.append_text(". All requests: ").append_description_of(self.all_requests)
 
     def _matches(self, server):

@@ -44,7 +44,14 @@ class Predicate(BasePredicate):
             return any(value == item.value for item in cls)
 
     def __init__(
-        self, path=None, method=None, query=None, body=None, xpath=None, operator=Operator.EQUALS, case_sensitive=True
+        self,
+        path=None,
+        method=None,
+        query=None,
+        body=None,
+        xpath=None,
+        operator=Operator.EQUALS,
+        case_sensitive=True,
     ):
         """
         :param path: URL path.
@@ -63,26 +70,43 @@ class Predicate(BasePredicate):
         :type case_sensitive: bool
         """
         self.path = path
-        self.method = method if isinstance(method, Predicate.Method) else Predicate.Method(method) if method else None
+        self.method = (
+            method
+            if isinstance(method, Predicate.Method)
+            else Predicate.Method(method)
+            if method
+            else None
+        )
         self.query = query
         self.body = body
         self.xpath = xpath
-        self.operator = operator if isinstance(operator, Predicate.Operator) else Predicate.Operator(operator)
+        self.operator = (
+            operator if isinstance(operator, Predicate.Operator) else Predicate.Operator(operator)
+        )
         self.case_sensitive = case_sensitive
 
     def as_structure(self):
-        predicate = {self.operator.value: self.fields_as_structure(), "caseSensitive": self.case_sensitive}
+        predicate = {
+            self.operator.value: self.fields_as_structure(),
+            "caseSensitive": self.case_sensitive,
+        }
         if self.xpath:
             predicate["xpath"] = {"selector": self.xpath}
         return predicate
 
     @staticmethod
     def from_structure(structure):
-        operators = tuple(filter(lambda operator: Predicate.Operator.has_value(operator), structure.keys()))
+        operators = tuple(
+            filter(lambda operator: Predicate.Operator.has_value(operator), structure.keys())
+        )
         if len(operators) != 1:
-            raise Predicate.InvalidPredicateOperator("Each predicate must define exactly one operator.")
+            raise Predicate.InvalidPredicateOperator(
+                "Each predicate must define exactly one operator."
+            )
         operator = operators[0]
-        predicate = Predicate(operator=operator, case_sensitive=structure.get("caseSensitive", True))
+        predicate = Predicate(
+            operator=operator, case_sensitive=structure.get("caseSensitive", True)
+        )
         predicate.fields_from_structure(structure[operator])
         if "xpath" in structure:
             predicate.xpath = structure["xpath"]["selector"]
