@@ -46,7 +46,7 @@ matrix:
      - TOX_ENV=safety
   - python: 3.6
     env:
-     - TOX_ENV=coverage
+     - TOX_ENV=coveralls
 install:
  - pip install --upgrade tox
  - npm install mountebank@1.16 --production
