@@ -19,6 +19,7 @@ Includes [pytest](https://pytest.org) fixture and [PyHamcrest](https://pyhamcres
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/brunns/mbtest.svg?logo=github)](https://github.com/brunns/mbtest/pulls)
 [![GitHub pull-requests closed](https://img.shields.io/github/issues-pr-closed/brunns/mbtest.svg?logo=github)](https://github.com/brunns/mbtest/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed)
 [![Coverage](https://img.shields.io/coveralls/github/brunns/mbtest.svg)](https://coveralls.io/github/brunns/mbtest)
+[![Scrtinizer Status](https://img.shields.io/scrutinizer/g/brunns/mbtest/master.png?label=code+quality)](https://scrutinizer-ci.com/g/brunns/mbtest/)
 [![Lines of Code](https://tokei.rs/b1/github/brunns/mbtest)](https://github.com/brunns/mbtest)
 
 ## Setup
