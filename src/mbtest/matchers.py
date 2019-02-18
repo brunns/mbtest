@@ -51,7 +51,8 @@ class HadRequest(BaseMatcher):
         self._append_matcher_descrption(description, self.headers, "headers")
         self._append_matcher_descrption(description, self.body, "body")
 
-    def _append_matcher_descrption(self, description, matcher, text):
+    @staticmethod
+    def _append_matcher_descrption(description, matcher, text):
         if not isinstance(matcher, IsAnything):
             description.append_text(" {0}: ".format(text)).append_description_of(matcher)
 
@@ -99,7 +100,8 @@ class EmailSent(BaseMatcher):
         self._append_matcher_descrption(description, self.subject, "subject")
         self._append_matcher_descrption(description, self.to, "to")
 
-    def _append_matcher_descrption(self, description, matcher, text):
+    @staticmethod
+    def _append_matcher_descrption(description, matcher, text):
         if not isinstance(matcher, IsAnything):
             description.append_text(" {0}: ".format(text)).append_description_of(matcher)
 

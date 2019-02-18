@@ -96,9 +96,7 @@ class Predicate(BasePredicate):
 
     @staticmethod
     def from_structure(structure):
-        operators = tuple(
-            filter(lambda operator: Predicate.Operator.has_value(operator), structure.keys())
-        )
+        operators = tuple(filter(Predicate.Operator.has_value, structure.keys()))
         if len(operators) != 1:
             raise Predicate.InvalidPredicateOperator(
                 "Each predicate must define exactly one operator."
