@@ -1,5 +1,7 @@
 language: python
 matrix:
+ allow_failures:
+  - os: windows
  include:
   - python: 3.4
     env:
@@ -46,7 +48,7 @@ matrix:
      - TOX_ENV=safety
   - python: 3.6
     env:
-     - TOX_ENV=coveralls
+     - TOX_ENV=publish-coverage
 install:
  - pip install --upgrade tox
  - npm install mountebank@1.16 --production

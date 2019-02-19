@@ -18,9 +18,9 @@ Includes [pytest](https://pytest.org) fixture and [PyHamcrest](https://pyhamcres
 [![GitHub issues-closed](https://img.shields.io/github/issues-closed/brunns/mbtest.svg?logo=github)](https://github.com/brunns/mbtest/issues?q=is%3Aissue+is%3Aclosed)
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/brunns/mbtest.svg?logo=github)](https://github.com/brunns/mbtest/pulls)
 [![GitHub pull-requests closed](https://img.shields.io/github/issues-pr-closed/brunns/mbtest.svg?logo=github)](https://github.com/brunns/mbtest/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed)
-[![Coverage](https://img.shields.io/coveralls/github/brunns/mbtest.svg)](https://coveralls.io/github/brunns/mbtest)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3b7c694664974d17a34e594c43af0c1b)](https://www.codacy.com/app/brunns/mbtest?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=brunns/mbtest&amp;utm_campaign=Badge_Grade)
-[![Lines of Code](https://tokei.rs/b1/github/brunns/mbtest)](https://github.com/brunns/mbtest)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3b7c694664974d17a34e594c43af0c1b)](https://www.codacy.com/app/brunns/mbtest)
+[![Codacy Coverage](https://api.codacy.com/project/badge/coverage/3b7c694664974d17a34e594c43af0c1b)](https://www.codacy.com/app/brunns/mbtest)
+[[![Lines of Code](https://tokei.rs/b1/github/brunns/mbtest)](https://github.com/brunns/mbtest)
 
 ## Setup
 
