@@ -67,7 +67,12 @@ class Proxy(JsonSerializable):
     @staticmethod
     def from_structure(structure):
         proxy_structure = structure["proxy"]
-        proxy = Proxy(proxy_structure["to"])
+        proxy = Proxy(
+            proxy_structure["to"],
+            inject_headers=proxy_structure["injectHeaders"]
+            if "injectHeaders" in proxy_structure
+            else None,
+        )
         wait = structure.get("_behaviors", {}).get("wait")
         if wait:
             proxy.wait = wait

@@ -78,3 +78,12 @@ def test_structure_wait():
     proxy_structure = expected_proxy.as_structure()
     proxy = Proxy.from_structure(proxy_structure)
     assert proxy.wait == expected_proxy.wait
+
+
+def test_structure_inject_headers():
+    expected_proxy = Proxy(
+        "http://darwin.dog", inject_headers={"X-Clacks-Overhead": "GNU Terry Pratchett"}
+    )
+    proxy_structure = expected_proxy.as_structure()
+    proxy = Proxy.from_structure(proxy_structure)
+    assert proxy.inject_headers == expected_proxy.inject_headers
