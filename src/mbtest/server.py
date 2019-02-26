@@ -10,6 +10,7 @@ from threading import Lock
 import requests
 from furl import furl
 from more_itertools import flatten
+from requests import RequestException
 
 DEFAULT_MB_EXECUTABLE = str(
     Path("node_modules") / ".bin" / ("mb.cmd" if platform.system() == "Windows" else "mb")
@@ -26,15 +27,16 @@ class MountebankTimeoutError(MountebankException):
     pass
 
 
-class MountebankServer(object):
+class MountebankServer:
     running = set()
     start_lock = Lock()
 
     def __init__(self, executable=DEFAULT_MB_EXECUTABLE, port=2525, timeout=5):
         self.server_port = port
+        self.imposters, self.imposter_ports = [], []
         with self.start_lock:
             if self.server_port in self.running:
-                raise MountebankException("Already running on port %s.", self.server_port)
+                raise MountebankException("Already running on port {0}.".format(self.server_port))
             try:
                 self.mb_process = subprocess.Popen(  # nosec
                     [executable, "--port", str(port), "--debug"]
@@ -70,7 +72,7 @@ class MountebankServer(object):
                 requests.get(self.server_url, timeout=1).raise_for_status()
                 started = True
                 break
-            except Exception:
+            except RequestException:
                 started = False
                 time.sleep(0.1)
 
@@ -84,12 +86,12 @@ class MountebankServer(object):
     def create_imposters(self, definition):
         if isinstance(definition, Sequence):
             return list(flatten(self.create_imposters(imposter) for imposter in definition))
-        else:
-            json = definition.as_structure()
-            post = requests.post(self.server_url, json=json, timeout=10)
-            post.raise_for_status()
-            definition.port = post.json()["port"]
-            return [definition.port]
+
+        json = definition.as_structure()
+        post = requests.post(self.server_url, json=json, timeout=10)
+        post.raise_for_status()
+        definition.port = post.json()["port"]
+        return [definition.port]
 
     def delete_imposters(self):
         for imposter_port in self.imposter_ports:

@@ -2,7 +2,7 @@
 from abc import ABCMeta, abstractmethod
 
 
-class JsonSerializable(object, metaclass=ABCMeta):
+class JsonSerializable(metaclass=ABCMeta):
     @abstractmethod
     def as_structure(self):  # pragma: no cover
         """
