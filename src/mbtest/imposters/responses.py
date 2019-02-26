@@ -1,4 +1,5 @@
 # encoding=utf-8
+from __future__ import unicode_literals, absolute_import, division, print_function
 from enum import Enum
 from xml.etree import ElementTree as et  # nosec - We are creating, not parsing XML.
 

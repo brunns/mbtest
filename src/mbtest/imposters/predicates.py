@@ -1,10 +1,12 @@
 # encoding=utf-8
+from __future__ import unicode_literals, absolute_import, division, print_function
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 
 from six import add_metaclass
 
 from mbtest.imposters.base import JsonSerializable
+
 
 @add_metaclass(ABCMeta)
 class BasePredicate(JsonSerializable):
