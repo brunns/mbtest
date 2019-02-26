@@ -36,7 +36,7 @@ class Imposter(JsonSerializable):
         :type record_requests: bool
         """
         stubs = stubs if isinstance(stubs, Sequence) else [stubs]
-        # For backwards compatability where previously a proxy may have been used directly as a stub.
+        # For backwards compatibility where previously a proxy may have been used directly as a stub.
         self.stubs = [Stub(responses=stub) if isinstance(stub, Proxy) else stub for stub in stubs]
         self.port = port
         self.protocol = (
