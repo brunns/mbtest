@@ -1,6 +1,8 @@
 # encoding=utf-8
 from collections.abc import Sequence
 
+from furl import furl
+
 from mbtest.imposters.base import JsonSerializable
 from mbtest.imposters.predicates import Predicate
 from mbtest.imposters.responses import Response
@@ -48,12 +50,16 @@ class Stub(JsonSerializable):
 
 
 class Proxy(JsonSerializable):
-    def __init__(self, to, wait=None):
+    def __init__(self, to, wait=None, inject_headers=None):
         self.to = to
         self.wait = wait
+        self.inject_headers = inject_headers
 
     def as_structure(self):
-        response = {"proxy": {"to": self.to}}
+        proxy = {"to": self.to.url if isinstance(self.to, furl) else self.to}
+        if self.inject_headers:
+            proxy["injectHeaders"] = self.inject_headers
+        response = {"proxy": proxy}
         if self.wait:
             response["_behaviors"] = {"wait": self.wait}
         return response

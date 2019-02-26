@@ -117,7 +117,7 @@ class MountebankServer:
         return furl().set(scheme="http", host="localhost", port=self.server_port, path="imposters")
 
     def imposter_url(self, imposter_port):
-        return furl(self.server_url).add(path="{0}".format(imposter_port))
+        return self.server_url.add(path=str(imposter_port))
 
     def close(self):
         self.mb_process.terminate()

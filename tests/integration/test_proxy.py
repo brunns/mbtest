@@ -6,9 +6,9 @@ from brunns.matchers.html import has_title
 from brunns.matchers.object import between
 from brunns.matchers.response import response_with
 from contexttimer import Timer
-from hamcrest import assert_that, is_
+from hamcrest import assert_that, is_, has_entry
 
-from mbtest.imposters import Imposter, Proxy, Stub
+from mbtest.imposters import Imposter, Proxy, Stub, Predicate
 from mbtest.matchers import had_request
 
 logger = logging.getLogger(__name__)
@@ -42,6 +42,28 @@ def test_proxy_delay(mock_server):
     assert_that(
         t.elapsed, between(0.5, 0.9)
     )  # Slightly longer than the wait time, to give example.com and the 'net time to work.
+
+
+def test_inject_headers(mock_server):
+    target_imposter = Imposter(Stub(Predicate(path="/test")))
+    with mock_server(target_imposter) as server:
+        proxy_imposter = Imposter(
+            Stub(
+                responses=Proxy(
+                    to=target_imposter.url,
+                    inject_headers={"X-Clacks-Overhead": "GNU Terry Pratchett"},
+                )
+            )
+        )
+        server.add_imposters(proxy_imposter)
+
+        requests.get(proxy_imposter.url / "test")
+        assert_that(
+            server,
+            had_request(
+                path="/test", headers=has_entry("X-Clacks-Overhead", "GNU Terry Pratchett")
+            ),
+        )
 
 
 def test_structure_to():

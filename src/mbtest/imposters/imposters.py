@@ -51,7 +51,7 @@ class Imposter(JsonSerializable):
 
     @property
     def url(self):
-        return furl().set(scheme=self.protocol.value, host=self.host, port=self.port).url
+        return furl().set(scheme=self.protocol.value, host=self.host, port=self.port)
 
     def as_structure(self):
         structure = {"protocol": self.protocol.value, "recordRequests": self.record_requests}
