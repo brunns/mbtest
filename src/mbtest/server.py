@@ -32,7 +32,7 @@ class MountebankServer:
 
     def __init__(self, executable=DEFAULT_MB_EXECUTABLE, port=2525, timeout=5):
         self.server_port = port
-        self.imposter_ports = set()
+        self.running_imposters_by_port = {}
         with self.start_lock:
             if self.server_port in self.running:
                 raise MountebankException("Already running on port {0}.".format(self.server_port))
@@ -75,7 +75,7 @@ class MountebankServer:
                 started = False
                 time.sleep(0.1)
 
-        if not started:  # pragma: no cover
+        if not started:
             raise MountebankTimeoutError(
                 "Mountebank failed to start within {0} seconds.".format(timeout)
             )
@@ -96,16 +96,16 @@ class MountebankServer:
             post = requests.post(self.server_url, json=json, timeout=10)
             post.raise_for_status()
             definition.port = post.json()["port"]
-            self.imposter_ports.add(definition.port)
+            self.running_imposters_by_port[definition.port] = definition
 
     def delete_imposters(self):
-        while self.imposter_ports:
-            imposter_port = self.imposter_ports.pop()
+        while self.running_imposters_by_port:
+            imposter_port, imposter = self.running_imposters_by_port.popitem()
             requests.delete(self.imposter_url(imposter_port)).raise_for_status()
 
     def get_actual_requests(self):
         impostors = {}
-        for imposter_port in self.imposter_ports:
+        for imposter_port in self.running_imposters_by_port:
             response = requests.get(self.imposter_url(imposter_port), timeout=5)
             response.raise_for_status()
             json = response.json()
