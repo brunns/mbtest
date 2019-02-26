@@ -1,18 +1,16 @@
 # encoding=utf-8
 from __future__ import unicode_literals, absolute_import, division, print_function
 from six import PY3
+from enum import Enum
+from furl import furl
+
+from mbtest.imposters.base import JsonSerializable
+from mbtest.imposters.stubs import Stub, Proxy
 
 if PY3:
     from collections.abc import Sequence
 else:  # pragma: no cover
     from collections import Sequence
-
-from enum import Enum
-
-from furl import furl
-
-from mbtest.imposters.base import JsonSerializable
-from mbtest.imposters.stubs import Stub, Proxy
 
 
 class Imposter(JsonSerializable):
