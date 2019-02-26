@@ -9,7 +9,6 @@ from threading import Lock
 
 import requests
 from furl import furl
-from more_itertools import flatten
 from requests import RequestException
 
 DEFAULT_MB_EXECUTABLE = str(
@@ -33,7 +32,7 @@ class MountebankServer:
 
     def __init__(self, executable=DEFAULT_MB_EXECUTABLE, port=2525, timeout=5):
         self.server_port = port
-        self.imposters, self.imposter_ports = [], []
+        self.imposter_ports = set()
         with self.start_lock:
             if self.server_port in self.running:
                 raise MountebankException("Already running on port {0}.".format(self.server_port))
@@ -58,7 +57,7 @@ class MountebankServer:
         return self
 
     def __enter__(self):
-        self.imposter_ports = self.create_imposters(self.imposters)
+        self.add_imposters(self.imposters)
         return self
 
     def __exit__(self, ex_type, ex_value, ex_traceback):
@@ -83,18 +82,25 @@ class MountebankServer:
 
         logger.debug("Server started at %s.", self.server_url)
 
-    def create_imposters(self, definition):
-        if isinstance(definition, Sequence):
-            return list(flatten(self.create_imposters(imposter) for imposter in definition))
+    def add_imposters(self, definition):
+        """Add imposters to Mountebank server.
 
-        json = definition.as_structure()
-        post = requests.post(self.server_url, json=json, timeout=10)
-        post.raise_for_status()
-        definition.port = post.json()["port"]
-        return [definition.port]
+        :param definition: One or more Imposters.
+        :type definition: Imposter or list(Imposter)
+        """
+        if isinstance(definition, Sequence):
+            for imposter in definition:
+                self.add_imposters(imposter)
+        else:
+            json = definition.as_structure()
+            post = requests.post(self.server_url, json=json, timeout=10)
+            post.raise_for_status()
+            definition.port = post.json()["port"]
+            self.imposter_ports.add(definition.port)
 
     def delete_imposters(self):
-        for imposter_port in self.imposter_ports:
+        while self.imposter_ports:
+            imposter_port = self.imposter_ports.pop()
             requests.delete(self.imposter_url(imposter_port)).raise_for_status()
 
     def get_actual_requests(self):
