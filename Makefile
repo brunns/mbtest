@@ -9,7 +9,7 @@ test: ## Run tests
 coverage: ## Test coverage report
 	tox -e coverage
 
-lint: check-format flake8 bandit safety ## Lint code
+lint: check-format flake8 bandit ## Lint code
 
 flake8:
 	tox -e flake8
@@ -17,8 +17,8 @@ flake8:
 bandit:
 	tox -e bandit
 
-safety:
-	tox -e safety
+pylint:
+	tox -e pylint
 
 check-format:
 	tox -e check-format
@@ -33,7 +33,7 @@ precommit: test lint coverage ## Pre-commit targets
 	@ python -m this
 
 recreate: ## Recreate tox environments
-	tox --recreate --notest -e py34,py37,format,flake8,bandit,safety,piprot
+	tox --recreate --notest -e py34,py37,format,flake8,bandit,piprot,pylint
 
 clean: ## Clean generated files
 	find . -name '*.pyc' -delete
