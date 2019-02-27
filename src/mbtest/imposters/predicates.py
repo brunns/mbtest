@@ -104,27 +104,19 @@ class Predicate(BasePredicate):
         return predicate
 
     def fields_from_structure(self, inner):
-        if "path" in inner:
-            self.path = inner["path"]
-        if "query" in inner:
-            self.query = inner["query"]
-        if "body" in inner:
-            self.body = inner["body"]
-        if "headers" in inner:
-            self.headers = inner["headers"]
+        self._set_if_in_dict(inner, "path", "path")
+        self._set_if_in_dict(inner, "query", "query")
+        self._set_if_in_dict(inner, "body", "body")
+        self._set_if_in_dict(inner, "headers", "headers")
         if "method" in inner:
             self.method = Predicate.Method(inner["method"])
 
     def fields_as_structure(self):
         fields = {}
-        if self.path:
-            fields["path"] = self.path
-        if self.query:
-            fields["query"] = self.query
-        if self.body:
-            fields["body"] = self.body
-        if self.headers:
-            fields["headers"] = self.headers
+        self._add_if_true(fields, "path", self.path)
+        self._add_if_true(fields, "query", self.query)
+        self._add_if_true(fields, "body", self.body)
+        self._add_if_true(fields, "headers", self.headers)
         if self.method:
             fields["method"] = self.method.value
         return fields
