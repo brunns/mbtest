@@ -1,7 +1,7 @@
 # encoding=utf-8
 import xml.etree.ElementTree as et
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 
 from functools import singledispatch
 
@@ -11,13 +11,13 @@ def data2xml(data, default_namespace=None):
     :param data: data to convert to XML
     :type data: dict
     :param default_namespace: Namespace
-    :type default_namespace: str
+    :type default_namespace: tuple(str)
     :rtype: xml.etree.ElementTree.Element
     """
     root, body = data.popitem()
     root = et.Element(root)
     if default_namespace:
-        root.set("xmlns", default_namespace)
+        root.set("xmlns:{0}".format(default_namespace[0]), default_namespace[1])
     return buildxml(body, root)
 
 
@@ -39,13 +39,12 @@ def buildxml_mapping(data, root):
     return root
 
 
-# @buildxml.register(collections.Sequence)
-# def buildxml_sequence(data, root):
-#     for value in data:
-#         sub = et.SubElement(root, "anon")
-#         buildxml(value, sub)
-#         # root.extend(sub)
-#     return root
+@buildxml.register(Sequence)
+def buildxml_sequence(data, root):
+    for value in data:
+        buildxml(value, root)
+        # root.extend(sub)
+    return root
 
 
 @buildxml.register(str)

@@ -37,9 +37,9 @@ class MountebankServer:
             if self.server_port in self.running:
                 raise MountebankException("Already running on port {0}.".format(self.server_port))
             try:
-                self.mb_process = subprocess.Popen(
-                    [executable, "--port", str(port), "--debug"]
-                )  # nosec
+                self.mb_process = subprocess.Popen(  # nosec
+                    [executable, "--port", str(port), "--debug", "--allowInjection"]
+                )
                 self._await_start(timeout)
                 self.running.add(port)
                 logger.info(
