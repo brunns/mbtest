@@ -155,11 +155,11 @@ class UsingRegex(Using):
         :param ignore_case: Uses a case-insensitive regular expression (For REGEX method)
         :type ignore_case: bool
         """
-        super().__init__(Using.Method.REGEX, selector)
+        super(UsingRegex, self).__init__(Using.Method.REGEX, selector)
         self.ignore_case = ignore_case
 
     def as_structure(self):
-        structure = super().as_structure()
+        structure = super(UsingRegex, self).as_structure()
         structure["options"] = {"ignoreCase": self.ignore_case}
         return structure
 
