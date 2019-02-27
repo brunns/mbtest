@@ -48,7 +48,7 @@ class Predicate(BasePredicate):
             return any(value == item.value for item in cls)
 
     def __init__(
-        self, path=None, method=None, query=None, body=None, xpath=None, operator=Operator.EQUALS, case_sensitive=True
+        self, path=None, method=None, query=None, body=None, headers=None, xpath=None, operator=Operator.EQUALS, case_sensitive=True
     ):
         """
         :param path: URL path.
@@ -59,6 +59,8 @@ class Predicate(BasePredicate):
         :type query: dict(str, str)
         :param body: Body text. Can be a string, or a JSON serialisable data structure.
         :type body: str or dict or list
+        :param headers: Headers, keys and values.
+        :type headers: dict(str, str)
         :param xpath: xpath query
         :type xpath: str
         :param operator:
@@ -70,6 +72,7 @@ class Predicate(BasePredicate):
         self.method = method if isinstance(method, Predicate.Method) else Predicate.Method(method) if method else None
         self.query = query
         self.body = body
+        self.headers = headers
         self.xpath = xpath
         self.operator = operator if isinstance(operator, Predicate.Operator) else Predicate.Operator(operator)
         self.case_sensitive = case_sensitive
@@ -99,6 +102,8 @@ class Predicate(BasePredicate):
             self.query = inner["query"]
         if "body" in inner:
             self.body = inner["body"]
+        if "headers" in inner:
+            self.headers = inner["headers"]
         if "method" in inner:
             self.method = Predicate.Method(inner["method"])
 
@@ -110,6 +115,8 @@ class Predicate(BasePredicate):
             fields["query"] = self.query
         if self.body:
             fields["body"] = self.body
+        if self.headers:
+            fields["headers"] = self.headers
         if self.method:
             fields["method"] = self.method.value
         return fields
