@@ -3,7 +3,7 @@ from __future__ import unicode_literals, absolute_import, division, print_functi
 from enum import Enum
 from xml.etree import ElementTree as et  # nosec - We are creating, not parsing XML.
 
-from six import PY3, add_metaclass
+from six import PY3
 
 from mbtest.imposters.base import JsonSerializable
 
