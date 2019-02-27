@@ -61,3 +61,21 @@ class UsingRegex(Using):
         structure = super().as_structure()
         structure["options"] = {"ignoreCase": self.ignore_case}
         return structure
+
+
+class UsingXpath(Using):
+    def __init__(self, selector, ns=None):
+        """
+        :param selector: The selector used to select the value(s) from the request.
+        :type selector: str
+        :param ns: The ns object maps namespace aliases to URLs
+        :type ns: dict(str, str)
+        """
+        super().__init__(Using.Method.XPATH, selector)
+        self.ns = ns
+
+    def as_structure(self):
+        structure = super().as_structure()
+        if self.ns:
+            structure["ns"] = self.ns
+        return structure
