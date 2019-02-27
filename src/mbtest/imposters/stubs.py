@@ -43,7 +43,10 @@ class Stub(JsonSerializable):
                 responses.append(Proxy.from_structure(response))
             else:
                 responses.append(Response.from_structure(response))
-        return Stub([Predicate.from_structure(predicate) for predicate in structure.get("predicates", ())], responses)
+        return Stub(
+            [Predicate.from_structure(predicate) for predicate in structure.get("predicates", ())],
+            responses,
+        )
 
 
 class Proxy(JsonSerializable):
@@ -66,7 +69,9 @@ class Proxy(JsonSerializable):
         proxy_structure = structure["proxy"]
         proxy = Proxy(
             proxy_structure["to"],
-            inject_headers=proxy_structure["injectHeaders"] if "injectHeaders" in proxy_structure else None,
+            inject_headers=proxy_structure["injectHeaders"]
+            if "injectHeaders" in proxy_structure
+            else None,
         )
         wait = structure.get("_behaviors", {}).get("wait")
         if wait:

@@ -39,7 +39,9 @@ class Imposter(JsonSerializable):
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
         self.stubs = [Stub(responses=stub) if isinstance(stub, Proxy) else stub for stub in stubs]
         self.port = port
-        self.protocol = protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
+        self.protocol = (
+            protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
+        )
         self.name = name
         self.record_requests = record_requests
 
@@ -68,7 +70,9 @@ class Imposter(JsonSerializable):
             imposter.port = structure["port"]
         if "protocol" in structure:
             protocol = structure["protocol"]
-            imposter.protocol = protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
+            imposter.protocol = (
+                protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
+            )
         if "recordRequests" in structure:
             imposter.record_requests = structure["recordRequests"]
         if "name" in structure:
@@ -78,4 +82,6 @@ class Imposter(JsonSerializable):
 
 def smtp_imposter(name="smtp", record_requests=True):
     """Canned SMTP server impostor."""
-    return Imposter([], 4525, protocol=Imposter.Protocol.SMTP, name=name, record_requests=record_requests)
+    return Imposter(
+        [], 4525, protocol=Imposter.Protocol.SMTP, name=name, record_requests=record_requests
+    )

@@ -13,7 +13,10 @@ logger = logging.getLogger(__name__)
 
 def test_and_predicate_and_query_strings(mock_server):
     imposter = Imposter(
-        Stub(Predicate(query={"foo": "bar"}) & Predicate(query={"dinner": "chips"}), Response(body="black pudding"))
+        Stub(
+            Predicate(query={"foo": "bar"}) & Predicate(query={"dinner": "chips"}),
+            Response(body="black pudding"),
+        )
     )
 
     with mock_server(imposter) as s:
@@ -27,7 +30,9 @@ def test_and_predicate_and_query_strings(mock_server):
 
 
 def test_or_predicate_and_body(mock_server):
-    imposter = Imposter(Stub(Predicate(body="foo") | Predicate(body="bar"), Response(body="oranges")))
+    imposter = Imposter(
+        Stub(Predicate(body="foo") | Predicate(body="bar"), Response(body="oranges"))
+    )
 
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)

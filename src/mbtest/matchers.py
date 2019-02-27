@@ -8,15 +8,27 @@ from more_itertools import flatten
 ANYTHING = anything()
 
 
-def had_request(method=ANYTHING, path=ANYTHING, query=ANYTHING, headers=ANYTHING, body=ANYTHING, times=ANYTHING):
+def had_request(
+    method=ANYTHING, path=ANYTHING, query=ANYTHING, headers=ANYTHING, body=ANYTHING, times=ANYTHING
+):
     """Mountebank server has recorded call matching"""
-    return HadRequest(method=method, path=path, query=query, headers=headers, body=body, times=times)
+    return HadRequest(
+        method=method, path=path, query=query, headers=headers, body=body, times=times
+    )
 
 
 class HadRequest(BaseMatcher):
     """Mountebank server has recorded call matching"""
 
-    def __init__(self, method=ANYTHING, path=ANYTHING, query=ANYTHING, headers=ANYTHING, body=ANYTHING, times=ANYTHING):
+    def __init__(
+        self,
+        method=ANYTHING,
+        path=ANYTHING,
+        query=ANYTHING,
+        headers=ANYTHING,
+        body=ANYTHING,
+        times=ANYTHING,
+    ):
         self.method = wrap_matcher(method)
         self.path = wrap_matcher(path)
         self.query = wrap_matcher(query)
@@ -46,7 +58,9 @@ class HadRequest(BaseMatcher):
 
     def describe_mismatch(self, server, description):
         description.append_text("found ").append_description_of(len(self.matching_requests))
-        description.append_text(" matching requests: ").append_description_of(self.matching_requests)
+        description.append_text(" matching requests: ").append_description_of(
+            self.matching_requests
+        )
         description.append_text(". All requests: ").append_description_of(self.all_requests)
 
     def _matches(self, server):
@@ -93,7 +107,9 @@ class EmailSent(BaseMatcher):
 
     def describe_mismatch(self, server, description):
         description.append_text("found ").append_description_of(len(self.matching_requests))
-        description.append_text(" matching requests: ").append_description_of(self.matching_requests)
+        description.append_text(" matching requests: ").append_description_of(
+            self.matching_requests
+        )
         description.append_text(". All requests: ").append_description_of(self.all_requests)
 
     def _matches(self, server):
