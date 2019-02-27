@@ -134,7 +134,7 @@ def test_structure_query():
     assert predicate.query == expected_predicate.query
 
 
-def test_structure_query():
+def test_structure_headers():
     expected_predicate = Predicate(headers={"key": "value"})
     predicate_structure = expected_predicate.as_structure()
     predicate = Predicate.from_structure(predicate_structure)
