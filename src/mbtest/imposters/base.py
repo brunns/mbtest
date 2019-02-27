@@ -10,3 +10,8 @@ class JsonSerializable(metaclass=ABCMeta):
         :rtype: dict
         """
         raise NotImplementedError()
+
+    @staticmethod
+    def _add_if_true(dictionary, key, value):
+        if value:
+            dictionary[key] = value
