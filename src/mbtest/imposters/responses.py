@@ -7,6 +7,10 @@ from six import PY3
 
 from mbtest.imposters.base import JsonSerializable
 
+if PY3:
+    from collections.abc import Sequence
+else:  # pragma: no cover
+    from collections import Sequence
 
 class Response(JsonSerializable):
     """Represents a Mountebank 'is' response behavior - see http://www.mbtest.org/docs/api/stubs"""
@@ -15,25 +19,38 @@ class Response(JsonSerializable):
         TEXT = "text"
         BINARY = "binary"
 
-    def __init__(self, body="", status_code=200, wait=None, repeat=None, headers=None, mode=None):
+    def __init__(
+        self, body="", status_code=200, wait=None, repeat=None, headers=None, mode=None, copy=None
+    ):
         """
         :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
         :type body: str or dict or list or xml.etree.ElementTree.Element or bytes
         :param status_code: HTTP status code
-        :type status_code: int
+        :type status_code: int or str
         :param wait: Add latency, in ms
         :type wait: int
         :param repeat: Repeat this many times before moving on to next response.
         :type repeat: int
         :param headers: Response HTTP headers
         :type headers: dict mapping from HTTP header name to header value
+        :param mode: Mode - text or binary
+        :type mode: Mode
+        :param copy: Copy behavior
+        :type copy: Copy or list(Copy)
         """
         self._body = body
         self.status_code = status_code
         self.wait = wait
         self.repeat = repeat
         self.headers = headers
-        self.mode = mode if isinstance(mode, Response.Mode) else Response.Mode(mode) if mode else Response.Mode.TEXT
+        self.mode = (
+            mode
+            if isinstance(mode, Response.Mode)
+            else Response.Mode(mode)
+            if mode
+            else Response.Mode.TEXT
+        )
+        self.copy = copy if isinstance(copy, Sequence) else [copy] if copy else None
 
     @property
     def body(self):
@@ -44,17 +61,25 @@ class Response(JsonSerializable):
         return self._body
 
     def as_structure(self):
-        inner = {"statusCode": self.status_code, "_mode": self.mode.value}
+        return {"is": (self._is_structure()), "_behaviors": self._behaviors_structure()}
+
+    def _is_structure(self):
+        is_structure = {"statusCode": self.status_code, "_mode": self.mode.value}
         if self.body:
-            inner["body"] = self.body
+            is_structure["body"] = self.body
         if self.headers:
-            inner["headers"] = self.headers
-        result = {"is": inner, "_behaviors": {}}
+            is_structure["headers"] = self.headers
+        return is_structure
+
+    def _behaviors_structure(self):
+        behaviors = {}
         if self.wait:
-            result["_behaviors"]["wait"] = self.wait
+            behaviors["wait"] = self.wait
         if self.repeat:
-            result["_behaviors"]["repeat"] = self.repeat
-        return result
+            behaviors["repeat"] = self.repeat
+        if self.copy:
+            behaviors["copy"] = [c.as_structure() for c in self.copy]
+        return behaviors
 
     @staticmethod
     def from_structure(structure):
@@ -77,6 +102,30 @@ class Response(JsonSerializable):
             self.headers = inner["headers"]
         if "statusCode" in inner:
             self.status_code = inner["statusCode"]
+
+
+class Copy(JsonSerializable):
+    def __init__(self, from_, into, using):
+        self.from_ = from_
+        self.into = into
+        self.using = using
+
+    def as_structure(self):
+        return {"from": self.from_, "into": self.into, "using": self.using.as_structure()}
+
+
+class Using(JsonSerializable):
+    class Method(Enum):
+        REGEX = "regex"
+        XPATH = "xpath"
+        JSONPATH = "jsonpath"
+
+    def __init__(self, method, selector):
+        self.method = method
+        self.selector = selector
+
+    def as_structure(self):
+        return {"method": self.method.value, "selector": self.selector}
 
 
 class TcpResponse(JsonSerializable):
