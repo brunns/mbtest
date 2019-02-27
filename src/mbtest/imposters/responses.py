@@ -30,6 +30,7 @@ class Response(JsonSerializable):
         mode=None,
         copy=None,
         decorate=None,
+        lookup=None,
     ):
         """
         :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
@@ -48,6 +49,8 @@ class Response(JsonSerializable):
         :type copy: Copy or list(Copy)
         :param decorate: Decorate behavior
         :type decorate: str
+        :param lookup: Lookup behavior
+        :type lookup: Lookup or list(Lookup)
         """
         self._body = body
         self.status_code = status_code
@@ -63,6 +66,7 @@ class Response(JsonSerializable):
         )
         self.copy = copy if isinstance(copy, Sequence) else [copy] if copy else None
         self.decorate = decorate
+        self.lookup = lookup if isinstance(lookup, Sequence) else [lookup] if lookup else None
 
     @property
     def body(self):
@@ -77,22 +81,19 @@ class Response(JsonSerializable):
 
     def _is_structure(self):
         is_structure = {"statusCode": self.status_code, "_mode": self.mode.value}
-        if self.body:
-            is_structure["body"] = self.body
-        if self.headers:
-            is_structure["headers"] = self.headers
+        self._add_if_true(is_structure, "body", self.body)
+        self._add_if_true(is_structure, "headers", self.headers)
         return is_structure
 
     def _behaviors_structure(self):
         behaviors = {}
-        if self.wait:
-            behaviors["wait"] = self.wait
-        if self.repeat:
-            behaviors["repeat"] = self.repeat
+        self._add_if_true(behaviors, "wait", self.wait)
+        self._add_if_true(behaviors, "repeat", self.repeat)
+        self._add_if_true(behaviors, "decorate", self.decorate)
         if self.copy:
             behaviors["copy"] = [c.as_structure() for c in self.copy]
-        if self.decorate:
-            behaviors["decorate"] = self.decorate
+        if self.lookup:
+            behaviors["lookup"] = [l.as_structure() for l in self.lookup]
         return behaviors
 
     @staticmethod
