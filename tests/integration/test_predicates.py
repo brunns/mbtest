@@ -64,6 +64,24 @@ def test_query_predicate(mock_server):
         assert_that(r3, is_(response_with(body=not_("oranges"))))
 
 
+def test_headers_predicate(mock_server):
+    # Given
+    imposter = Imposter(Stub(Predicate(headers={"foo": "bar"}), Response(body="oranges")))
+
+    with mock_server(imposter) as s:
+        logger.debug("server: %s", s)
+
+        # When
+        r1 = requests.get(imposter.url, headers={"foo": "bar"})
+        r2 = requests.get(imposter.url, headers={"foo": "baz"})
+        r3 = requests.get(imposter.url)
+
+        # Then
+        assert_that(r1, is_(response_with(body="oranges")))
+        assert_that(r2, is_(response_with(body=not_("oranges"))))
+        assert_that(r3, is_(response_with(body=not_("oranges"))))
+
+
 def test_methods(mock_server):
     # Given
     imposter = Imposter(
@@ -117,6 +135,13 @@ def test_structure_query():
     predicate_structure = expected_predicate.as_structure()
     predicate = Predicate.from_structure(predicate_structure)
     assert predicate.query == expected_predicate.query
+
+
+def test_structure_headers():
+    expected_predicate = Predicate(headers={"key": "value"})
+    predicate_structure = expected_predicate.as_structure()
+    predicate = Predicate.from_structure(predicate_structure)
+    assert predicate.headers == expected_predicate.headers
 
 
 def test_structure_operator():
