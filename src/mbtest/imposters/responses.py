@@ -14,7 +14,15 @@ class Response(JsonSerializable):
         BINARY = "binary"
 
     def __init__(
-        self, body="", status_code=200, wait=None, repeat=None, headers=None, mode=None, copy=None
+        self,
+        body="",
+        status_code=200,
+        wait=None,
+        repeat=None,
+        headers=None,
+        mode=None,
+        copy=None,
+        decorate=None,
     ):
         """
         :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
@@ -31,6 +39,8 @@ class Response(JsonSerializable):
         :type mode: Mode
         :param copy: Copy behavior
         :type copy: Copy or list(Copy)
+        :param decorate: Decorate behavior
+        :type decorate: str
         """
         self._body = body
         self.status_code = status_code
@@ -45,6 +55,7 @@ class Response(JsonSerializable):
             else Response.Mode.TEXT
         )
         self.copy = copy if isinstance(copy, Sequence) else [copy] if copy else None
+        self.decorate = decorate
 
     @property
     def body(self):
@@ -73,6 +84,8 @@ class Response(JsonSerializable):
             behaviors["repeat"] = self.repeat
         if self.copy:
             behaviors["copy"] = [c.as_structure() for c in self.copy]
+        if self.decorate:
+            behaviors["decorate"] = self.decorate
         return behaviors
 
     @staticmethod
