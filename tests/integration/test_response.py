@@ -72,6 +72,6 @@ def test_copy(mock_server):
     )
 
     with mock_server(imposter):
-        response = requests.get(imposter.url / str(456))
+        response = requests.get('{imposter_url}/456'.format(imposter_url=imposter.url))
 
         assert_that(response, is_(response_with(status_code=456)))
