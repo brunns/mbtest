@@ -15,3 +15,7 @@ class JsonSerializable(metaclass=ABCMeta):
     def _add_if_true(dictionary, key, value):
         if value:
             dictionary[key] = value
+
+    def _set_if_in_dict(self, dictionary, key, name):
+        if key in dictionary:
+            setattr(self, name, dictionary[key])

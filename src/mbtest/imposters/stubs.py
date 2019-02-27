@@ -57,8 +57,7 @@ class Proxy(JsonSerializable):
 
     def as_structure(self):
         proxy = {"to": self.to.url if isinstance(self.to, furl) else self.to}
-        if self.inject_headers:
-            proxy["injectHeaders"] = self.inject_headers
+        self._add_if_true(proxy, "injectHeaders", self.inject_headers)
         response = {"proxy": proxy}
         if self.wait:
             response["_behaviors"] = {"wait": self.wait}
