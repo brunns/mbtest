@@ -19,8 +19,8 @@ def test_json_payload(mock_server):
 
     with mock_server(imposter):
         # When
-        r1 = requests.get(imposter.url, json={"foo": ["bar", "baz"]})
-        r2 = requests.get(imposter.url, json={"baz": ["bar", "foo"]})
+        r1 = requests.post(imposter.url, json={"foo": ["bar", "baz"]})
+        r2 = requests.post(imposter.url, json={"baz": ["bar", "foo"]})
 
         # Then
         assert_that(r1, is_(response_with(body="sausages")))
