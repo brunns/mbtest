@@ -5,7 +5,7 @@ import requests
 from brunns.matchers.response import response_with
 from hamcrest import assert_that, is_, has_entry
 
-from mbtest.imposters import Imposter, Response, Stub
+from mbtest.imposters import Imposter, Response, Stub, Copy, Using
 
 logger = logging.getLogger(__name__)
 
@@ -62,3 +62,19 @@ def test_multiple_responses(mock_server):
         assert_that(r1, is_(response_with(body="sausages")))
         assert_that(r2, is_(response_with(body="egg")))
         assert_that(r3, is_(response_with(body="sausages")))
+
+
+def test_copy(mock_server):
+    imposter = Imposter(
+        Stub(
+            responses=Response(
+                status_code="${code}",
+                copy=Copy("path", "${code}", Using(Using.Method.REGEX, "\\d+")),
+            )
+        )
+    )
+
+    with mock_server(imposter):
+        response = requests.get(imposter.url / str(456))
+
+        assert_that(response, is_(response_with(status_code=456)))
