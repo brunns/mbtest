@@ -30,13 +30,7 @@ class Response(JsonSerializable):
         self.wait = wait
         self.repeat = repeat
         self.headers = headers
-        self.mode = (
-            mode
-            if isinstance(mode, Response.Mode)
-            else Response.Mode(mode)
-            if mode
-            else Response.Mode.TEXT
-        )
+        self.mode = mode if isinstance(mode, Response.Mode) else Response.Mode(mode) if mode else Response.Mode.TEXT
 
     @property
     def body(self):

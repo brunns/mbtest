@@ -49,6 +49,7 @@ class Predicate(BasePredicate):
         method=None,
         query=None,
         body=None,
+        headers=None,
         xpath=None,
         operator=Operator.EQUALS,
         case_sensitive=True,
@@ -62,6 +63,8 @@ class Predicate(BasePredicate):
         :type query: dict(str, str)
         :param body: Body text. Can be a string, or a JSON serialisable data structure.
         :type body: str or dict or list
+        :param headers: Headers, keys and values.
+        :type headers: dict(str, str)
         :param xpath: xpath query
         :type xpath: str
         :param operator:
@@ -70,26 +73,16 @@ class Predicate(BasePredicate):
         :type case_sensitive: bool
         """
         self.path = path
-        self.method = (
-            method
-            if isinstance(method, Predicate.Method)
-            else Predicate.Method(method)
-            if method
-            else None
-        )
+        self.method = method if isinstance(method, Predicate.Method) else Predicate.Method(method) if method else None
         self.query = query
         self.body = body
+        self.headers = headers
         self.xpath = xpath
-        self.operator = (
-            operator if isinstance(operator, Predicate.Operator) else Predicate.Operator(operator)
-        )
+        self.operator = operator if isinstance(operator, Predicate.Operator) else Predicate.Operator(operator)
         self.case_sensitive = case_sensitive
 
     def as_structure(self):
-        predicate = {
-            self.operator.value: self.fields_as_structure(),
-            "caseSensitive": self.case_sensitive,
-        }
+        predicate = {self.operator.value: self.fields_as_structure(), "caseSensitive": self.case_sensitive}
         if self.xpath:
             predicate["xpath"] = {"selector": self.xpath}
         return predicate
@@ -98,13 +91,9 @@ class Predicate(BasePredicate):
     def from_structure(structure):
         operators = tuple(filter(Predicate.Operator.has_value, structure.keys()))
         if len(operators) != 1:
-            raise Predicate.InvalidPredicateOperator(
-                "Each predicate must define exactly one operator."
-            )
+            raise Predicate.InvalidPredicateOperator("Each predicate must define exactly one operator.")
         operator = operators[0]
-        predicate = Predicate(
-            operator=operator, case_sensitive=structure.get("caseSensitive", True)
-        )
+        predicate = Predicate(operator=operator, case_sensitive=structure.get("caseSensitive", True))
         predicate.fields_from_structure(structure[operator])
         if "xpath" in structure:
             predicate.xpath = structure["xpath"]["selector"]
@@ -117,6 +106,8 @@ class Predicate(BasePredicate):
             self.query = inner["query"]
         if "body" in inner:
             self.body = inner["body"]
+        if "headers" in inner:
+            self.headers = inner["headers"]
         if "method" in inner:
             self.method = Predicate.Method(inner["method"])
 
@@ -128,6 +119,8 @@ class Predicate(BasePredicate):
             fields["query"] = self.query
         if self.body:
             fields["body"] = self.body
+        if self.headers:
+            fields["headers"] = self.headers
         if self.method:
             fields["method"] = self.method.value
         return fields

@@ -11,8 +11,7 @@ logger = logging.getLogger(__name__)
 
 def test_tcp(mock_server):
     imposter = Imposter(
-        Stub(TcpPredicate(data="request"), TcpResponse(data="*" * 1024)),
-        protocol=Imposter.Protocol.TCP,
+        Stub(TcpPredicate(data="request"), TcpResponse(data="*" * 1024)), protocol=Imposter.Protocol.TCP
     )
 
     with mock_server(imposter):

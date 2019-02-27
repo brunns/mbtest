@@ -23,14 +23,8 @@ def test_request_to_mock_server(mock_server):
         # Make request to mock server
         response = requests.get("{0}/test".format(imposter.url))
 
-        assert_that(
-            "We got the expected response",
-            response,
-            is_(response_with(status_code=200, body="sausages")),
-        )
-        assert_that(
-            "The mock server recorded the request", server, had_request(path="/test", method="GET")
-        )
+        assert_that("We got the expected response", response, is_(response_with(status_code=200, body="sausages")))
+        assert_that("The mock server recorded the request", server, had_request(path="/test", method="GET"))
 
 
 def test_nonexistent_executable():
@@ -70,9 +64,7 @@ def test_server_can_be_restarted_on_same_port():
     server.close()
 
 
-@pytest.mark.skipif(
-    platform.system() == "Windows", reason="Can only run one server on Windows for some reason."
-)
+@pytest.mark.skipif(platform.system() == "Windows", reason="Can only run one server on Windows for some reason.")
 def test_allow_multiple_servers_on_different_ports():
     # Given
     try:

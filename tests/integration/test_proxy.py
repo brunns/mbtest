@@ -48,22 +48,12 @@ def test_inject_headers(mock_server):
     target_imposter = Imposter(Stub(Predicate(path="/test")))
     with mock_server(target_imposter) as server:
         proxy_imposter = Imposter(
-            Stub(
-                responses=Proxy(
-                    to=target_imposter.url,
-                    inject_headers={"X-Clacks-Overhead": "GNU Terry Pratchett"},
-                )
-            )
+            Stub(responses=Proxy(to=target_imposter.url, inject_headers={"X-Clacks-Overhead": "GNU Terry Pratchett"}))
         )
         server.add_imposters(proxy_imposter)
 
         requests.get(proxy_imposter.url / "test")
-        assert_that(
-            server,
-            had_request(
-                path="/test", headers=has_entry("X-Clacks-Overhead", "GNU Terry Pratchett")
-            ),
-        )
+        assert_that(server, had_request(path="/test", headers=has_entry("X-Clacks-Overhead", "GNU Terry Pratchett")))
 
 
 def test_structure_to():
@@ -81,9 +71,7 @@ def test_structure_wait():
 
 
 def test_structure_inject_headers():
-    expected_proxy = Proxy(
-        "http://darwin.dog", inject_headers={"X-Clacks-Overhead": "GNU Terry Pratchett"}
-    )
+    expected_proxy = Proxy("http://darwin.dog", inject_headers={"X-Clacks-Overhead": "GNU Terry Pratchett"})
     proxy_structure = expected_proxy.as_structure()
     proxy = Proxy.from_structure(proxy_structure)
     assert proxy.inject_headers == expected_proxy.inject_headers

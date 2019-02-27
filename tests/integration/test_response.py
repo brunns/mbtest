@@ -29,17 +29,12 @@ def test_status(mock_server):
 
 
 def test_headers(mock_server):
-    imposter = Imposter(
-        Stub(responses=Response(headers={"X-Clacks-Overhead": "GNU Terry Pratchett"}))
-    )
+    imposter = Imposter(Stub(responses=Response(headers={"X-Clacks-Overhead": "GNU Terry Pratchett"})))
 
     with mock_server(imposter):
         response = requests.get(imposter.url)
 
-        assert_that(
-            response,
-            is_(response_with(headers=has_entry("X-Clacks-Overhead", "GNU Terry Pratchett"))),
-        )
+        assert_that(response, is_(response_with(headers=has_entry("X-Clacks-Overhead", "GNU Terry Pratchett"))))
 
 
 def test_binary_mode(mock_server):

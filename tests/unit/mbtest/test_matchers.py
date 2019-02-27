@@ -19,13 +19,8 @@ def test_request_matcher():
     assert_that(server, had_request(path="/test", method="GET"))
     assert_that(server, had_request(path="/test", method="GET", times=2))
     assert_that(server, not_(had_request(path="/somewhereelse", method="GET")))
-    assert_that(
-        had_request(path="/sausages", method="PUT"),
-        has_string("call with method: 'PUT' path: '/sausages'"),
-    )
-    assert_that(
-        had_request(path="/sausages", times=4), has_string("<4> call(s) with path: '/sausages'")
-    )
+    assert_that(had_request(path="/sausages", method="PUT"), has_string("call with method: 'PUT' path: '/sausages'"))
+    assert_that(had_request(path="/sausages", times=4), has_string("<4> call(s) with path: '/sausages'"))
     assert_that(
         had_request(path="/sausages", method="PUT"),
         mismatches_with(

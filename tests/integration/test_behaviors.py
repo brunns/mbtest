@@ -29,9 +29,7 @@ def test_wait(mock_server):
 
 def test_repeat(mock_server):
     # Given
-    imposter = Imposter(
-        Stub(Predicate(), [Response(body="oranges", repeat=2), Response(body="apples")])
-    )
+    imposter = Imposter(Stub(Predicate(), [Response(body="oranges", repeat=2), Response(body="apples")]))
 
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
