@@ -1,15 +1,11 @@
 # encoding=utf-8
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 from enum import Enum
 
 from mbtest.imposters.base import JsonSerializable
 
 
 class BasePredicate(JsonSerializable, metaclass=ABCMeta):
-    @abstractmethod
-    def as_structure(self):  # pragma: no cover
-        raise NotImplementedError()
-
     def __and__(self, other):
         return AndPredicate(self, other)
 
