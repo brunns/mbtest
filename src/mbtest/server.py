@@ -31,7 +31,7 @@ class MountebankServer(object):
 
     def __init__(self, timeout=5, executable="./node_modules/.bin/mb"):
         try:
-            self.mb_process = subprocess.Popen( # nosec
+            self.mb_process = subprocess.Popen(  # nosec
                 [executable, "--debug", "--allowInjection"], stdout=subprocess.PIPE
             )
             self._await_start(timeout)
