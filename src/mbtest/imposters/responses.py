@@ -31,6 +31,7 @@ class Response(JsonSerializable):
         copy=None,
         decorate=None,
         lookup=None,
+        shell_transform=None,
     ):
         """
         :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
@@ -51,6 +52,8 @@ class Response(JsonSerializable):
         :type decorate: str
         :param lookup: Lookup behavior
         :type lookup: Lookup or list(Lookup)
+        :param shell_transform: shellTransform behavior
+        :type shell_transform: str or list(str)
         """
         self._body = body
         self.status_code = status_code
@@ -67,6 +70,7 @@ class Response(JsonSerializable):
         self.copy = copy if isinstance(copy, Sequence) else [copy] if copy else None
         self.decorate = decorate
         self.lookup = lookup if isinstance(lookup, Sequence) else [lookup] if lookup else None
+        self.shell_transform = shell_transform
 
     @property
     def body(self):
@@ -90,6 +94,7 @@ class Response(JsonSerializable):
         self._add_if_true(behaviors, "wait", self.wait)
         self._add_if_true(behaviors, "repeat", self.repeat)
         self._add_if_true(behaviors, "decorate", self.decorate)
+        self._add_if_true(behaviors, "shellTransform", self.shell_transform)
         if self.copy:
             behaviors["copy"] = [c.as_structure() for c in self.copy]
         if self.lookup:
