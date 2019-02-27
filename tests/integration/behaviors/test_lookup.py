@@ -3,6 +3,7 @@ import logging
 import requests
 from brunns.matchers.response import response_with
 from hamcrest import assert_that, is_, has_entry
+
 try:
     from pathlib import Path
 except ImportError:
@@ -21,9 +22,7 @@ def test_lookup(mock_server):
                 status_code="${row}['code']",
                 body="Hello ${row}['Name'], have you done your ${row}['jobs'] today?",
                 headers={"X-Tree": "${row}['tree']"},
-                lookup=Lookup(
-                    Key("path", UsingRegex("/(.*)$"), 1), datasource_path, "Name", "${row}"
-                ),
+                lookup=Lookup(Key("path", UsingRegex("/(.*)$"), 1), datasource_path, "Name", "${row}"),
             )
         )
     )

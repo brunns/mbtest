@@ -31,7 +31,9 @@ class MountebankServer(object):
 
     def __init__(self, timeout=5, executable="./node_modules/.bin/mb"):
         try:
-            self.mb_process = subprocess.Popen([executable, "--debug", "--allowInjection"], stdout=subprocess.PIPE)  # nosec
+            self.mb_process = subprocess.Popen(
+                [executable, "--debug", "--allowInjection"], stdout=subprocess.PIPE
+            )  # nosec
             self._await_start(timeout)
             logger.info("Spawned mb process.")
         except OSError:  # pragma: no cover

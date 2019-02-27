@@ -12,9 +12,7 @@ class Lookup(JsonSerializable):
     def as_structure(self):
         return {
             "key": self.key.as_structure(),
-            "fromDataSource": {
-                "csv": {"path": self.datasource_path, "keyColumn": self.datasource_key_column}
-            },
+            "fromDataSource": {"csv": {"path": self.datasource_path, "keyColumn": self.datasource_key_column}},
             "into": self.into,
         }
 

@@ -23,11 +23,7 @@ SCRIPT = "\n".join(
 
 def test_shell_transform(mock_server):
     imposter = Imposter(
-        Stub(
-            responses=Response(
-                body="Hello ${name}!", shell_transform=('python -c "{0}" '.format(SCRIPT))
-            )
-        )
+        Stub(responses=Response(body="Hello ${name}!", shell_transform=('python -c "{0}" '.format(SCRIPT))))
     )
 
     with mock_server(imposter):

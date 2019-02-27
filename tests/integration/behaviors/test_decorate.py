@@ -25,6 +25,4 @@ def test_decorate(mock_server):
     with mock_server(imposter):
         response = requests.get(imposter.url)
 
-        assert_that(
-            response, is_(response_with(body=matches_regexp(r"The time is \d\d:\d\d:\d\d\.")))
-        )
+        assert_that(response, is_(response_with(body=matches_regexp(r"The time is \d\d:\d\d:\d\d\."))))
