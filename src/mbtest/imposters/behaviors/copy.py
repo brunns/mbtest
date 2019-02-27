@@ -79,3 +79,12 @@ class UsingXpath(Using):
         if self.ns:
             structure["ns"] = self.ns
         return structure
+
+
+class UsingJsonpath(Using):
+    def __init__(self, selector):
+        """
+        :param selector: The selector used to select the value(s) from the request.
+        :type selector: str
+        """
+        super().__init__(Using.Method.JSONPATH, selector)

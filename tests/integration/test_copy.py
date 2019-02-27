@@ -5,7 +5,7 @@ import requests
 from brunns.matchers.response import response_with
 from hamcrest import assert_that, is_, has_entry
 
-from mbtest.imposters import Imposter, Response, Stub, Copy, UsingRegex, UsingXpath
+from mbtest.imposters import Imposter, Response, Stub, Copy, UsingRegex, UsingXpath, UsingJsonpath
 from tests.utils.data2xml import data2xml, et2string
 
 logger = logging.getLogger(__name__)
@@ -77,6 +77,35 @@ def test_xpath_copy_namespaced(mock_server):
 
     with mock_server(imposter):
         response = requests.post(imposter.url, data=BOOKS_XML_NAMESPACED)
+
+        assert_that(response, is_(response_with(body="Have you read Game of Thrones?")))
+
+
+def test_jsonpath_copy(mock_server):
+    imposter = Imposter(
+        Stub(
+            responses=Response(
+                body="Have you read BOOK?", copy=Copy("body", "BOOK", UsingJsonpath("$..title"))
+            )
+        )
+    )
+
+    with mock_server(imposter):
+        response = requests.post(
+            imposter.url,
+            json={
+                "books": [
+                    {
+                        "book": {
+                            "title": "Game of Thrones",
+                            "summary": "Dragons and political intrigue",
+                        }
+                    },
+                    {"book": {"title": "Harry Potter", "summary": "Dragons and a boy wizard"}},
+                    {"book": {"title": "The Hobbit", "summary": "A dragon and short people"}},
+                ]
+            },
+        )
 
         assert_that(response, is_(response_with(body="Have you read Game of Thrones?")))
 
