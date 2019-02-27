@@ -29,28 +29,20 @@ def test_regex_copy(mock_server):
 
     with mock_server(imposter):
         response = requests.get(
-            '{imposter_url}/456'.format(imposter_url=imposter.url), params={"name": "Alice"}, headers={"X-REQUEST": "Header value"}
+            "{imposter_url}/456".format(imposter_url=imposter.url),
+            params={"name": "Alice"},
+            headers={"X-REQUEST": "Header value"},
         )
 
         assert_that(
             response,
-            is_(
-                response_with(
-                    status_code=456,
-                    body="Hello, Alice!",
-                    headers=has_entry("X-Test", "Header value"),
-                )
-            ),
+            is_(response_with(status_code=456, body="Hello, Alice!", headers=has_entry("X-Test", "Header value"))),
         )
 
 
 def test_xpath_copy(mock_server):
     imposter = Imposter(
-        Stub(
-            responses=Response(
-                body="Have you read BOOK?", copy=Copy("body", "BOOK", UsingXpath("(//title)[2]"))
-            )
-        )
+        Stub(responses=Response(body="Have you read BOOK?", copy=Copy("body", "BOOK", UsingXpath("(//title)[2]"))))
     )
 
     with mock_server(imposter):
@@ -65,11 +57,7 @@ def test_xpath_copy_namespaced(mock_server):
             responses=Response(
                 body="Have you read BOOK?",
                 copy=Copy(
-                    "body",
-                    "BOOK",
-                    UsingXpath(
-                        "//isbn:title", ns={"isbn": "http://schemas.isbn.org/ns/1999/basic.dtd"}
-                    ),
+                    "body", "BOOK", UsingXpath("//isbn:title", ns={"isbn": "http://schemas.isbn.org/ns/1999/basic.dtd"})
                 ),
             )
         )
@@ -83,11 +71,7 @@ def test_xpath_copy_namespaced(mock_server):
 
 def test_jsonpath_copy(mock_server):
     imposter = Imposter(
-        Stub(
-            responses=Response(
-                body="Have you read BOOK?", copy=Copy("body", "BOOK", UsingJsonpath("$..title"))
-            )
-        )
+        Stub(responses=Response(body="Have you read BOOK?", copy=Copy("body", "BOOK", UsingJsonpath("$..title"))))
     )
 
     with mock_server(imposter):
@@ -95,12 +79,7 @@ def test_jsonpath_copy(mock_server):
             imposter.url,
             json={
                 "books": [
-                    {
-                        "book": {
-                            "title": "Game of Thrones",
-                            "summary": "Dragons and political intrigue",
-                        }
-                    },
+                    {"book": {"title": "Game of Thrones", "summary": "Dragons and political intrigue"}},
                     {"book": {"title": "Harry Potter", "summary": "Dragons and a boy wizard"}},
                     {"book": {"title": "The Hobbit", "summary": "A dragon and short people"}},
                 ]
@@ -125,18 +104,8 @@ BOOKS_XML_NAMESPACED = et2string(
     data2xml(
         {
             "books": [
-                {
-                    "book": {
-                        "isbn:title": "Game of Thrones",
-                        "isbn:summary": "Dragons and political intrigue",
-                    }
-                },
-                {
-                    "book": {
-                        "isbn:title": "Harry Potter",
-                        "isbn:summary": "Dragons and a boy wizard",
-                    }
-                },
+                {"book": {"isbn:title": "Game of Thrones", "isbn:summary": "Dragons and political intrigue"}},
+                {"book": {"isbn:title": "Harry Potter", "isbn:summary": "Dragons and a boy wizard"}},
                 {"book": {"isbn:title": "The Hobbit", "isbn:summary": "A dragon and short people"}},
             ]
         },

@@ -13,6 +13,7 @@ if PY3:
 else:  # pragma: no cover
     from collections import Sequence
 
+
 class Response(JsonSerializable):
     """Represents a Mountebank 'is' response behavior - see http://www.mbtest.org/docs/api/stubs"""
 
@@ -60,13 +61,7 @@ class Response(JsonSerializable):
         self.wait = wait
         self.repeat = repeat
         self.headers = headers
-        self.mode = (
-            mode
-            if isinstance(mode, Response.Mode)
-            else Response.Mode(mode)
-            if mode
-            else Response.Mode.TEXT
-        )
+        self.mode = mode if isinstance(mode, Response.Mode) else Response.Mode(mode) if mode else Response.Mode.TEXT
         self.copy = copy if isinstance(copy, Sequence) else [copy] if copy else None
         self.decorate = decorate
         self.lookup = lookup if isinstance(lookup, Sequence) else [lookup] if lookup else None
@@ -122,6 +117,7 @@ class Response(JsonSerializable):
             self.headers = inner["headers"]
         if "statusCode" in inner:
             self.status_code = inner["statusCode"]
+
 
 class TcpResponse(JsonSerializable):
     def __init__(self, data):
