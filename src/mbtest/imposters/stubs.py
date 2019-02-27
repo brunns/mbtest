@@ -60,7 +60,6 @@ class Proxy(JsonSerializable):
             response["_behaviors"] = {"wait": self.wait}
         return response
 
-
     @staticmethod
     def from_structure(structure):
         proxy_structure = structure["proxy"]
