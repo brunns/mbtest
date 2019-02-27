@@ -48,7 +48,15 @@ class Predicate(BasePredicate):
             return any(value == item.value for item in cls)
 
     def __init__(
-        self, path=None, method=None, query=None, body=None, headers=None, xpath=None, operator=Operator.EQUALS, case_sensitive=True
+        self,
+        path=None,
+        method=None,
+        query=None,
+        body=None,
+        headers=None,
+        xpath=None,
+        operator=Operator.EQUALS,
+        case_sensitive=True,
     ):
         """
         :param path: URL path.
