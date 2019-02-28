@@ -126,4 +126,4 @@ class TcpResponse(JsonSerializable):
 
     @staticmethod
     def from_structure(structure):
-        pass
+        return TcpResponse(data=structure["is"]["data"])

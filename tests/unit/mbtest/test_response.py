@@ -1,7 +1,9 @@
 # encoding=utf-8
 import logging
 
-from mbtest.imposters import Response
+from hamcrest import assert_that, instance_of
+
+from mbtest.imposters import Response, TcpResponse
 
 logger = logging.getLogger(__name__)
 
@@ -47,3 +49,16 @@ def test_structure_wait():
     response_structure = expected_response.as_structure()
     response = Response.from_structure(response_structure)
     assert response.wait == expected_response.wait
+
+
+def test_tcp_response():
+    # Given
+    expected = TcpResponse(data="somedata")
+    structure = expected.as_structure()
+
+    # When
+    actual = TcpResponse.from_structure(structure)
+
+    # Then
+    assert_that(actual, instance_of(TcpResponse))
+    assert actual.data == "somedata"
