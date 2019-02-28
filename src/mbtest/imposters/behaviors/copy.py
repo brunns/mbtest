@@ -1,5 +1,6 @@
 # encoding=utf-8
 from mbtest.imposters.base import JsonSerializable
+from mbtest.imposters.behaviors.using import Using
 
 
 class Copy(JsonSerializable):
@@ -21,3 +22,7 @@ class Copy(JsonSerializable):
 
     def as_structure(self):
         return {"from": self.from_, "into": self.into, "using": self.using.as_structure()}
+
+    @staticmethod
+    def from_structure(structure):
+        return Copy(structure["from"], structure["into"], Using.from_structure(structure["using"]))

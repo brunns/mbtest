@@ -24,6 +24,16 @@ class Using(JsonSerializable, metaclass=abc.ABCMeta):
     def as_structure(self):
         return {"method": self.method.value, "selector": self.selector}
 
+    @staticmethod
+    def from_structure(structure):
+        method = Using.Method(structure["method"])
+        cls = {
+            Using.Method.REGEX: UsingRegex,
+            Using.Method.XPATH: UsingXpath,
+            Using.Method.JSONPATH: UsingJsonpath,
+        }[method]
+        return cls.from_structure(structure)
+
 
 class UsingRegex(Using):
     def __init__(self, selector, ignore_case=False):
@@ -40,6 +50,12 @@ class UsingRegex(Using):
         structure = super().as_structure()
         structure["options"] = {"ignoreCase": self.ignore_case}
         return structure
+
+    @staticmethod
+    def from_structure(structure):
+        return UsingRegex(
+            selector=structure["selector"], ignore_case=structure["options"]["ignoreCase"]
+        )
 
 
 class UsingXpath(Using):
@@ -59,6 +75,12 @@ class UsingXpath(Using):
             structure["ns"] = self.ns
         return structure
 
+    @staticmethod
+    def from_structure(structure):
+        using = UsingXpath(selector=structure["selector"])
+        using._set_if_in_dict(structure, "ns", "ns")
+        return using
+
 
 class UsingJsonpath(Using):
     def __init__(self, selector):
@@ -67,3 +89,7 @@ class UsingJsonpath(Using):
         :type selector: str
         """
         super().__init__(Using.Method.JSONPATH, selector)
+
+    @staticmethod
+    def from_structure(structure):
+        return UsingJsonpath(selector=structure["selector"])

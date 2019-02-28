@@ -137,6 +137,10 @@ class AndPredicate(BasePredicate):
     def as_structure(self):
         return {"and": [self.left.as_structure(), self.right.as_structure()]}
 
+    @staticmethod
+    def from_structure(structure):
+        pass
+
 
 class OrPredicate(BasePredicate):
     def __init__(self, left, right):
@@ -146,6 +150,10 @@ class OrPredicate(BasePredicate):
     def as_structure(self):
         return {"or": [self.left.as_structure(), self.right.as_structure()]}
 
+    @staticmethod
+    def from_structure(structure):
+        pass
+
 
 class TcpPredicate(BasePredicate):
     def __init__(self, data):
@@ -153,3 +161,7 @@ class TcpPredicate(BasePredicate):
 
     def as_structure(self):
         return {"contains": {"data": self.data}}
+
+    @staticmethod
+    def from_structure(structure):
+        pass

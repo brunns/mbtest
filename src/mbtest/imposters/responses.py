@@ -123,3 +123,7 @@ class TcpResponse(JsonSerializable):
 
     def as_structure(self):
         return {"is": {"data": self.data}}
+
+    @staticmethod
+    def from_structure(structure):
+        pass

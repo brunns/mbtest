@@ -12,6 +12,11 @@ class JsonSerializable(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @staticmethod
+    @abstractmethod
+    def from_structure(structure):  # pragma: no cover
+        raise NotImplementedError()
+
+    @staticmethod
     def _add_if_true(dictionary, key, value):
         if value:
             dictionary[key] = value

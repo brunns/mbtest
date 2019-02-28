@@ -18,6 +18,10 @@ class Lookup(JsonSerializable):
             "into": self.into,
         }
 
+    @staticmethod
+    def from_structure(structure):
+        pass
+
 
 class Key(JsonSerializable):
     def __init__(self, from_, using, index=0):
@@ -27,3 +31,7 @@ class Key(JsonSerializable):
 
     def as_structure(self):
         return {"from": self.from_, "using": self.using.as_structure(), "index": self.index}
+
+    @staticmethod
+    def from_structure(structure):
+        pass
