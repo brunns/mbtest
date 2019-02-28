@@ -18,7 +18,11 @@ class BasePredicate(JsonSerializable, metaclass=ABCMeta):
             return AndPredicate.from_structure(structure)
         elif "or" in structure:
             return OrPredicate.from_structure(structure)
-        elif set(structure.keys()).intersection({o.value for o in Predicate.Operator}):
+        elif "contains" in structure and "data" in structure["contains"]:
+            return TcpPredicate.from_structure(structure)
+        elif set(structure.keys()).intersection(
+            {o.value for o in Predicate.Operator}
+        ):  # pragma: no cover
             return Predicate.from_structure(structure)
         raise NotImplementedError()  # pragma: no cover
 
@@ -180,4 +184,4 @@ class TcpPredicate(BasePredicate):
 
     @staticmethod
     def from_structure(structure):
-        pass
+        return TcpPredicate(structure["contains"]["data"])
