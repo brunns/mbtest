@@ -71,13 +71,13 @@ Examples of more complex predicates can be found in the [integration tests](http
 
 ## Developing
 
-Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html) and [tox](https://tox.readthedocs.io). Run `make precommit` tells you if you're OK to commit. For more options, run:
+Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html) and [tox](https://tox.readthedocs.io). [PyEnv](https://github.com/pyenv/pyenv) may also come in handy so tests can be run against various Python versions.  Run `make precommit` tells you if you're OK to commit. For more options, run:
 
     make help
 
 ## Releasing
 
-Requires [hub](https://hub.github.com/), [setuptools](https://setuptools.readthedocs.io) and [twine](https://twine.readthedocs.io). To release `n.n.n`:
+Requires [hub](https://hub.github.com/), [setuptools](https://setuptools.readthedocs.io) and [twine](https://twine.readthedocs.io). To release version `n.n.n`:
 
     version="n.n.n" # Needs to match new version number in setup.py.
     make precommit && git commit -am"Release $version" && git push # If not already all pushed, which it should be.
