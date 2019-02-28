@@ -1,5 +1,8 @@
 # encoding=utf-8
 import logging
+import platform
+
+import pytest
 import requests
 from brunns.matchers.data import json_matching
 from brunns.matchers.response import response_with
@@ -21,6 +24,7 @@ SCRIPT = "\n".join(
 )
 
 
+@pytest.mark.skipif(platform.system() == "Windows", reason="TODO: Fix on Windows.")
 def test_shell_transform(mock_server):
     imposter = Imposter(
         Stub(
