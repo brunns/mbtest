@@ -4,7 +4,7 @@ import random
 import string
 from email.mime.text import MIMEText
 
-from mbtest.imposters import Copy, UsingRegex, UsingJsonpath, UsingXpath
+from mbtest.imposters import Copy, UsingRegex, UsingJsonpath, UsingXpath, Predicate
 
 NOT_PASSED = object()
 
@@ -32,6 +32,36 @@ def a_message(
     msg["From"] = email.utils.formataddr((from_name, from_email))
     msg["Subject"] = subject
     return msg
+
+
+def a_predicate(
+    path=NOT_PASSED,
+    method=NOT_PASSED,
+    query=NOT_PASSED,
+    body=NOT_PASSED,
+    headers=NOT_PASSED,
+    xpath=NOT_PASSED,
+    operator=NOT_PASSED,
+    case_sensitive=NOT_PASSED,
+):
+    path = path if path != NOT_PASSED else random.choice([None, a_string()])
+    method = method if method != NOT_PASSED else random.choice(list(Predicate.Method))
+    query = query if query != NOT_PASSED else random.choice([None, {a_string(): a_string()}])
+    body = body if body != NOT_PASSED else random.choice([None, a_string()])
+    headers = headers if headers != NOT_PASSED else random.choice([None, {a_string(): a_string()}])
+    xpath = xpath if xpath != NOT_PASSED else random.choice([None, a_string()])
+    operator = operator if operator != NOT_PASSED else random.choice(list(Predicate.Operator))
+    case_sensitive = case_sensitive if case_sensitive != NOT_PASSED else a_boolean()
+    return Predicate(
+        path=path,
+        method=method,
+        query=query,
+        body=body,
+        headers=headers,
+        xpath=xpath,
+        operator=operator,
+        case_sensitive=case_sensitive,
+    )
 
 
 def an_email(user=None, domain=None):

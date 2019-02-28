@@ -12,6 +12,16 @@ class BasePredicate(JsonSerializable, metaclass=ABCMeta):
     def __or__(self, other):
         return OrPredicate(self, other)
 
+    @staticmethod
+    def from_structure(structure):
+        if "and" in structure:
+            return AndPredicate.from_structure(structure)
+        elif "or" in structure:
+            return OrPredicate.from_structure(structure)
+        elif set(structure.keys()).intersection({o.value for o in Predicate.Operator}):
+            return Predicate.from_structure(structure)
+        raise NotImplementedError()  # pragma: no cover
+
 
 class Predicate(BasePredicate):
     """"Represents a Mountebank predicate - see http://www.mbtest.org/docs/api/predicates
@@ -139,7 +149,10 @@ class AndPredicate(BasePredicate):
 
     @staticmethod
     def from_structure(structure):
-        pass
+        return AndPredicate(
+            BasePredicate.from_structure(structure["and"][0]),
+            BasePredicate.from_structure(structure["and"][1]),
+        )
 
 
 class OrPredicate(BasePredicate):
@@ -152,7 +165,10 @@ class OrPredicate(BasePredicate):
 
     @staticmethod
     def from_structure(structure):
-        pass
+        return OrPredicate(
+            BasePredicate.from_structure(structure["or"][0]),
+            BasePredicate.from_structure(structure["or"][1]),
+        )
 
 
 class TcpPredicate(BasePredicate):
