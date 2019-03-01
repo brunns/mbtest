@@ -36,25 +36,30 @@ class Using(JsonSerializable, metaclass=abc.ABCMeta):
 
 
 class UsingRegex(Using):
-    def __init__(self, selector, ignore_case=False):
+    def __init__(self, selector, ignore_case=False, multiline=False):
         """
         :param selector: The selector used to select the value(s) from the request.
         :type selector: str
-        :param ignore_case: Uses a case-insensitive regular expression (For REGEX method)
+        :param ignore_case: Uses a case-insensitive regular expression
         :type ignore_case: bool
+        :param multiline: Uses a multiline regular expression
+        :type multiline: bool
         """
         super().__init__(Using.Method.REGEX, selector)
         self.ignore_case = ignore_case
+        self.multiline = multiline
 
     def as_structure(self):
         structure = super().as_structure()
-        structure["options"] = {"ignoreCase": self.ignore_case}
+        structure["options"] = {"ignoreCase": self.ignore_case, "multiline": self.multiline}
         return structure
 
     @staticmethod
     def from_structure(structure):
         return UsingRegex(
-            selector=structure["selector"], ignore_case=structure["options"]["ignoreCase"]
+            selector=structure["selector"],
+            ignore_case=structure["options"]["ignoreCase"],
+            multiline=structure["options"]["multiline"],
         )
 
 
