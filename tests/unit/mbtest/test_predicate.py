@@ -4,9 +4,8 @@ import logging
 import pytest
 from hamcrest import assert_that, instance_of
 
-from mbtest.imposters.predicates import AndPredicate, BasePredicate, OrPredicate, TcpPredicate
-
 from mbtest.imposters import Predicate
+from mbtest.imposters.predicates import AndPredicate, BasePredicate, OrPredicate, TcpPredicate
 from tests.utils.builders import a_predicate
 
 logger = logging.getLogger(__name__)

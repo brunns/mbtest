@@ -1,4 +1,5 @@
 # encoding=utf-8
+import abc
 import email
 import random
 import string
@@ -13,68 +14,162 @@ def a_string(length=10, characters=string.ascii_letters + string.digits):
     return "".join(random.choice(characters) for _ in range(length))
 
 
+def an_integer(a=None, b=None):
+    return random.randint(a, b)
+
+
 def a_boolean():
     return random.choice([True, False])
 
 
-def a_message(
-    to_name=None, to_email=None, from_name=None, from_email=None, subject=None, body_text=None
-):
-    to_name = to_name or a_string()
-    to_email = to_email or an_email()
-    from_name = from_name or a_string()
-    from_email = from_email or an_email()
-    subject = subject or a_string()
-    body_text = body_text or a_string()
+class TestObjectBuilder(metaclass=abc.ABCMeta):
+    @property
+    @abc.abstractmethod
+    def value(self):
+        raise NotImplementedError()
 
-    msg = MIMEText(body_text)
-    msg["To"] = email.utils.formataddr((to_name, to_email))
-    msg["From"] = email.utils.formataddr((from_name, from_email))
-    msg["Subject"] = subject
-    return msg
+    def __getattr__(self, item):
+        """Dynamic 'with_x' methods."""
+        target = item.partition("with_")[2]
+        if target:
 
+            def with_(value):
+                setattr(self, target, value)
+                return self
 
-def a_predicate(
-    path=NOT_PASSED,
-    method=NOT_PASSED,
-    query=NOT_PASSED,
-    body=NOT_PASSED,
-    headers=NOT_PASSED,
-    xpath=NOT_PASSED,
-    operator=NOT_PASSED,
-    case_sensitive=NOT_PASSED,
-):
-    path = path if path != NOT_PASSED else random.choice([None, a_string()])
-    method = method if method != NOT_PASSED else random.choice(list(Predicate.Method))
-    query = query if query != NOT_PASSED else random.choice([None, {a_string(): a_string()}])
-    body = body if body != NOT_PASSED else random.choice([None, a_string()])
-    headers = headers if headers != NOT_PASSED else random.choice([None, {a_string(): a_string()}])
-    xpath = xpath if xpath != NOT_PASSED else random.choice([None, a_string()])
-    operator = operator if operator != NOT_PASSED else random.choice(list(Predicate.Operator))
-    case_sensitive = case_sensitive if case_sensitive != NOT_PASSED else a_boolean()
-    return Predicate(
-        path=path,
-        method=method,
-        query=query,
-        body=body,
-        headers=headers,
-        xpath=xpath,
-        operator=operator,
-        case_sensitive=case_sensitive,
-    )
+            return with_
+        else:
+            return getattr(self.value, item)
+
+    def __getitem__(self, item):
+        return self.value[item]
 
 
-def an_email(user=None, domain=None):
-    user = user or a_string()
-    domain = domain or "example.com"
-    return "{0}@{1}".format(user, domain)
+def an_email_message():
+    return email_message_builder().value
+
+
+def email_message_builder():
+    return EmailMessageBuilder()
+
+
+class EmailMessageBuilder(TestObjectBuilder):
+    def __init__(self):
+        self.to_name = a_string()
+        self.to_email_address = an_email_address()
+        self.from_name = a_string()
+        self.from_email_address = an_email_address()
+        self.subject = a_string()
+        self.body_text = a_string()
+
+    @property
+    def value(self):
+        message = MIMEText(self.body_text)
+        message["To"] = email.utils.formataddr((self.to_name, self.to_email_address))
+        message["From"] = email.utils.formataddr((self.from_name, self.from_email_address))
+        message["Subject"] = self.subject
+        return message
+
+
+def a_predicate(**kwargs):
+    builder = predicate_builder()
+    for key, value in kwargs.items():
+        setattr(builder, key, value)
+    return builder.value
+
+
+def predicate_builder():
+    return PredicateBuilder()
+
+
+class PredicateBuilder(TestObjectBuilder):
+    def __init__(self):
+        self.path = random.choice([None, a_string()])
+        self.method = random.choice(list(Predicate.Method))
+        self.query = random.choice([None, {a_string(): a_string()}])
+        self.body = random.choice([None, a_string()])
+        self.headers = random.choice([None, {a_string(): a_string()}])
+        self.xpath = random.choice([None, a_string()])
+        self.operator = random.choice(list(Predicate.Operator))
+        self.case_sensitive = a_boolean()
+
+    @property
+    def value(self):
+        return Predicate(
+            path=self.path,
+            method=self.method,
+            query=self.query,
+            body=self.body,
+            headers=self.headers,
+            xpath=self.xpath,
+            operator=self.operator,
+            case_sensitive=self.case_sensitive,
+        )
+
+
+def a_domain():
+    return domain_builder().value
+
+
+def domain_builder():
+    return DomainBuilder()
+
+
+class DomainBuilder(TestObjectBuilder):
+    def __init__(self):
+        self.subdomain = a_string(characters=string.ascii_lowercase)
+        self.tld = random.choice(["com", "net", "dev", "co.uk"])
+
+    @property
+    def value(self):
+        return "{0}.{1}".format(self.subdomain, self.tld)
+
+
+def an_email_address():
+    return email_address_builder().value
+
+
+def email_address_builder():
+    return EmaiAddressBuilder()
+
+
+class EmaiAddressBuilder(TestObjectBuilder):
+    def __init__(self):
+        self.username = a_string()
+        self.domain = a_domain()
+
+    @property
+    def value(self):
+        return "{0}@{1}".format(self.username, self.domain)
 
 
 def a_copy(from_=None, into=None, using=None):
-    from_ = from_ or a_string()
-    into = into or a_string()
-    using = using or a_using()
-    return Copy(from_, into, using)
+    builder = copy_builder()
+    if from_:
+        builder.with_from(from_)
+    if into:
+        builder.with_into(into)
+    if using:
+        builder.with_using(using)
+    return builder.value
+
+
+def copy_builder():
+    return CopyBuilder()
+
+
+class CopyBuilder(TestObjectBuilder):
+    def __init__(self):
+        self.from_ = a_string()
+        self.into = a_string()
+        self.using = a_using()
+
+    def with_from(self, from_):
+        self.from_ = from_
+
+    @property
+    def value(self):
+        return Copy(self.from_, self.into, self.using)
 
 
 def a_using(selector=None):
