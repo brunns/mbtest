@@ -2,14 +2,15 @@
 import logging
 
 from mbtest.imposters import Copy
-from tests.utils.builders import a_copy, a_using
+from tests.utils.builders import UsingRegexBuilder, CopyBuilder
 
 logger = logging.getLogger(__name__)
 
 
 def test_from_structure():
     # Given
-    expected_copy = a_copy(from_="from", into="into", using=a_using(selector="selector"))
+    using = UsingRegexBuilder(selector="selector").build()
+    expected_copy = CopyBuilder(from_="from", into="into", using=using)
     structure = expected_copy.as_structure()
 
     # When

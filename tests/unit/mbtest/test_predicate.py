@@ -6,7 +6,7 @@ from hamcrest import assert_that, instance_of
 
 from mbtest.imposters import Predicate
 from mbtest.imposters.predicates import AndPredicate, BasePredicate, OrPredicate, TcpPredicate
-from tests.utils.builders import a_predicate
+from tests.utils.builders import PredicateBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +71,9 @@ def test_invalid_operator():
 
 
 def test_and_predicate():
-    expected_predicate = AndPredicate(a_predicate(path="left"), a_predicate(path="right"))
+    expected_predicate = AndPredicate(
+        PredicateBuilder(path="left").build(), PredicateBuilder(path="right").build()
+    )
     structure = expected_predicate.as_structure()
 
     # When
@@ -84,7 +86,9 @@ def test_and_predicate():
 
 
 def test_or_predicate():
-    expected_predicate = OrPredicate(a_predicate(path="left"), a_predicate(path="right"))
+    expected_predicate = OrPredicate(
+        PredicateBuilder(path="left").build(), PredicateBuilder(path="right").build()
+    )
     structure = expected_predicate.as_structure()
 
     # When

@@ -2,11 +2,12 @@
 import logging
 import smtplib
 
+from brunns.builder import a_string
+from brunns.builder.email import EmailMessageBuilder, EmailBuilder
 from hamcrest import assert_that
 
 from mbtest.imposters import smtp_imposter
 from mbtest.matchers import email_sent
-from tests.utils.builders import a_string, an_email_address, email_message_builder
 
 logger = logging.getLogger(__name__)
 
@@ -15,14 +16,15 @@ def test_email(mock_server):
     # Given
     imposter = smtp_imposter()
 
-    to_email = an_email_address()
-    from_email = an_email_address()
+    to_email = EmailBuilder().build()
+    from_email = EmailBuilder().build()
     body_text = a_string()
     message = (
-        email_message_builder()
+        EmailMessageBuilder()
         .with_to_email(to_email)
         .with_from_email(from_email)
         .with_body_text(body_text)
+        .build()
         .as_string()
     )
 
