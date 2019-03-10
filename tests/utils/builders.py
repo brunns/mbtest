@@ -2,7 +2,7 @@
 
 from brunns.builder import Builder, one_of, a_string, a_boolean
 
-from mbtest.imposters import Copy, UsingRegex, UsingJsonpath, UsingXpath, Predicate
+from mbtest.imposters import Copy, UsingRegex, UsingJsonpath, UsingXpath, Predicate, TcpResponse
 from mbtest.imposters.predicates import OrPredicate, AndPredicate, TcpPredicate
 
 
@@ -35,6 +35,12 @@ class AndPredicateBuilder(Builder):
 
 class TcpPredicateBuilder(Builder):
     target = TcpPredicate
+
+    data = a_string
+
+
+class TcpResponseBuilder(Builder):
+    target = TcpResponse
 
     data = a_string
 

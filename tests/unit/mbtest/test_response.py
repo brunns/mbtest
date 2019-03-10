@@ -1,9 +1,11 @@
 # encoding=utf-8
 import logging
 
+from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, instance_of
 
 from mbtest.imposters import Response, TcpResponse
+from tests.utils.builders import TcpResponseBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +55,7 @@ def test_structure_wait():
 
 def test_tcp_response():
     # Given
-    expected = TcpResponse(data="somedata")
+    expected = TcpResponseBuilder().build()
     structure = expected.as_structure()
 
     # When
@@ -61,4 +63,4 @@ def test_tcp_response():
 
     # Then
     assert_that(actual, instance_of(TcpResponse))
-    assert actual.data == "somedata"
+    assert_that(actual, has_identical_properties_to(expected))
