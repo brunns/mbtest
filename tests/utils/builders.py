@@ -3,6 +3,7 @@
 from brunns.builder import Builder, one_of, a_string, a_boolean
 
 from mbtest.imposters import Copy, UsingRegex, UsingJsonpath, UsingXpath, Predicate
+from mbtest.imposters.predicates import OrPredicate, AndPredicate, TcpPredicate
 
 
 class PredicateBuilder(Builder):
@@ -16,6 +17,26 @@ class PredicateBuilder(Builder):
     xpath = lambda: one_of(None, a_string())
     operator = lambda: one_of(*list(Predicate.Operator))
     case_sensitive = a_boolean
+
+
+class OrPredicateBuilder(Builder):
+    target = OrPredicate
+
+    left = PredicateBuilder
+    right = PredicateBuilder
+
+
+class AndPredicateBuilder(Builder):
+    target = AndPredicate
+
+    left = PredicateBuilder
+    right = PredicateBuilder
+
+
+class TcpPredicateBuilder(Builder):
+    target = TcpPredicate
+
+    data = a_string
 
 
 class UsingRegexBuilder(Builder):

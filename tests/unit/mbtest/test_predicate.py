@@ -2,11 +2,12 @@
 import logging
 
 import pytest
+from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, instance_of
 
 from mbtest.imposters import Predicate
 from mbtest.imposters.predicates import AndPredicate, BasePredicate, OrPredicate, TcpPredicate
-from tests.utils.builders import PredicateBuilder
+from tests.utils.builders import AndPredicateBuilder, OrPredicateBuilder, TcpPredicateBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -71,43 +72,37 @@ def test_invalid_operator():
 
 
 def test_and_predicate():
-    expected_predicate = AndPredicate(
-        PredicateBuilder(path="left").build(), PredicateBuilder(path="right").build()
-    )
-    structure = expected_predicate.as_structure()
+    expected = AndPredicateBuilder().build()
+    structure = expected.as_structure()
 
     # When
     actual = BasePredicate.from_structure(structure)
 
     # Then
     assert_that(actual, instance_of(AndPredicate))
-    assert actual.left.path == "left"
-    assert actual.right.path == "right"
+    assert_that(actual, has_identical_properties_to(expected))
 
 
 def test_or_predicate():
-    expected_predicate = OrPredicate(
-        PredicateBuilder(path="left").build(), PredicateBuilder(path="right").build()
-    )
-    structure = expected_predicate.as_structure()
+    expected = OrPredicateBuilder().build()
+    structure = expected.as_structure()
 
     # When
     actual = BasePredicate.from_structure(structure)
 
     # Then
     assert_that(actual, instance_of(OrPredicate))
-    assert actual.left.path == "left"
-    assert actual.right.path == "right"
+    assert_that(actual, has_identical_properties_to(expected))
 
 
 def test_tcp_predicate():
     # Given
-    expected_predicate = TcpPredicate(data="somedata")
-    structure = expected_predicate.as_structure()
+    expected = TcpPredicateBuilder().build()
+    structure = expected.as_structure()
 
     # When
     actual = BasePredicate.from_structure(structure)
 
     # Then
     assert_that(actual, instance_of(TcpPredicate))
-    assert actual.data == "somedata"
+    assert_that(actual, has_identical_properties_to(expected))

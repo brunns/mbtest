@@ -24,3 +24,11 @@ class JsonSerializable(metaclass=ABCMeta):
     def _set_if_in_dict(self, dictionary, key, name):
         if key in dictionary:
             setattr(self, name, dictionary[key])
+
+    def __repr__(self):  # pragma: no cover
+        state = (
+            "{0:s}={1!r:s}".format(attribute, value) for (attribute, value) in self.__dict__.items()
+        )
+        return "{0:s}.{1:s}({2:s})".format(
+            self.__class__.__module__, self.__class__.__name__, ", ".join(state)
+        )
