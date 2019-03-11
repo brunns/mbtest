@@ -12,6 +12,8 @@ from mbtest.imposters import (
     Response,
     Lookup,
     Key,
+    Imposter,
+    Stub,
 )
 from mbtest.imposters.predicates import OrPredicate, AndPredicate, TcpPredicate
 
@@ -173,8 +175,25 @@ class ResponseBuilder(Builder):
     wait = lambda: one_of(an_integer(0, 500), None)
     repeat = lambda: one_of(an_integer(1, 50), None)
     headers = lambda: one_of(None, {a_string(): a_string()})
-    mode = one_of(*Response.Mode)
+    mode = lambda: one_of(*Response.Mode)
     copy = lambda: one_of(None, CopyBuilder().build())
     decorate = lambda: one_of(None, a_string())
     lookup = lambda: one_of(None, LookupBuilder().build())
     shell_transform = lambda: one_of(None, a_string())
+
+
+class StubBuilder(Builder):
+    target = Stub
+
+    predicates = lambda: [PredicateBuilder().build(), PredicateBuilder().build()]
+    responses = lambda: [ResponseBuilder().build(), ResponseBuilder().build()]
+
+
+class ImposterBuilder(Builder):
+    target = Imposter
+
+    stubs = lambda: [StubBuilder().build(), StubBuilder().build()]
+    port = lambda: one_of(None, an_integer(1, 5000))
+    protocol = one_of(*Imposter.Protocol)
+    name = lambda: one_of(None, a_string)
+    record_requests = a_boolean

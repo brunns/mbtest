@@ -1,9 +1,11 @@
 # encoding=utf-8
 import logging
 
-from hamcrest import assert_that, has_entries
+from brunns.matchers.object import has_identical_properties_to
+from hamcrest import assert_that, has_entries, instance_of
 
 from mbtest.imposters import Predicate, Imposter, Stub, Response, Proxy
+from tests.utils.builders import ImposterBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -82,3 +84,16 @@ def test_structure_no_record_requests():
     del imposter_structure["recordRequests"]
     imposter = Imposter.from_structure(imposter_structure)
     assert imposter.record_requests == expected_imposter.record_requests
+
+
+def test_imposter_structure_roundtrip():
+    # Given
+    expected = ImposterBuilder().build()
+    structure = expected.as_structure()
+
+    # When
+    actual = Imposter.from_structure(structure)
+
+    # Then
+    assert_that(actual, instance_of(Imposter))
+    assert_that(actual, has_identical_properties_to(expected))
