@@ -5,7 +5,7 @@ from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, instance_of
 
 from mbtest.imposters import Response, TcpResponse
-from tests.utils.builders import TcpResponseBuilder
+from tests.utils.builders import TcpResponseBuilder, ResponseBuilder, CopyBuilder, LookupBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,35 @@ def test_structure_wait():
     assert response.wait == expected_response.wait
 
 
-def test_tcp_response():
+def test_response_structure_roundtrip():
+    # Given
+    expected = ResponseBuilder(mode=None, copy=None, lookup=None).build()
+    structure = expected.as_structure()
+
+    # When
+    actual = Response.from_structure(structure)
+
+    # Then
+    assert_that(actual, instance_of(Response))
+    assert_that(actual, has_identical_properties_to(expected))
+
+
+def test_response_with_copy_and_lookup_structure_roundtrip():
+    # Given
+    expected = ResponseBuilder(
+        mode=Response.Mode.TEXT, copy=CopyBuilder().build(), lookup=LookupBuilder().build()
+    ).build()
+    structure = expected.as_structure()
+
+    # When
+    actual = Response.from_structure(structure)
+
+    # Then
+    assert_that(actual, instance_of(Response))
+    assert_that(actual, has_identical_properties_to(expected))
+
+
+def test_tcp_response_structure_roundtrip():
     # Given
     expected = TcpResponseBuilder().build()
     structure = expected.as_structure()

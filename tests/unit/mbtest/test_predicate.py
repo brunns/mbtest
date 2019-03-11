@@ -71,7 +71,7 @@ def test_invalid_operator():
         Predicate.from_structure(predicate_structure)
 
 
-def test_and_predicate():
+def test_and_predicate_structure_roundtrip():
     expected = AndPredicateBuilder().build()
     structure = expected.as_structure()
 
@@ -83,7 +83,7 @@ def test_and_predicate():
     assert_that(actual, has_identical_properties_to(expected))
 
 
-def test_or_predicate():
+def test_or_predicate_structure_roundtrip():
     expected = OrPredicateBuilder().build()
     structure = expected.as_structure()
 
@@ -95,7 +95,7 @@ def test_or_predicate():
     assert_that(actual, has_identical_properties_to(expected))
 
 
-def test_tcp_predicate():
+def test_tcp_predicate_structure_roundtrip():
     # Given
     expected = TcpPredicateBuilder().build()
     structure = expected.as_structure()

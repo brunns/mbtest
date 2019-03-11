@@ -3,6 +3,7 @@ from collections.abc import Sequence
 from enum import Enum
 from xml.etree import ElementTree as et  # nosec - We are creating, not parsing XML.
 
+from mbtest.imposters import Copy, Lookup
 from mbtest.imposters.base import JsonSerializable
 
 
@@ -99,18 +100,21 @@ class Response(JsonSerializable):
         response = Response()
         response.fields_from_structure(structure)
         behaviors = structure.get("_behaviors")
-        if not behaviors:
-            return response
-        if "wait" in behaviors:
-            response.wait = behaviors["wait"]
-        if "repeat" in behaviors:
-            response.repeat = behaviors["repeat"]
+        response._set_if_in_dict(behaviors, "wait", "wait")
+        response._set_if_in_dict(behaviors, "repeat", "repeat")
+        response._set_if_in_dict(behaviors, "decorate", "decorate")
+        response._set_if_in_dict(behaviors, "shellTransform", "shell_transform")
+        if "copy" in behaviors:
+            response.copy = [Copy.from_structure(c) for c in behaviors["copy"]]
+        if "lookup" in behaviors:
+            response.lookup = [Lookup.from_structure(l) for l in behaviors["lookup"]]
         return response
 
     def fields_from_structure(self, structure):
         inner = structure["is"]
         if "body" in inner:
             self._body = inner["body"]
+        self.mode = Response.Mode(inner["_mode"])
         if "headers" in inner:
             self.headers = inner["headers"]
         if "statusCode" in inner:

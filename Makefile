@@ -42,6 +42,7 @@ clean: ## Clean generated files
 	find . -name "*.egg-info" -type d -print | xargs -t rm -r
 	find . -name "__pycache__" -type d -print | xargs -t rm -r
 	find . -name "test-output" -type d -print | xargs -t rm -r
+	rm coverage.*
 
 deps: jsdeps ## Install or update dependencies
 
