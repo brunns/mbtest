@@ -172,8 +172,8 @@ class ResponseBuilder(Builder):
         511,
         599,
     )
-    wait = lambda: one_of(an_integer(0, 500), None)
-    repeat = lambda: one_of(an_integer(1, 50), None)
+    wait = lambda: one_of(an_integer(1, 500), None)
+    repeat = lambda: one_of(an_integer(2, 50), None)
     headers = lambda: one_of(None, {a_string(): a_string()})
     mode = lambda: one_of(*Response.Mode)
     copy = lambda: one_of(None, CopyBuilder().build())
