@@ -17,8 +17,13 @@ flake8:
 bandit:
 	tox -e bandit
 
+extra-lint: pylint mypy  ## Extra, optional linting.
+
 pylint:
 	tox -e pylint
+
+mypy:
+	tox -e mypy
 
 check-format:
 	tox -e check-format
@@ -33,7 +38,7 @@ precommit: test lint coverage ## Pre-commit targets
 	@ python -m this
 
 recreate: ## Recreate tox environments
-	tox --recreate --notest -e py34,py35,py37,format,flake8,bandit,piprot,pylint
+	tox --recreate --notest -e py34,py35,py37,format,flake8,bandit,piprot,pylint,mypy
 
 clean: ## Clean generated files
 	find . -name '*.pyc' -delete
