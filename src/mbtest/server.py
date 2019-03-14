@@ -1,15 +1,19 @@
 ﻿# encoding=utf-8
+import collections.abc as abc
 import logging
 import platform
 import subprocess  # nosec
 import time
-from collections.abc import Sequence
 from pathlib import Path
 from threading import Lock
+from typing import List, Union, Iterable, Mapping
 
 import requests
+from _pytest.fixtures import FixtureRequest
 from furl import furl
 from requests import RequestException
+
+from mbtest.imposters import Imposter
 
 DEFAULT_MB_EXECUTABLE = str(
     Path("node_modules") / ".bin" / ("mb.cmd" if platform.system() == "Windows" else "mb")
@@ -30,7 +34,12 @@ class MountebankServer:
     running = set()
     start_lock = Lock()
 
-    def __init__(self, executable=DEFAULT_MB_EXECUTABLE, port=2525, timeout=5):
+    def __init__(
+        self,
+        executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
+        port: int = 2525,
+        timeout: int = 5,
+    ) -> None:
         self.server_port = port
         self.running_imposters_by_port = {}
         with self.start_lock:
@@ -52,18 +61,18 @@ class MountebankServer:
                 )
                 raise
 
-    def __call__(self, imposters):
+    def __call__(self, imposters: List[Imposter]) -> "MountebankServer":
         self.imposters = imposters
         return self
 
-    def __enter__(self):
+    def __enter__(self) -> "MountebankServer":
         self.add_imposters(self.imposters)
         return self
 
-    def __exit__(self, ex_type, ex_value, ex_traceback):
+    def __exit__(self, ex_type, ex_value, ex_traceback) -> None:
         self.delete_imposters()
 
-    def _await_start(self, timeout):
+    def _await_start(self, timeout: int) -> None:
         start_time = time.time()
 
         while time.time() - start_time < timeout:
@@ -82,13 +91,13 @@ class MountebankServer:
 
         logger.debug("Server started at %s.", self.server_url)
 
-    def add_imposters(self, definition):
+    def add_imposters(self, definition: Union[Imposter, Iterable[Imposter]]) -> None:
         """Add imposters to Mountebank server.
 
         :param definition: One or more Imposters.
         :type definition: Imposter or list(Imposter)
         """
-        if isinstance(definition, Sequence):
+        if isinstance(definition, abc.Iterable):
             for imposter in definition:
                 self.add_imposters(imposter)
         else:
@@ -98,12 +107,12 @@ class MountebankServer:
             definition.port = post.json()["port"]
             self.running_imposters_by_port[definition.port] = definition
 
-    def delete_imposters(self):
+    def delete_imposters(self) -> None:
         while self.running_imposters_by_port:
             imposter_port, imposter = self.running_imposters_by_port.popitem()
             requests.delete(self.imposter_url(imposter_port)).raise_for_status()
 
-    def get_actual_requests(self):
+    def get_actual_requests(self) -> Mapping[int, Imposter]:
         impostors = {}
         for imposter_port in self.running_imposters_by_port:
             response = requests.get(self.imposter_url(imposter_port), timeout=5)
@@ -113,13 +122,13 @@ class MountebankServer:
         return impostors
 
     @property
-    def server_url(self):
+    def server_url(self) -> furl:
         return furl().set(scheme="http", host="localhost", port=self.server_port, path="imposters")
 
-    def imposter_url(self, imposter_port):
+    def imposter_url(self, imposter_port: int) -> furl:
         return self.server_url.add(path=str(imposter_port))
 
-    def close(self):
+    def close(self) -> None:
         self.mb_process.terminate()
         self.mb_process.wait()
         self.running.remove(self.server_port)
@@ -131,7 +140,12 @@ class MountebankServer:
         )
 
 
-def mock_server(request, executable=DEFAULT_MB_EXECUTABLE, port=2525, **kwargs):
+def mock_server(
+    request: FixtureRequest,
+    executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
+    port: int = 2525,
+    **kwargs
+) -> MountebankServer:
     """A mock server, running one or more impostors, one for each site being mocked.
 
     Use in a pytest conftest.py fixture as follows:

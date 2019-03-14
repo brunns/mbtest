@@ -1,19 +1,22 @@
 # encoding=utf-8
 from abc import ABCMeta
 from enum import Enum
+from typing import Union, Optional, Mapping
 
-from mbtest.imposters.base import JsonSerializable
+from furl import furl
+
+from mbtest.imposters.base import JsonSerializable, Structure
 
 
 class BasePredicate(JsonSerializable, metaclass=ABCMeta):
-    def __and__(self, other):
+    def __and__(self, other: "BasePredicate") -> "AndPredicate":
         return AndPredicate(self, other)
 
-    def __or__(self, other):
+    def __or__(self, other: "BasePredicate") -> "OrPredicate":
         return OrPredicate(self, other)
 
     @staticmethod
-    def from_structure(structure):
+    def from_structure(structure: Structure) -> "BasePredicate":
         if "and" in structure:
             return AndPredicate.from_structure(structure)
         elif "or" in structure:
@@ -50,20 +53,20 @@ class Predicate(BasePredicate):
         EXISTS = "exists"
 
         @classmethod
-        def has_value(cls, value):
-            return any(value == item.value for item in cls)
+        def has_value(cls, name: str) -> bool:
+            return any(name == item.value for item in cls)
 
     def __init__(
         self,
-        path=None,
-        method=None,
-        query=None,
-        body=None,
-        headers=None,
-        xpath=None,
-        operator=Operator.EQUALS,
-        case_sensitive=True,
-    ):
+        path: Optional[Union[str, furl]] = None,
+        method: Optional[Method] = None,
+        query: Optional[Mapping[str, Union[str, int, bool]]] = None,
+        body: Optional[str] = None,
+        headers: Optional[Mapping[str, str]] = None,
+        xpath: Optional[str] = None,
+        operator: Operator = Operator.EQUALS,
+        case_sensitive: bool = True,
+    ) -> None:
         """
         :param path: URL path.
         :type path: str or furl.furl.furl
@@ -99,7 +102,7 @@ class Predicate(BasePredicate):
         )
         self.case_sensitive = case_sensitive
 
-    def as_structure(self):
+    def as_structure(self) -> Structure:
         predicate = {
             self.operator.value: self.fields_as_structure(),
             "caseSensitive": self.case_sensitive,
@@ -109,7 +112,7 @@ class Predicate(BasePredicate):
         return predicate
 
     @staticmethod
-    def from_structure(structure):
+    def from_structure(structure: Structure) -> "Predicate":
         operators = tuple(filter(Predicate.Operator.has_value, structure.keys()))
         if len(operators) != 1:
             raise Predicate.InvalidPredicateOperator(
@@ -144,15 +147,15 @@ class Predicate(BasePredicate):
 
 
 class AndPredicate(BasePredicate):
-    def __init__(self, left, right):
+    def __init__(self, left: BasePredicate, right: BasePredicate) -> None:
         self.left = left
         self.right = right
 
-    def as_structure(self):
+    def as_structure(self) -> Structure:
         return {"and": [self.left.as_structure(), self.right.as_structure()]}
 
     @staticmethod
-    def from_structure(structure):
+    def from_structure(structure: Structure) -> "AndPredicate":
         return AndPredicate(
             BasePredicate.from_structure(structure["and"][0]),
             BasePredicate.from_structure(structure["and"][1]),
@@ -160,15 +163,15 @@ class AndPredicate(BasePredicate):
 
 
 class OrPredicate(BasePredicate):
-    def __init__(self, left, right):
+    def __init__(self, left: BasePredicate, right: BasePredicate) -> None:
         self.left = left
         self.right = right
 
-    def as_structure(self):
+    def as_structure(self) -> Structure:
         return {"or": [self.left.as_structure(), self.right.as_structure()]}
 
     @staticmethod
-    def from_structure(structure):
+    def from_structure(structure: Structure) -> "OrPredicate":
         return OrPredicate(
             BasePredicate.from_structure(structure["or"][0]),
             BasePredicate.from_structure(structure["or"][1]),
@@ -176,12 +179,12 @@ class OrPredicate(BasePredicate):
 
 
 class TcpPredicate(BasePredicate):
-    def __init__(self, data):
+    def __init__(self, data: str) -> None:
         self.data = data
 
-    def as_structure(self):
+    def as_structure(self) -> Structure:
         return {"contains": {"data": self.data}}
 
     @staticmethod
-    def from_structure(structure):
+    def from_structure(structure: Structure) -> "TcpPredicate":
         return TcpPredicate(structure["contains"]["data"])

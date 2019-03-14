@@ -1,10 +1,11 @@
 # encoding=utf-8
 from collections.abc import Sequence
 from enum import Enum
+from typing import Optional, Mapping, Union, Iterable
 from xml.etree import ElementTree as et  # nosec - We are creating, not parsing XML.
 
 from mbtest.imposters import Copy, Lookup
-from mbtest.imposters.base import JsonSerializable
+from mbtest.imposters.base import JsonSerializable, Structure
 
 
 class Response(JsonSerializable):
@@ -16,17 +17,17 @@ class Response(JsonSerializable):
 
     def __init__(
         self,
-        body="",
-        status_code=200,
-        wait=None,
-        repeat=None,
-        headers=None,
-        mode=None,
-        copy=None,
-        decorate=None,
-        lookup=None,
-        shell_transform=None,
-    ):
+        body: str = "",
+        status_code: int = 200,
+        wait: Optional[int] = None,
+        repeat: Optional[int] = None,
+        headers: Optional[Mapping[str, str]] = None,
+        mode: Optional[Mode] = None,
+        copy: Optional[Copy] = None,
+        decorate: Optional[str] = None,
+        lookup: Optional[Lookup] = None,
+        shell_transform: Optional[Union[str, Iterable[str]]] = None,
+    ) -> None:
         """
         :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
         :type body: str or dict or list or xml.etree.ElementTree.Element or bytes
@@ -67,14 +68,14 @@ class Response(JsonSerializable):
         self.shell_transform = shell_transform
 
     @property
-    def body(self):
+    def body(self) -> str:
         if isinstance(self._body, et.Element):
             return et.tostring(self._body, encoding="unicode")
         elif isinstance(self._body, bytes):
             return self._body.decode("utf-8")
         return self._body
 
-    def as_structure(self):
+    def as_structure(self) -> Structure:
         return {"is": (self._is_structure()), "_behaviors": self._behaviors_structure()}
 
     def _is_structure(self):
@@ -96,7 +97,7 @@ class Response(JsonSerializable):
         return behaviors
 
     @staticmethod
-    def from_structure(structure):
+    def from_structure(structure: Structure) -> "Response":
         response = Response()
         response.fields_from_structure(structure)
         behaviors = structure.get("_behaviors")
@@ -110,7 +111,7 @@ class Response(JsonSerializable):
             response.lookup = [Lookup.from_structure(l) for l in behaviors["lookup"]]
         return response
 
-    def fields_from_structure(self, structure):
+    def fields_from_structure(self, structure: Structure) -> None:
         inner = structure["is"]
         if "body" in inner:
             self._body = inner["body"]
@@ -122,12 +123,12 @@ class Response(JsonSerializable):
 
 
 class TcpResponse(JsonSerializable):
-    def __init__(self, data):
+    def __init__(self, data: str) -> None:
         self.data = data
 
-    def as_structure(self):
+    def as_structure(self) -> Structure:
         return {"is": {"data": self.data}}
 
     @staticmethod
-    def from_structure(structure):
+    def from_structure(structure: Structure) -> "TcpResponse":
         return TcpResponse(data=structure["is"]["data"])

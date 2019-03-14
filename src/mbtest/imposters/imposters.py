@@ -1,10 +1,11 @@
 # encoding=utf-8
-from collections.abc import Sequence
+import collections.abc as abc
 from enum import Enum
+from typing import Union, Iterable, Optional
 
 from furl import furl
 
-from mbtest.imposters.base import JsonSerializable
+from mbtest.imposters.base import JsonSerializable, Structure
 from mbtest.imposters.stubs import Stub, Proxy
 
 
@@ -22,7 +23,14 @@ class Imposter(JsonSerializable):
         SMTP = "smtp"
         TCP = "tcp"
 
-    def __init__(self, stubs, port=None, protocol=Protocol.HTTP, name=None, record_requests=True):
+    def __init__(
+        self,
+        stubs: Union[Stub, Iterable[Stub], Proxy, Iterable[Proxy]],
+        port: Optional[int] = None,
+        protocol: Protocol = Protocol.HTTP,
+        name: Optional[str] = None,
+        record_requests: bool = True,
+    ) -> None:
         """
         :param stubs: One or more Stubs.
         :type stubs: Stub or list(Stub)
@@ -35,7 +43,7 @@ class Imposter(JsonSerializable):
         :param record_requests: Record requests made against this impostor, so they can be asserted against later.
         :type record_requests: bool
         """
-        stubs = stubs if isinstance(stubs, Sequence) else [stubs]
+        stubs = stubs if isinstance(stubs, abc.Sequence) else [stubs]
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
         self.stubs = [Stub(responses=stub) if isinstance(stub, Proxy) else stub for stub in stubs]
         self.port = port
@@ -46,14 +54,14 @@ class Imposter(JsonSerializable):
         self.record_requests = record_requests
 
     @property
-    def host(self):
+    def host(self) -> str:
         return "localhost"
 
     @property
-    def url(self):
+    def url(self) -> furl:
         return furl().set(scheme=self.protocol.value, host=self.host, port=self.port)
 
-    def as_structure(self):
+    def as_structure(self) -> Structure:
         structure = {"protocol": self.protocol.value, "recordRequests": self.record_requests}
         if self.port:
             structure["port"] = self.port
@@ -64,7 +72,7 @@ class Imposter(JsonSerializable):
         return structure
 
     @staticmethod
-    def from_structure(structure):
+    def from_structure(structure: Structure) -> "Imposter":
         imposter = Imposter([Stub.from_structure(stub) for stub in structure["stubs"]])
         if "port" in structure:
             imposter.port = structure["port"]
@@ -80,7 +88,7 @@ class Imposter(JsonSerializable):
         return imposter
 
 
-def smtp_imposter(name="smtp", record_requests=True):
+def smtp_imposter(name="smtp", record_requests=True) -> Imposter:
     """Canned SMTP server impostor."""
     return Imposter(
         [], 4525, protocol=Imposter.Protocol.SMTP, name=name, record_requests=record_requests

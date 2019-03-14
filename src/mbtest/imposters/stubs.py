@@ -1,9 +1,10 @@
 # encoding=utf-8
 from collections.abc import Sequence
+from typing import Optional, Union, Iterable, Mapping
 
 from furl import furl
 
-from mbtest.imposters.base import JsonSerializable
+from mbtest.imposters.base import JsonSerializable, Structure
 from mbtest.imposters.predicates import Predicate
 from mbtest.imposters.responses import Response
 
@@ -13,7 +14,11 @@ class Stub(JsonSerializable):
     Think of a stub as a behavior, triggered by a matching predicate.
     """
 
-    def __init__(self, predicates=None, responses=None):
+    def __init__(
+        self,
+        predicates: Optional[Union[Predicate, Iterable[Predicate]]] = None,
+        responses: Optional[Union[Response, Iterable[Response], "Proxy", Iterable["Proxy"]]] = None,
+    ) -> None:
         """
         :param predicates: Trigger this stub if one of these predicates matches the request
         :type predicates: Predicate or list(Predicate)
@@ -29,14 +34,14 @@ class Stub(JsonSerializable):
         else:
             self.responses = [Response()]
 
-    def as_structure(self):
+    def as_structure(self) -> Structure:
         return {
             "predicates": [predicate.as_structure() for predicate in self.predicates],
             "responses": [response.as_structure() for response in self.responses],
         }
 
     @staticmethod
-    def from_structure(structure):
+    def from_structure(structure: Structure) -> "Stub":
         responses = []
         for response in structure.get("responses", ()):
             if "proxy" in response:
@@ -50,12 +55,17 @@ class Stub(JsonSerializable):
 
 
 class Proxy(JsonSerializable):
-    def __init__(self, to, wait=None, inject_headers=None):
+    def __init__(
+        self,
+        to: Union[furl, str],
+        wait: Optional[int] = None,
+        inject_headers: Optional[Mapping[str, str]] = None,
+    ) -> None:
         self.to = to
         self.wait = wait
         self.inject_headers = inject_headers
 
-    def as_structure(self):
+    def as_structure(self) -> Structure:
         proxy = {"to": self.to.url if isinstance(self.to, furl) else self.to}
         self._add_if_true(proxy, "injectHeaders", self.inject_headers)
         response = {"proxy": proxy}
@@ -64,7 +74,7 @@ class Proxy(JsonSerializable):
         return response
 
     @staticmethod
-    def from_structure(structure):
+    def from_structure(structure: Structure) -> "Proxy":
         proxy_structure = structure["proxy"]
         proxy = Proxy(
             proxy_structure["to"],
