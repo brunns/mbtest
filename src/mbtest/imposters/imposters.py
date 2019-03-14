@@ -5,7 +5,7 @@ from typing import Union, Iterable, Optional
 
 from furl import furl
 
-from mbtest.imposters.base import JsonSerializable, Structure
+from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.stubs import Stub, Proxy
 
 
@@ -61,7 +61,7 @@ class Imposter(JsonSerializable):
     def url(self) -> furl:
         return furl().set(scheme=self.protocol.value, host=self.host, port=self.port)
 
-    def as_structure(self) -> Structure:
+    def as_structure(self) -> JsonStructure:
         structure = {"protocol": self.protocol.value, "recordRequests": self.record_requests}
         if self.port:
             structure["port"] = self.port
@@ -72,7 +72,7 @@ class Imposter(JsonSerializable):
         return structure
 
     @staticmethod
-    def from_structure(structure: Structure) -> "Imposter":
+    def from_structure(structure: JsonStructure) -> "Imposter":
         imposter = Imposter([Stub.from_structure(stub) for stub in structure["stubs"]])
         if "port" in structure:
             imposter.port = structure["port"]

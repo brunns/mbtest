@@ -5,7 +5,7 @@ from typing import Optional, Mapping, Union, Iterable
 from xml.etree import ElementTree as et  # nosec - We are creating, not parsing XML.
 
 from mbtest.imposters import Copy, Lookup
-from mbtest.imposters.base import JsonSerializable, Structure
+from mbtest.imposters.base import JsonSerializable, JsonStructure
 
 
 class Response(JsonSerializable):
@@ -75,7 +75,7 @@ class Response(JsonSerializable):
             return self._body.decode("utf-8")
         return self._body
 
-    def as_structure(self) -> Structure:
+    def as_structure(self) -> JsonStructure:
         return {"is": (self._is_structure()), "_behaviors": self._behaviors_structure()}
 
     def _is_structure(self):
@@ -97,7 +97,7 @@ class Response(JsonSerializable):
         return behaviors
 
     @staticmethod
-    def from_structure(structure: Structure) -> "Response":
+    def from_structure(structure: JsonStructure) -> "Response":
         response = Response()
         response.fields_from_structure(structure)
         behaviors = structure.get("_behaviors")
@@ -111,7 +111,7 @@ class Response(JsonSerializable):
             response.lookup = [Lookup.from_structure(l) for l in behaviors["lookup"]]
         return response
 
-    def fields_from_structure(self, structure: Structure) -> None:
+    def fields_from_structure(self, structure: JsonStructure) -> None:
         inner = structure["is"]
         if "body" in inner:
             self._body = inner["body"]
@@ -126,9 +126,9 @@ class TcpResponse(JsonSerializable):
     def __init__(self, data: str) -> None:
         self.data = data
 
-    def as_structure(self) -> Structure:
+    def as_structure(self) -> JsonStructure:
         return {"is": {"data": self.data}}
 
     @staticmethod
-    def from_structure(structure: Structure) -> "TcpResponse":
+    def from_structure(structure: JsonStructure) -> "TcpResponse":
         return TcpResponse(data=structure["is"]["data"])

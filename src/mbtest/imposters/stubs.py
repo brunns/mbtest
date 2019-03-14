@@ -4,7 +4,7 @@ from typing import Optional, Union, Iterable, Mapping
 
 from furl import furl
 
-from mbtest.imposters.base import JsonSerializable, Structure
+from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.predicates import Predicate
 from mbtest.imposters.responses import Response
 
@@ -34,14 +34,14 @@ class Stub(JsonSerializable):
         else:
             self.responses = [Response()]
 
-    def as_structure(self) -> Structure:
+    def as_structure(self) -> JsonStructure:
         return {
             "predicates": [predicate.as_structure() for predicate in self.predicates],
             "responses": [response.as_structure() for response in self.responses],
         }
 
     @staticmethod
-    def from_structure(structure: Structure) -> "Stub":
+    def from_structure(structure: JsonStructure) -> "Stub":
         responses = []
         for response in structure.get("responses", ()):
             if "proxy" in response:
@@ -65,7 +65,7 @@ class Proxy(JsonSerializable):
         self.wait = wait
         self.inject_headers = inject_headers
 
-    def as_structure(self) -> Structure:
+    def as_structure(self) -> JsonStructure:
         proxy = {"to": self.to.url if isinstance(self.to, furl) else self.to}
         self._add_if_true(proxy, "injectHeaders", self.inject_headers)
         response = {"proxy": proxy}
@@ -74,7 +74,7 @@ class Proxy(JsonSerializable):
         return response
 
     @staticmethod
-    def from_structure(structure: Structure) -> "Proxy":
+    def from_structure(structure: JsonStructure) -> "Proxy":
         proxy_structure = structure["proxy"]
         proxy = Proxy(
             proxy_structure["to"],

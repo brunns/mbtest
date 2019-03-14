@@ -2,13 +2,13 @@
 from abc import ABCMeta, abstractmethod
 from typing import Mapping, Any, MutableMapping
 
-# Structure = Union[MutableMapping[str, "Structure"], Iterable["Structure"], str, int, bool]
-Structure = Any
+# JsonStructure = Union[MutableMapping[str, "Structure"], Iterable["Structure"], str, int, bool]
+JsonStructure = Any  # Pending a better solution to https://github.com/python/typing/issues/182
 
 
 class JsonSerializable(metaclass=ABCMeta):
     @abstractmethod
-    def as_structure(self) -> Structure:  # pragma: no cover
+    def as_structure(self) -> JsonStructure:  # pragma: no cover
         """
         :returns Structure suitable for JSON serialisation.
         :rtype: dict
@@ -17,7 +17,7 @@ class JsonSerializable(metaclass=ABCMeta):
 
     @staticmethod
     @abstractmethod
-    def from_structure(structure: Structure) -> "JsonSerializable":  # pragma: no cover
+    def from_structure(structure: JsonStructure) -> "JsonSerializable":  # pragma: no cover
         raise NotImplementedError()
 
     @staticmethod
