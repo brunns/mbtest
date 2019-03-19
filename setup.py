@@ -47,5 +47,10 @@ setup(
         "Topic :: Software Development :: Testing",
     ],
     python_requires=">=3.4",
-    install_requires=["requests~=2.0", "furl~=2.0", "pyhamcrest~=1.9"],
+    install_requires=[
+        "requests~=2.0",
+        "furl~=2.0",
+        "pyhamcrest~=1.9",
+        'typing~=3.6;python_version<"3.5"',
+    ],
 )
