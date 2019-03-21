@@ -1,21 +1,20 @@
 # encoding=utf-8
 
-from brunns.builder import Builder, one_of, a_string, a_boolean, an_integer
-
+from brunns.builder import Builder, a_boolean, a_string, an_integer, one_of
 from mbtest.imposters import (
     Copy,
-    UsingRegex,
-    UsingJsonpath,
-    UsingXpath,
-    Predicate,
-    TcpResponse,
-    Response,
-    Lookup,
-    Key,
     Imposter,
+    Key,
+    Lookup,
+    Predicate,
+    Response,
     Stub,
+    TcpResponse,
+    UsingJsonpath,
+    UsingRegex,
+    UsingXpath,
 )
-from mbtest.imposters.predicates import OrPredicate, AndPredicate, TcpPredicate
+from mbtest.imposters.predicates import AndPredicate, OrPredicate, TcpPredicate
 
 
 class PredicateBuilder(Builder):

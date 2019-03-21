@@ -1,6 +1,6 @@
 # encoding=utf-8
 from abc import ABCMeta, abstractmethod
-from typing import Mapping, Any, MutableMapping
+from typing import Any, Mapping, MutableMapping
 
 # JsonStructure = Union[MutableMapping[str, "Structure"], Iterable["Structure"], str, int, bool]
 JsonStructure = Any  # Pending a better solution to https://github.com/python/typing/issues/182

@@ -3,9 +3,8 @@ import logging
 import smtplib
 
 from brunns.builder import a_string
-from brunns.builder.email import EmailMessageBuilder, EmailBuilder
+from brunns.builder.email import EmailBuilder, EmailMessageBuilder
 from hamcrest import assert_that
-
 from mbtest.imposters import smtp_imposter
 from mbtest.matchers import email_sent
 

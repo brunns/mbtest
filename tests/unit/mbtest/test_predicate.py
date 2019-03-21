@@ -4,7 +4,6 @@ import logging
 import pytest
 from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, instance_of
-
 from mbtest.imposters import Predicate
 from mbtest.imposters.predicates import AndPredicate, BasePredicate, OrPredicate, TcpPredicate
 from tests.utils.builders import AndPredicateBuilder, OrPredicateBuilder, TcpPredicateBuilder

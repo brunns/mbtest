@@ -3,8 +3,7 @@ import logging
 
 import requests
 from brunns.matchers.response import response_with
-from hamcrest import assert_that, is_, has_entry
-
+from hamcrest import assert_that, has_entry, is_
 from mbtest.imposters import Imposter, Response, Stub
 
 logger = logging.getLogger(__name__)

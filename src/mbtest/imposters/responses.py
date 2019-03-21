@@ -1,7 +1,7 @@
 # encoding=utf-8
 from collections.abc import Sequence
 from enum import Enum
-from typing import Optional, Mapping, Union, Iterable
+from typing import Iterable, Mapping, Optional, Union
 from xml.etree import ElementTree as et  # nosec - We are creating, not parsing XML.
 
 from mbtest.imposters import Copy, Lookup

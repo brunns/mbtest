@@ -2,9 +2,8 @@
 from unittest.mock import MagicMock
 
 from brunns.matchers.matcher import mismatches_with
-from hamcrest import assert_that, not_, has_string, contains_string, all_of
-
-from mbtest.matchers import had_request, email_sent
+from hamcrest import all_of, assert_that, contains_string, has_string, not_
+from mbtest.matchers import email_sent, had_request
 
 
 def test_request_matcher():

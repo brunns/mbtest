@@ -3,9 +3,8 @@ import logging
 
 import requests
 from brunns.matchers.response import response_with
-from hamcrest import assert_that, is_, has_entry
-
-from mbtest.imposters import Imposter, Response, Stub, Copy, UsingRegex, UsingXpath, UsingJsonpath
+from hamcrest import assert_that, has_entry, is_
+from mbtest.imposters import Copy, Imposter, Response, Stub, UsingJsonpath, UsingRegex, UsingXpath
 from tests.utils.data2xml import data2xml, et2string
 
 logger = logging.getLogger(__name__)

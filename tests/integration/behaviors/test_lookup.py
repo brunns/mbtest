@@ -1,11 +1,11 @@
 # encoding=utf-8
 import logging
-import requests
-from brunns.matchers.response import response_with
-from hamcrest import assert_that, is_, has_entry
 from pathlib import Path
 
-from mbtest.imposters import Imposter, Response, Stub, Lookup, Key, UsingRegex
+import requests
+from brunns.matchers.response import response_with
+from hamcrest import assert_that, has_entry, is_
+from mbtest.imposters import Imposter, Key, Lookup, Response, Stub, UsingRegex
 
 logger = logging.getLogger(__name__)
 

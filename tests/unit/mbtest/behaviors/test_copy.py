@@ -2,7 +2,7 @@
 import logging
 
 from mbtest.imposters import Copy
-from tests.utils.builders import UsingRegexBuilder, CopyBuilder
+from tests.utils.builders import CopyBuilder, UsingRegexBuilder
 
 logger = logging.getLogger(__name__)
 

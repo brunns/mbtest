@@ -1,10 +1,9 @@
 # encoding=utf-8
 from abc import ABCMeta
 from enum import Enum
-from typing import Union, Optional, Mapping
+from typing import Mapping, Optional, Union
 
 from furl import furl
-
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 
 

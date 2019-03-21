@@ -1,7 +1,7 @@
 # encoding=utf-8
 import logging
 
-from mbtest.imposters import Lookup, Key, UsingJsonpath
+from mbtest.imposters import Key, Lookup, UsingJsonpath
 
 logger = logging.getLogger(__name__)
 

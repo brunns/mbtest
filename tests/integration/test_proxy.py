@@ -1,15 +1,15 @@
 # encoding=utf-8
 import logging
+import socket
+
 import pytest
 import requests
-import socket
 from brunns.matchers.html import has_title
 from brunns.matchers.object import between
 from brunns.matchers.response import response_with
 from contexttimer import Timer
-from hamcrest import assert_that, is_, has_entry
-
-from mbtest.imposters import Imposter, Proxy, Stub, Predicate
+from hamcrest import assert_that, has_entry, is_
+from mbtest.imposters import Imposter, Predicate, Proxy, Stub
 from mbtest.matchers import had_request
 
 logger = logging.getLogger(__name__)

@@ -1,12 +1,11 @@
 # encoding=utf-8
 import collections.abc as abc
 from enum import Enum
-from typing import Union, Iterable, Optional
+from typing import Iterable, Optional, Union
 
 from furl import furl
-
 from mbtest.imposters.base import JsonSerializable, JsonStructure
-from mbtest.imposters.stubs import Stub, Proxy
+from mbtest.imposters.stubs import Proxy, Stub
 
 
 class Imposter(JsonSerializable):

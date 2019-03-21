@@ -6,14 +6,13 @@ import subprocess  # nosec
 import time
 from pathlib import Path
 from threading import Lock
-from typing import List, Union, Iterable, Mapping
+from typing import Iterable, List, Mapping, Union
 
 import requests
 from _pytest.fixtures import FixtureRequest
 from furl import furl
-from requests import RequestException
-
 from mbtest.imposters import Imposter
+from requests import RequestException
 
 DEFAULT_MB_EXECUTABLE = str(
     Path("node_modules") / ".bin" / ("mb.cmd" if platform.system() == "Windows" else "mb")

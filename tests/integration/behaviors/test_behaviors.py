@@ -4,9 +4,8 @@ import logging
 import requests
 from brunns.matchers.response import response_with
 from contexttimer import Timer
-from hamcrest import assert_that, is_, close_to
-
-from mbtest.imposters import Imposter, Stub, Predicate, Response
+from hamcrest import assert_that, close_to, is_
+from mbtest.imposters import Imposter, Predicate, Response, Stub
 
 logger = logging.getLogger(__name__)
 

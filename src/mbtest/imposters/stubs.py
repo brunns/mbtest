@@ -1,9 +1,8 @@
 # encoding=utf-8
 from collections.abc import Sequence
-from typing import Optional, Union, Iterable, Mapping
+from typing import Iterable, Mapping, Optional, Union
 
 from furl import furl
-
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.predicates import Predicate
 from mbtest.imposters.responses import Response
