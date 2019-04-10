@@ -29,10 +29,11 @@ class Predicate(BasePredicate):
         pass
 
     class Method(Enum):
-        GET = "GET"
-        PUT = "PUT"
-        POST = "POST"
         DELETE = "DELETE"
+        GET = "GET"
+        HEAD = "HEAD"
+        POST = "POST"
+        PUT = "PUT"
 
     class Operator(Enum):
         EQUALS = "equals"
