@@ -88,6 +88,7 @@ def test_methods(mock_server):
             Stub(Predicate(method=Predicate.Method.PUT), Response(body="put")),
             Stub(Predicate(method=Predicate.Method.POST), Response(body="post")),
             Stub(Predicate(method=Predicate.Method.DELETE), Response(body="delete")),
+            Stub(Predicate(method=Predicate.Method.HEAD), Response(status_code=789)),
         ]
     )
 
@@ -99,9 +100,11 @@ def test_methods(mock_server):
         post = requests.post(imposter.url)
         put = requests.put(imposter.url)
         get = requests.get(imposter.url)
+        head = requests.head(imposter.url)
 
         # Then
         assert_that(delete, is_(response_with(body="delete")))
         assert_that(post, is_(response_with(body="post")))
         assert_that(put, is_(response_with(body="put")))
         assert_that(get, is_(response_with(body="get")))
+        assert_that(head, is_(response_with(status_code=789)))
