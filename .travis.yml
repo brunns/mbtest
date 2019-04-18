@@ -1,5 +1,7 @@
 language: python
 matrix:
+  allow_failures:
+    - os: windows
   include:
     - python: 3.4
       env:
