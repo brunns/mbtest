@@ -59,7 +59,7 @@ pydeps:
 	@ pip list --outdated
 
 jsdeps:
-	npm install mountebank@2.0 --production
+	npm install mountebank@2.1 --production
 
 repl: ## Python REPL
 	tox -e py37 -- python

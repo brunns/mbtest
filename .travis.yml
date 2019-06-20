@@ -52,9 +52,15 @@ matrix:
       sudo: yes
       env:
         - TOX_ENV=py37
+        - MBTEST_VERSION=2.0
+    - python: 3.7
+      dist: xenial
+      sudo: yes
+      env:
+        - TOX_ENV=py37
         - MBTEST_VERSION=1.16
 install:
   - pip install --upgrade tox
-  - npm install mountebank@"${MBTEST_VERSION:-2.0}" --production
+  - npm install mountebank@"${MBTEST_VERSION:-2.1}" --production
 script:
   - tox -e $TOX_ENV
