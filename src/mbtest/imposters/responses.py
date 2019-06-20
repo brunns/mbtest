@@ -18,7 +18,7 @@ class Response(JsonSerializable):
     def __init__(
         self,
         body: str = "",
-        status_code: int = 200,
+        status_code: Union[int, str] = 200,
         wait: Optional[int] = None,
         repeat: Optional[int] = None,
         headers: Optional[Mapping[str, str]] = None,

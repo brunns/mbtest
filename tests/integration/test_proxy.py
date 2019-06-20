@@ -1,6 +1,5 @@
 # encoding=utf-8
 import logging
-import socket
 
 import pytest
 import requests
@@ -11,25 +10,9 @@ from contexttimer import Timer
 from hamcrest import assert_that, has_entry, is_
 from mbtest.imposters import Imposter, Predicate, Proxy, Stub
 from mbtest.matchers import had_request
+from tests.utils.network import internet_connection
 
 logger = logging.getLogger(__name__)
-
-
-def internet_connection(host="8.8.8.8", port=53, timeout=1):
-    """
-      Host: 8.8.8.8 (google-public-dns-a.google.com)
-      OpenPort: 53/tcp
-      Service: domain (DNS/TCP)
-      from: https://stackoverflow.com/a/33117579/1073696
-      """
-    try:
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-        return True
-    except Exception as ex:
-        logger.warn(ex)
-        return False
-
 
 INTERNET_CONNECTED = internet_connection()
 
