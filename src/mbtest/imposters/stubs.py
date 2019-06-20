@@ -1,5 +1,6 @@
 # encoding=utf-8
 from collections.abc import Sequence
+from enum import Enum
 from typing import Iterable, Mapping, Optional, Union
 
 from furl import furl
@@ -54,18 +55,28 @@ class Stub(JsonSerializable):
 
 
 class Proxy(JsonSerializable):
+    class Mode(Enum):
+        ONCE = "proxyOnce"
+        ALWAYS = "proxyAlways"
+        TRANSPARENT = "proxyTransparent"
+
     def __init__(
         self,
         to: Union[furl, str],
         wait: Optional[int] = None,
         inject_headers: Optional[Mapping[str, str]] = None,
+        mode: "Proxy.Mode" = Mode.ALWAYS,
     ) -> None:
         self.to = to
         self.wait = wait
         self.inject_headers = inject_headers
+        self.mode = mode
 
     def as_structure(self) -> JsonStructure:
-        proxy = {"to": self.to.url if isinstance(self.to, furl) else self.to}
+        proxy = {
+            "to": self.to.url if isinstance(self.to, furl) else self.to,
+            "mode": self.mode.value,
+        }
         self._add_if_true(proxy, "injectHeaders", self.inject_headers)
         response = {"proxy": proxy}
         if self.wait:
@@ -76,10 +87,11 @@ class Proxy(JsonSerializable):
     def from_structure(structure: JsonStructure) -> "Proxy":
         proxy_structure = structure["proxy"]
         proxy = Proxy(
-            proxy_structure["to"],
+            to=furl(proxy_structure["to"]),
             inject_headers=proxy_structure["injectHeaders"]
             if "injectHeaders" in proxy_structure
             else None,
+            mode=Proxy.Mode(proxy_structure["mode"]),
         )
         wait = structure.get("_behaviors", {}).get("wait")
         if wait:

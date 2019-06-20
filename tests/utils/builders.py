@@ -1,12 +1,14 @@
 # encoding=utf-8
 
 from brunns.builder import Builder, a_boolean, a_string, an_integer, one_of
+from brunns.builder.internet import UrlBuilder
 from mbtest.imposters import (
     Copy,
     Imposter,
     Key,
     Lookup,
     Predicate,
+    Proxy,
     Response,
     Stub,
     TcpResponse,
@@ -186,6 +188,15 @@ class StubBuilder(Builder):
 
     predicates = lambda: [PredicateBuilder().build(), PredicateBuilder().build()]
     responses = lambda: [ResponseBuilder().build(), ResponseBuilder().build()]
+
+
+class ProxyBuilder(Builder):
+    target = Proxy
+
+    to = UrlBuilder
+    wait = lambda: one_of(None, an_integer(1, 1000))
+    inject_headers = lambda: one_of(None, {a_string(): a_string()})
+    mode = lambda: one_of(*Proxy.Mode)
 
 
 class ImposterBuilder(Builder):
