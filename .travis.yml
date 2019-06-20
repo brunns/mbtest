@@ -59,12 +59,14 @@ matrix:
       env:
         - TOX_ENV=py37
         - MBTEST_VERSION=1.16
+before_install:
+  - nvm install 12
+  - pip install --upgrade tox
 install:
   - python --version
   - pip --version
   - node --version
   - npm --version
-  - pip install --upgrade tox
   - npm install mountebank@"${MBTEST_VERSION:-2.1}" --production
 script:
   - tox -e $TOX_ENV
