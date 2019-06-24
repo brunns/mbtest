@@ -22,7 +22,7 @@ def test_proxy(mock_server):
     imposter = Imposter(Proxy(to="http://example.com"))
 
     with mock_server(imposter) as server:
-        response = requests.get("{0}/".format(imposter.url))
+        response = requests.get(imposter.url)
 
         assert_that(response, is_(response_with(status_code=200, body=has_title("Example Domain"))))
         assert_that(server, had_request(path="/", method="GET"))
@@ -33,21 +33,21 @@ def test_proxy_in_stub(mock_server):
     imposter = Imposter(Stub(responses=Proxy(to="http://example.com")))
 
     with mock_server(imposter):
-        response = requests.get("{0}/".format(imposter.url))
+        response = requests.get(imposter.url)
 
         assert_that(response, is_(response_with(status_code=200, body=has_title("Example Domain"))))
 
 
-@pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
 def test_proxy_delay(mock_server):
-    imposter = Imposter(Stub(responses=Proxy(to="http://example.com", wait=500)))
+    target_imposter = Imposter(Stub(Predicate(path="/test")))
+    with mock_server(target_imposter) as server:
+        proxy_imposter = Imposter(Stub(responses=Proxy(to=target_imposter.url, wait=100)))
+        server.add_imposters(proxy_imposter)
 
-    with mock_server(imposter), Timer() as t:
-        requests.get("{0}/".format(imposter.url))
+        with Timer() as timer:
+            requests.get(proxy_imposter.url / "test")
 
-    assert_that(
-        t.elapsed, between(0.5, 0.9)
-    )  # Slightly longer than the wait time, to give example.com and the 'net time to work.
+            assert_that(timer.elapsed, between(0.1, 0.15))
 
 
 def test_inject_headers(mock_server):
