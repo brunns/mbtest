@@ -19,7 +19,7 @@ class Response(JsonSerializable):
         self,
         body: str = "",
         status_code: Union[int, str] = 200,
-        wait: Optional[int] = None,
+        wait: Optional[Union[int, str]] = None,
         repeat: Optional[int] = None,
         headers: Optional[Mapping[str, str]] = None,
         mode: Optional[Mode] = None,

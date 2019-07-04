@@ -2,28 +2,33 @@
 import logging
 
 import requests
+from brunns.matchers.object import between
 from brunns.matchers.response import response_with
 from contexttimer import Timer
-from hamcrest import assert_that, close_to, is_
+from hamcrest import assert_that, is_
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 
 logger = logging.getLogger(__name__)
 
 
 def test_wait(mock_server):
-    # Given
-    imposter = Imposter(Stub(Predicate(), Response(body="oranges", wait=500)))
+    imposter = Imposter(Stub(responses=Response(wait=100)))
 
-    with mock_server(imposter) as s:
-        logger.debug("server: %s", s)
+    with mock_server(imposter), Timer() as timer:
+        requests.get(imposter.url)
 
-        # When
-        with Timer() as t:
-            r = requests.get(imposter.url)
+        assert_that(timer.elapsed, between(0.1, 0.15))
 
-        # Then
-        assert_that(r, is_(response_with(body="oranges")))
-        assert_that(t.elapsed, close_to(0.5, 0.1))
+
+def test_wait_function(mock_server):
+    imposter = Imposter(
+        Stub(responses=Response(wait="function() { return Math.floor(Math.random() * 50) + 100; }"))
+    )
+
+    with mock_server(imposter), Timer() as timer:
+        requests.get(imposter.url)
+
+        assert_that(timer.elapsed, between(0.1, 0.2))
 
 
 def test_repeat(mock_server):
