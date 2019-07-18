@@ -17,7 +17,7 @@ def test_wait(mock_server):
     with mock_server(imposter), Timer() as timer:
         requests.get(imposter.url)
 
-        assert_that(timer.elapsed, between(0.1, 0.15))
+        assert_that(timer.elapsed, between(0.1, 0.25))
 
 
 def test_wait_function(mock_server):
@@ -28,7 +28,7 @@ def test_wait_function(mock_server):
     with mock_server(imposter), Timer() as timer:
         requests.get(imposter.url)
 
-        assert_that(timer.elapsed, between(0.1, 0.2))
+        assert_that(timer.elapsed, between(0.1, 0.25))
 
 
 def test_repeat(mock_server):

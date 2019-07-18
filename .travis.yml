@@ -22,7 +22,7 @@ matrix:
       before_install:
         - choco install python3 nodejs
         - export PATH="/c/Python37:/c/Python37/Scripts:/c/Program Files/nodejs:$PATH"
-        - python -m pip install --upgrade pip wheel
+        - python -m pip install --upgrade pip wheel tox
       env:
         - TOX_ENV=py37
     - python: 3.5
