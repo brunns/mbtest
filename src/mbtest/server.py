@@ -143,7 +143,7 @@ def mock_server(
     request: FixtureRequest,
     executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
     port: int = 2525,
-    **kwargs
+    timeout: int = 5,
 ) -> MountebankServer:
     """A mock server, running one or more impostors, one for each site being mocked.
 
@@ -168,11 +168,11 @@ def mock_server(
 
     This function can take optional keyword arguments:
 
-    * timeout - specifies how long to wait for the Mountebank server to start.
-    * port - Server port
     * executable - Alternate location for the Mountebank executable.
+    * port - Server port
+    * timeout - specifies how long to wait for the Mountebank server to start.
     """
-    server = MountebankServer(executable=executable, port=port, **kwargs)
+    server = MountebankServer(executable=executable, port=port, timeout=timeout)
 
     def close():
         server.close()
