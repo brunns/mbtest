@@ -1,4 +1,5 @@
 language: python
+dist: xenial
 matrix:
   allow_failures:
     - os: windows
@@ -45,13 +46,11 @@ matrix:
         - TOX_ENV=publish-coverage
         - secure: "iBpfQQnq7LqJC9Tc4M7EuRiK5RSZLjsmacp6Ns9obpkkHQyJFWS80760BOD8iBsi9cor5w6z0JzLBIJYLGRZAmUNW7y76K+NKXs9pEn/i6mF7V8rXCzU6tyJ28xH6csNt9KAkoHIbXmt+0TAa4tN+uCRq2c7rHVbuarCfQBVislpJZl9qz61WVvDBfxpefL4VKCkteHxNTGMdZvw0wnc1+RvluNLeuNQ6TpPnJ7iS2FPGXOOMhcj26ZVL5cPMqIwX5IIo2JlWczMqXYWwoN+PC+4YlZclH+c73yl3XcZL9twq4g1cvW39HKAd5QDpQPapLep+3OF39bBiYetlqLUImHgCI/IwufV7RSceW+HUv1rqTVIteglRWhmR1ePZYeuJxLsuGnIbKRJcUnob7spk2Oxwr+ZrvqqC3+ivSpaPQiZjtIp2mdTEvetWm6X7xjMvk8FQKJZedp8CaRO8TEd9U5Cy3XxCA/hXNIThhxWtkpCwqmGs/VGV6Ao6swsuN/z9YxUQ2uIKvml7KwzCj1QYOhpHkdcxRGyTy/xoEUvQ4Vm7XGcrxksUKKBu1K9VCIdANo73w0WwTM6BPSWiMKDMHCUaJFqLiSr3gZwT2oUrPt83f9THdY7hl67NeZB7v0DHm/c4BSXf7nrkWmxREAUd86KRcrdczqe7NIJJGzpkRM="
     - python: 3.7
-      dist: xenial
       sudo: yes
       env:
         - TOX_ENV=py37
         - MBTEST_VERSION=2.0
     - python: 3.7
-      dist: xenial
       sudo: yes
       env:
         - TOX_ENV=py37
