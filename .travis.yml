@@ -16,7 +16,8 @@ matrix:
       language: sh
       python: 3.7
       before_install:
-        - choco install python3 nodejs
+        - choco install python --version=3.7.5
+        - choco install nodejs
         - export PATH="/c/Python37:/c/Python37/Scripts:/c/Program Files/nodejs:$PATH"
         - python -m pip install --upgrade pip wheel tox
       env:
