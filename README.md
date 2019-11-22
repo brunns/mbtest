@@ -67,7 +67,7 @@ def mock_server(request):
     return server.mock_server(request)
 ```
 
-Examples of more complex predicates can be found in the [integration tests](https://github.com/brunns/mbtest/tree/master/tests/integration/).
+This will take care of starting and stopping the Mountebank server for you. Examples of more complex predicates can be found in the [integration tests](https://github.com/brunns/mbtest/tree/master/tests/integration/).
 
 ## Developing
 
