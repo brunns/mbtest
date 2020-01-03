@@ -4,7 +4,7 @@ default: help
 .PHONY: help
 
 test: ## Run tests
-	tox -e py35,py36,py37,py37
+	tox -e py35,py38
 
 coverage: ## Test coverage report
 	tox -e coverage
@@ -38,7 +38,7 @@ precommit: test lint coverage ## Pre-commit targets
 	@ python -m this
 
 recreate: ## Recreate tox environments
-	tox --recreate --notest -e py35,py36,py37,format,flake8,bandit,piprot,pylint,mypy
+	tox --recreate --notest -e py35,py36,py37,py38,coverage,format,flake8,bandit,piprot,pylint,mypy
 
 clean: ## Clean generated files
 	find . -name '*.pyc' -delete
@@ -62,10 +62,10 @@ jsdeps:
 	npm install mountebank@2.1 --production
 
 repl: ## Python REPL
-	tox -e py37 -- python
+	tox -e py38 -- python
 
 outdated: ## List outdated dependancies
-	tox -e py37 -- pip list --outdated
+	tox -e py38 -- pip list --outdated
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1,$$2}'
