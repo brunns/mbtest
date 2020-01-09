@@ -30,65 +30,20 @@ class MountebankTimeoutError(MountebankException):
 
 
 class MountebankServer:
-    running = set()
-    start_lock = Lock()
-
-    def __init__(
-        self,
-        executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
-        port: int = 2525,
-        timeout: int = 5,
-    ) -> None:
+    def __init__(self, port: int):
         self.server_port = port
-        self.running_imposters_by_port = {}
-        with self.start_lock:
-            if self.server_port in self.running:
-                raise MountebankException("Already running on port {0}.".format(self.server_port))
-            try:
-                self.mb_process = subprocess.Popen(  # nosec
-                    [executable, "--port", str(port), "--debug", "--allowInjection"]
-                )
-                self._await_start(timeout)
-                self.running.add(port)
-                logger.info(
-                    "Spawned mb process %s on port %s.", self.mb_process.pid, self.server_port
-                )
-            except OSError:
-                logger.error(
-                    "Failed to spawn mb process with executable at %s. Have you installed Mountebank?",
-                    executable,
-                )
-                raise
 
-    def __call__(self, imposters: List[Imposter]) -> "MountebankServer":
+    def __call__(self, imposters: List[Imposter]) -> "ExecutingMountebankServer":
         self.imposters = imposters
+        self.running_imposters_by_port = {}
         return self
 
-    def __enter__(self) -> "MountebankServer":
+    def __enter__(self) -> "ExecutingMountebankServer":
         self.add_imposters(self.imposters)
         return self
 
     def __exit__(self, ex_type, ex_value, ex_traceback) -> None:
         self.delete_imposters()
-
-    def _await_start(self, timeout: int) -> None:
-        start_time = time.time()
-
-        while time.time() - start_time < timeout:
-            try:
-                requests.get(self.server_url, timeout=1).raise_for_status()
-                started = True
-                break
-            except RequestException:
-                started = False
-                time.sleep(0.1)
-
-        if not started:
-            raise MountebankTimeoutError(
-                "Mountebank failed to start within {0} seconds.".format(timeout)
-            )
-
-        logger.debug("Server started at %s.", self.server_url)
 
     def add_imposters(self, definition: Union[Imposter, Iterable[Imposter]]) -> None:
         """Add imposters to Mountebank server.
@@ -127,6 +82,56 @@ class MountebankServer:
     def imposter_url(self, imposter_port: int) -> furl:
         return self.server_url.add(path=str(imposter_port))
 
+
+class ExecutingMountebankServer(MountebankServer):
+    running = set()
+    start_lock = Lock()
+
+    def __init__(
+        self,
+        executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
+        port: int = 2525,
+        timeout: int = 5,
+    ) -> None:
+        super(ExecutingMountebankServer, self).__init__(port)
+        with self.start_lock:
+            if self.server_port in self.running:
+                raise MountebankException("Already running on port {0}.".format(self.server_port))
+            try:
+                self.mb_process = subprocess.Popen(  # nosec
+                    [executable, "--port", str(port), "--debug", "--allowInjection"]
+                )
+                self._await_start(timeout)
+                self.running.add(port)
+                logger.info(
+                    "Spawned mb process %s on port %s.", self.mb_process.pid, self.server_port
+                )
+            except OSError:
+                logger.error(
+                    "Failed to spawn mb process with executable at %s. Have you installed Mountebank?",
+                    executable,
+                )
+                raise
+
+    def _await_start(self, timeout: int) -> None:
+        start_time = time.time()
+
+        while time.time() - start_time < timeout:
+            try:
+                requests.get(self.server_url, timeout=1).raise_for_status()
+                started = True
+                break
+            except RequestException:
+                started = False
+                time.sleep(0.1)
+
+        if not started:
+            raise MountebankTimeoutError(
+                "Mountebank failed to start within {0} seconds.".format(timeout)
+            )
+
+        logger.debug("Server started at %s.", self.server_url)
+
     def close(self) -> None:
         self.mb_process.terminate()
         self.mb_process.wait()
@@ -144,7 +149,7 @@ def mock_server(
     executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
     port: int = 2525,
     timeout: int = 5,
-) -> MountebankServer:
+) -> ExecutingMountebankServer:
     """A mock server, running one or more impostors, one for each site being mocked.
 
     Use in a pytest conftest.py fixture as follows:
@@ -172,7 +177,7 @@ def mock_server(
     * port - Server port
     * timeout - specifies how long to wait for the Mountebank server to start.
     """
-    server = MountebankServer(executable=executable, port=port, timeout=timeout)
+    server = ExecutingMountebankServer(executable=executable, port=port, timeout=timeout)
 
     def close():
         server.close()

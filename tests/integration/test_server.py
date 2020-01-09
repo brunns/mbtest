@@ -9,7 +9,7 @@ from brunns.matchers.response import response_with
 from hamcrest import assert_that, is_
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 from mbtest.matchers import had_request
-from mbtest.server import MountebankException, MountebankServer
+from mbtest.server import ExecutingMountebankServer, MountebankException
 
 logger = logging.getLogger(__name__)
 
@@ -34,25 +34,25 @@ def test_request_to_mock_server(mock_server):
 
 def test_nonexistent_executable():
     with pytest.raises(OSError):
-        MountebankServer(executable=str(Path(".") / "no" / "such" / "path"), port=2526)
+        ExecutingMountebankServer(executable=str(Path(".") / "no" / "such" / "path"), port=2526)
 
 
 def test_non_executable():
     with pytest.raises(OSError):
-        MountebankServer(executable=str(Path(".") / "README.md"), port=2526)
+        ExecutingMountebankServer(executable=str(Path(".") / "README.md"), port=2526)
 
 
 def test_executable_not_mb():
     with pytest.raises(MountebankException):
-        MountebankServer(executable="ls", port=2526, timeout=1)
+        ExecutingMountebankServer(executable="ls", port=2526, timeout=1)
 
 
 def test_exception_running_multiple_servers_on_same_port():
     # Given
     with pytest.raises(MountebankException):
         try:
-            server1 = MountebankServer(port=2526)
-            server2 = MountebankServer(port=2526)
+            server1 = ExecutingMountebankServer(port=2526)
+            server2 = ExecutingMountebankServer(port=2526)
         finally:
             try:
                 server1.close()
@@ -62,10 +62,10 @@ def test_exception_running_multiple_servers_on_same_port():
 
 
 def test_server_can_be_restarted_on_same_port():
-    server = MountebankServer(port=2526)
+    server = ExecutingMountebankServer(port=2526)
     server.close()
 
-    server = MountebankServer(port=2526)
+    server = ExecutingMountebankServer(port=2526)
     server.close()
 
 
@@ -75,8 +75,8 @@ def test_server_can_be_restarted_on_same_port():
 def test_allow_multiple_servers_on_different_ports():
     # Given
     try:
-        server1 = MountebankServer(port=2526)
-        server2 = MountebankServer(port=2527)
+        server1 = ExecutingMountebankServer(port=2526)
+        server2 = ExecutingMountebankServer(port=2527)
         imposter1 = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")))
         imposter2 = Imposter(Stub(Predicate(path="/test"), Response(body="bacon")))
 
