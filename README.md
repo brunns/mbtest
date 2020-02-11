@@ -81,6 +81,6 @@ Requires [hub](https://hub.github.com/), [setuptools](https://setuptools.readthe
 
     version="n.n.n" # Needs to match new version number in setup.py.
     make precommit && git commit -am"Release $version" && git push # If not already all pushed, which it should be.
-    hub release create $version -m"Release $version"
+    hub release create "V$version" -t"release-$version" -m"Version $version"
     python setup.py sdist bdist_wheel
     twine upload dist/*$version*
