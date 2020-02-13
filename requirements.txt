@@ -1,0 +1,4 @@
+# This isn't the master copy of dependencies - they live in setup.py (for runtime deps) and tox.ini (to test deps).
+# This file is just for CI and document generation.
+typing~=3.6;python_version<"3.5"
+sphinx-autodoc-typehints~=1.6
