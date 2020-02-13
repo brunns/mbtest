@@ -20,6 +20,7 @@ Includes [pytest](https://pytest.org) fixture and [PyHamcrest](https://pyhamcres
 [![GitHub pull-requests closed](https://img.shields.io/github/issues-pr-closed/brunns/mbtest.svg?logo=github)](https://github.com/brunns/mbtest/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3b7c694664974d17a34e594c43af0c1b)](https://www.codacy.com/app/brunns/mbtest)
 [![Codacy Coverage](https://api.codacy.com/project/badge/coverage/3b7c694664974d17a34e594c43af0c1b)](https://www.codacy.com/app/brunns/mbtest)
+[![Documentation Status](https://readthedocs.org/projects/mbtest/badge/?version=latest)](https://mbtest.readthedocs.io/en/latest/?badge=latest)
 [![Lines of Code](https://tokei.rs/b1/github/brunns/mbtest)](https://github.com/brunns/mbtest)
 
 ## Setup
@@ -80,6 +81,7 @@ Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html) a
 Requires [hub](https://hub.github.com/), [setuptools](https://setuptools.readthedocs.io) and [twine](https://twine.readthedocs.io). To release version `n.n.n`:
 
     version="n.n.n" # Needs to match new version number in setup.py.
+    git checkout -b "release-$version"
     make precommit && git commit -am"Release $version" && git push # If not already all pushed, which it should be.
     hub release create "V$version" -t"release-$version" -m"Version $version"
     python setup.py sdist bdist_wheel
