@@ -9,7 +9,11 @@ from brunns.matchers.response import response_with
 from hamcrest import assert_that, is_
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 from mbtest.matchers import had_request
-from mbtest.server import ExecutingMountebankServer, MountebankException
+from mbtest.server import (
+    ExecutingMountebankServer,
+    MountebankPortInUseException,
+    MountebankTimeoutError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -43,13 +47,13 @@ def test_non_executable():
 
 
 def test_executable_not_mb():
-    with pytest.raises(MountebankException):
+    with pytest.raises(MountebankTimeoutError):
         ExecutingMountebankServer(executable="ls", port=2526, timeout=1)
 
 
 def test_exception_running_multiple_servers_on_same_port():
     # Given
-    with pytest.raises(MountebankException):
+    with pytest.raises(MountebankPortInUseException):
         try:
             server1 = ExecutingMountebankServer(port=2526)
             server2 = ExecutingMountebankServer(port=2526)

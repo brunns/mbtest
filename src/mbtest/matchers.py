@@ -82,6 +82,7 @@ class HadRequest(BaseMatcher):
 
 
 def email_sent(to=ANYTHING, subject=ANYTHING, body_text=ANYTHING):
+    """TODO"""
     return EmailSent(to, subject, body_text)
 
 

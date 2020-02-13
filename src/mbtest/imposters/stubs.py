@@ -12,6 +12,9 @@ from mbtest.imposters.responses import Response
 class Stub(JsonSerializable):
     """Represents a Mountebank stub - see http://www.mbtest.org/docs/api/stubs.
     Think of a stub as a behavior, triggered by a matching predicate.
+
+    :param predicates: Trigger this stub if one of these predicates matches the request
+    :param responses: Use these response behaviors (in order)
     """
 
     def __init__(
@@ -19,12 +22,6 @@ class Stub(JsonSerializable):
         predicates: Optional[Union[Predicate, Iterable[Predicate]]] = None,
         responses: Optional[Union[Response, Iterable[Response], "Proxy", Iterable["Proxy"]]] = None,
     ) -> None:
-        """
-        :param predicates: Trigger this stub if one of these predicates matches the request
-        :type predicates: Predicate or list(Predicate)
-        :param responses: Use these response behaviors (in order)
-        :type responses: Response or list(Response)
-        """
         if predicates:
             self.predicates = predicates if isinstance(predicates, Sequence) else [predicates]
         else:
@@ -55,7 +52,13 @@ class Stub(JsonSerializable):
 
 
 class Proxy(JsonSerializable):
+    """TODO
+
+    :param to: TODO"""
+
     class Mode(Enum):
+        """TODO Mode"""
+
         ONCE = "proxyOnce"
         ALWAYS = "proxyAlways"
         TRANSPARENT = "proxyTransparent"

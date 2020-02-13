@@ -9,14 +9,20 @@ from mbtest.imposters.stubs import Proxy, Stub
 
 
 class Imposter(JsonSerializable):
-    """Represents a Mountebank imposter - see http://www.mbtest.org/docs/api/mocks.
+    """Represents a `Mountebank imposter <http://www.mbtest.org/docs/api/mocks>`_.
     Think of an imposter as a mock website, running a protocol, on a specific port.
-    The specific behaviors require
+    Required behaviors are specified using stubs.
 
-    Pass to an :mbtest.server.mock_server:.
+    :param stubs: One or more Stubs.
+    :param port: Port.
+    :param protocol: Protocol to run on.
+    :param name: Impostor name - useful for interactive exploration of impostors on http://localhost:2525/impostors
+    :param record_requests: Record requests made against this impostor, so they can be asserted against later.
     """
 
     class Protocol(Enum):
+        """`Protocol <http://www.mbtest.org/docs/protocols/http>`_."""
+
         HTTP = "http"
         HTTPS = "https"
         SMTP = "smtp"
@@ -30,18 +36,6 @@ class Imposter(JsonSerializable):
         name: Optional[str] = None,
         record_requests: bool = True,
     ) -> None:
-        """
-        :param stubs: One or more Stubs.
-        :type stubs: Stub or list(Stub)
-        :param port: Port.
-        :type port: int
-        :param protocol: :Imposter.Protocol: to run on.
-        :type protocol: Imposter.Protocol
-        :param name: Impostor name - useful for interactive exploration of impostors on http://localhost:2525/impostors
-        :type name: str
-        :param record_requests: Record requests made against this impostor, so they can be asserted against later.
-        :type record_requests: bool
-        """
         stubs = stubs if isinstance(stubs, abc.Sequence) else [stubs]
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
         self.stubs = [Stub(responses=stub) if isinstance(stub, Proxy) else stub for stub in stubs]

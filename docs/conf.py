@@ -45,7 +45,14 @@ extensions = [
     'sphinx.ext.doctest',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx',
 ]
+# Add mappings
+intersphinx_mapping = {
+    'python': ('http://docs.python.org/3', None),
+    'requests': ('http://requests.readthedocs.org/en/latest', None),
+    'pyhamcrest': ('http://pyhamcrest.readthedocs.org/en/latest', None),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

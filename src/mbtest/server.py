@@ -22,23 +22,54 @@ logger = logging.getLogger(__name__)
 
 
 class MountebankException(Exception):
+    """Exception using Mountebank server."""
+
+    pass
+
+
+class MountebankPortInUseException(Exception):
+    """Mountebank server failed to start - port already in use."""
+
     pass
 
 
 class MountebankTimeoutError(MountebankException):
+    """Mountebank server failed to start in time."""
+
     pass
 
 
 class MountebankServer:
+    """Allow addition of imposters to an already running Mountebank mock server.
+
+    Test will look like::
+
+        def test_an_imposter(mock_server):
+            mb = MountebankServer(1234)
+            imposter = Imposter(Stub(Predicate(path='/test'),
+                                     Response(body='sausages')),
+                                record_requests=True)
+
+            with mb(imposter) as s:
+                r = requests.get('{0}/test'.format(imposter.url))
+
+                assert_that(r, is_(response_with(status_code=200, body="sausages")))
+                assert_that(s, had_request(path='/test', method="GET"))
+
+    Impostors will be torn down when the `with` block is exited.
+
+    :param port: Server port.
+    """
+
     def __init__(self, port: int):
         self.server_port = port
 
-    def __call__(self, imposters: List[Imposter]) -> "ExecutingMountebankServer":
+    def __call__(self, imposters: List[Imposter]) -> "MountebankServer":
         self.imposters = imposters
         self.running_imposters_by_port = {}
         return self
 
-    def __enter__(self) -> "ExecutingMountebankServer":
+    def __enter__(self) -> "MountebankServer":
         self.add_imposters(self.imposters)
         return self
 
@@ -84,6 +115,32 @@ class MountebankServer:
 
 
 class ExecutingMountebankServer(MountebankServer):
+    """A Mountebank mock server, running one or more impostors, one for each domain being mocked.
+
+    Test will look like::
+
+        def test_an_imposter(mock_server):
+            mb = ExecutingMountebankServer()
+            imposter = Imposter(Stub(Predicate(path='/test'),
+                                     Response(body='sausages')),
+                                record_requests=True)
+
+            with mb(imposter) as s:
+                r = requests.get('{0}/test'.format(imposter.url))
+
+                assert_that(r, is_(response_with(status_code=200, body="sausages")))
+                assert_that(s, had_request(path='/test', method="GET"))
+
+            mb.close()
+
+    The mountebank server will be started when this class is instantiated, and needs to be closed if it's not to be
+    left running. Consider using the :meth:`mock_server` pytest fixture, which will take care of this for you.
+
+    :param executable: Optional, alternate location for the Mountebank executable.
+    :param port: Server port.
+    :param timeout: How long to wait for the Mountebank server to start.
+    """
+
     running = set()
     start_lock = Lock()
 
@@ -96,7 +153,9 @@ class ExecutingMountebankServer(MountebankServer):
         super(ExecutingMountebankServer, self).__init__(port)
         with self.start_lock:
             if self.server_port in self.running:
-                raise MountebankException("Already running on port {0}.".format(self.server_port))
+                raise MountebankPortInUseException(
+                    "Already running on port {0}.".format(self.server_port)
+                )
             try:
                 self.mb_process = subprocess.Popen(  # nosec
                     [
@@ -158,32 +217,33 @@ def mock_server(
     port: int = 2525,
     timeout: int = 5,
 ) -> ExecutingMountebankServer:
-    """A mock server, running one or more impostors, one for each site being mocked.
+    """Pytest fixture, making available a mock server, running one or more impostors, one for each domain being mocked.
 
-    Use in a pytest conftest.py fixture as follows:
+    Use in a pytest conftest.py fixture as follows::
 
-    @pytest.fixture(scope="session")
-    def mock_server(request):
-        return server.mock_server(request)
+        @pytest.fixture(scope="session")
+        def mock_server(request):
+            return server.mock_server(request)
 
-    Test will look like:
+    Test will look like::
 
-    def test_1_imposter(mock_server):
-        imposter = Imposter(Stub(Predicate(path='/test'),
-                                 Response(body='sausages')),
-                            record_requests=True)
+        def test_an_imposter(mock_server):
+            imposter = Imposter(Stub(Predicate(path='/test'),
+                                     Response(body='sausages')),
+                                record_requests=True)
 
-        with mock_server(imposter) as s:
-            r = requests.get('{0}/test'.format(imposter.url))
+            with mock_server(imposter) as s:
+                r = requests.get('{0}/test'.format(imposter.url))
 
-            assert_that(r, is_(response_with(status_code=200, body="sausages")))
-            assert_that(s, had_request(path='/test', method="GET"))
+                assert_that(r, is_(response_with(status_code=200, body="sausages")))
+                assert_that(s, had_request(path='/test', method="GET"))
 
-    This function can take optional keyword arguments:
+    :param request: Request for a fixture from a test or fixture function.
+    :param executable: Alternate location for the Mountebank executable.
+    :param port: Server port.
+    :param timeout: specifies how long to wait for the Mountebank server to start.
 
-    * executable - Alternate location for the Mountebank executable.
-    * port - Server port
-    * timeout - specifies how long to wait for the Mountebank server to start.
+    :returns: Mock server.
     """
     server = ExecutingMountebankServer(executable=executable, port=port, timeout=timeout)
 

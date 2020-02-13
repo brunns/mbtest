@@ -4,13 +4,11 @@ from collections.abc import Mapping, Sequence
 from functools import singledispatch
 
 
-def data2xml(data, default_namespace=None):
+def data2xml(data, default_namespace=None) -> et.Element:
     """ Convert data structure to XML
     :param data: data to convert to XML
-    :type data: dict
     :param default_namespace: Namespace
-    :type default_namespace: tuple(str)
-    :rtype: xml.etree.ElementTree.Element
+    :returns: Element
     """
     root, body = data.popitem()
     root = et.Element(root)

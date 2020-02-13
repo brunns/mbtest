@@ -2,22 +2,30 @@
 from abc import ABCMeta, abstractmethod
 from typing import Any, Mapping, MutableMapping
 
-# JsonStructure = Union[MutableMapping[str, "Structure"], Iterable["Structure"], str, int, bool]
-JsonStructure = Any  # Pending a better solution to https://github.com/python/typing/issues/182
+# JsonStructure = Union[MutableMapping[str, "JsonStructure"], Iterable["JsonStructure"], str, int, bool, None]
+JsonStructure = Any  # TODO Pending a better solution to https://github.com/python/typing/issues/182
 
 
 class JsonSerializable(metaclass=ABCMeta):
+    """Object capable of being converted to a JSON serializable structure (using :py:meth:`as_structure`)
+    or from such a structure ((using :py:meth:`from_structure`).
+    """
+
     @abstractmethod
     def as_structure(self) -> JsonStructure:  # pragma: no cover
-        """
-        :returns Structure suitable for JSON serialisation.
-        :rtype: dict
+        """ Converted to a JSON serializable structure.
+
+        :returns: Structure suitable for JSON serialisation.
         """
         raise NotImplementedError()
 
     @staticmethod
     @abstractmethod
     def from_structure(structure: JsonStructure) -> "JsonSerializable":  # pragma: no cover
+        """ Converted from a JSON serializable structure.
+        ":param structure: JSON structure to be converted.
+        :returns: Converted object.
+        """
         raise NotImplementedError()
 
     @staticmethod
