@@ -17,11 +17,14 @@ Installation
 
 Install from `Pypi <https://pypi.org/project/mbtest/>`_ as usual, using pip , `tox`_, or ``setup.py``.
 
+Also requires `Mountebank`_ to have been installed::
+
+    $ npm install mountebank@2.2 --production
 
 Usage
 -----
 
-A basic example
+A basic example:
 
 .. code:: python
 

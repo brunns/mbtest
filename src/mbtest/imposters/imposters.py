@@ -21,7 +21,7 @@ class Imposter(JsonSerializable):
     """
 
     class Protocol(Enum):
-        """`Protocol <http://www.mbtest.org/docs/protocols/http>`_."""
+        """Imposter `Protocol <http://www.mbtest.org/docs/protocols/http>`_."""
 
         HTTP = "http"
         HTTPS = "https"

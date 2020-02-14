@@ -47,7 +47,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
 ]
-# Add mappings
+# Extension settings:
+autodoc_member_order = 'bysource'
 intersphinx_mapping = {
     'python': ('http://docs.python.org/3', None),
     'requests': ('http://requests.readthedocs.org/en/latest', None),

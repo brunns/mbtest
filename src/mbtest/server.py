@@ -21,22 +21,49 @@ DEFAULT_MB_EXECUTABLE = str(
 logger = logging.getLogger(__name__)
 
 
-class MountebankException(Exception):
-    """Exception using Mountebank server."""
+def mock_server(
+    request: FixtureRequest,
+    executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
+    port: int = 2525,
+    timeout: int = 5,
+) -> "ExecutingMountebankServer":
+    """`Pytest fixture <https://docs.pytest.org/en/latest/fixture.html>`_, making available a mock server, running one
+    or more impostors, one for each domain being mocked.
 
-    pass
+    Use in a pytest conftest.py fixture as follows::
 
+        @pytest.fixture(scope="session")
+        def mock_server(request):
+            return server.mock_server(request)
 
-class MountebankPortInUseException(Exception):
-    """Mountebank server failed to start - port already in use."""
+    Test will look like::
 
-    pass
+        def test_an_imposter(mock_server):
+            imposter = Imposter(Stub(Predicate(path='/test'),
+                                     Response(body='sausages')),
+                                record_requests=True)
 
+            with mock_server(imposter) as s:
+                r = requests.get('{0}/test'.format(imposter.url))
 
-class MountebankTimeoutError(MountebankException):
-    """Mountebank server failed to start in time."""
+                assert_that(r, is_(response_with(status_code=200, body="sausages")))
+                assert_that(s, had_request(path='/test', method="GET"))
 
-    pass
+    :param request: Request for a fixture from a test or fixture function.
+    :param executable: Alternate location for the Mountebank executable.
+    :param port: Server port.
+    :param timeout: specifies how long to wait for the Mountebank server to start.
+
+    :returns: Mock server.
+    """
+    server = ExecutingMountebankServer(executable=executable, port=port, timeout=timeout)
+
+    def close():
+        server.close()
+
+    request.addfinalizer(close)
+
+    return server
 
 
 class MountebankServer:
@@ -211,45 +238,19 @@ class ExecutingMountebankServer(MountebankServer):
         )
 
 
-def mock_server(
-    request: FixtureRequest,
-    executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
-    port: int = 2525,
-    timeout: int = 5,
-) -> ExecutingMountebankServer:
-    """Pytest fixture, making available a mock server, running one or more impostors, one for each domain being mocked.
+class MountebankException(Exception):
+    """Exception using Mountebank server."""
 
-    Use in a pytest conftest.py fixture as follows::
+    pass
 
-        @pytest.fixture(scope="session")
-        def mock_server(request):
-            return server.mock_server(request)
 
-    Test will look like::
+class MountebankPortInUseException(Exception):
+    """Mountebank server failed to start - port already in use."""
 
-        def test_an_imposter(mock_server):
-            imposter = Imposter(Stub(Predicate(path='/test'),
-                                     Response(body='sausages')),
-                                record_requests=True)
+    pass
 
-            with mock_server(imposter) as s:
-                r = requests.get('{0}/test'.format(imposter.url))
 
-                assert_that(r, is_(response_with(status_code=200, body="sausages")))
-                assert_that(s, had_request(path='/test', method="GET"))
+class MountebankTimeoutError(MountebankException):
+    """Mountebank server failed to start in time."""
 
-    :param request: Request for a fixture from a test or fixture function.
-    :param executable: Alternate location for the Mountebank executable.
-    :param port: Server port.
-    :param timeout: specifies how long to wait for the Mountebank server to start.
-
-    :returns: Mock server.
-    """
-    server = ExecutingMountebankServer(executable=executable, port=port, timeout=timeout)
-
-    def close():
-        server.close()
-
-    request.addfinalizer(close)
-
-    return server
+    pass

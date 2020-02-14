@@ -30,13 +30,25 @@ class BasePredicate(JsonSerializable, metaclass=ABCMeta):
 
 
 class Predicate(BasePredicate):
-    """"Represents a Mountebank predicate - see http://www.mbtest.org/docs/api/predicates
-    A predicate can be thought of as a trigger, which may or may not match a request."""
+    """ Represents a `Mountebank predicate <http://www.mbtest.org/docs/api/predicates>`_.
+    A predicate can be thought of as a trigger, which may or may not match a request.
+
+    :param path: URL path.
+    :param method: HTTP method.
+    :param query: Query arguments, keys and values.
+    :param body: Body text. Can be a string, or a JSON serialisable data structure.
+    :param headers: Headers, keys and values.
+    :param xpath: xpath query
+    :param operator:
+    :param case_sensitive:
+    """
 
     class InvalidPredicateOperator(Exception):
         pass
 
     class Method(Enum):
+        """Predicate HTTP method."""
+
         DELETE = "DELETE"
         GET = "GET"
         HEAD = "HEAD"
@@ -44,6 +56,8 @@ class Predicate(BasePredicate):
         PUT = "PUT"
 
     class Operator(Enum):
+        """`Predicate operator <http://www.mbtest.org/docs/api/predicates>`_."""
+
         EQUALS = "equals"
         DEEP_EQUALS = "deepEquals"
         CONTAINS = "contains"
@@ -67,24 +81,6 @@ class Predicate(BasePredicate):
         operator: Operator = Operator.EQUALS,
         case_sensitive: bool = True,
     ) -> None:
-        """
-        :param path: URL path.
-        :type path: str or furl.furl.furl
-        :param method: HTTP method.
-        :type method: Predicate.Method
-        :param query: Query arguments, keys and values.
-        :type query: dict(str, str)
-        :param body: Body text. Can be a string, or a JSON serialisable data structure.
-        :type body: str or dict or list
-        :param headers: Headers, keys and values.
-        :type headers: dict(str, str)
-        :param xpath: xpath query
-        :type xpath: str
-        :param operator:
-        :type operator: Predicate.Operator
-        :param case_sensitive:
-        :type case_sensitive: bool
-        """
         self.path = path
         self.method = (
             method
@@ -104,7 +100,7 @@ class Predicate(BasePredicate):
 
     def as_structure(self) -> JsonStructure:
         predicate = {
-            self.operator.value: self.fields_as_structure(),
+            self.operator.value: self._fields_as_structure(),
             "caseSensitive": self.case_sensitive,
         }
         if self.xpath:
@@ -122,12 +118,12 @@ class Predicate(BasePredicate):
         predicate = Predicate(
             operator=operator, case_sensitive=structure.get("caseSensitive", True)
         )
-        predicate.fields_from_structure(structure[operator])
+        predicate._fields_from_structure(structure[operator])
         if "xpath" in structure:
             predicate.xpath = structure["xpath"]["selector"]
         return predicate
 
-    def fields_from_structure(self, inner):
+    def _fields_from_structure(self, inner):
         self._set_if_in_dict(inner, "path", "path")
         self._set_if_in_dict(inner, "query", "query")
         self._set_if_in_dict(inner, "body", "body")
@@ -135,7 +131,7 @@ class Predicate(BasePredicate):
         if "method" in inner:
             self.method = Predicate.Method(inner["method"])
 
-    def fields_as_structure(self):
+    def _fields_as_structure(self):
         fields = {}
         self._add_if_true(fields, "path", self.path)
         self._add_if_true(fields, "query", self.query)
