@@ -1,5 +1,5 @@
-Welcome to mbtest's documentation!
-======================================
+Welcome to mbtest's documentation
+=================================
 
 Opinionated Python wrapper & utils for the `Mountebank`_ over the wire
 test double tool.

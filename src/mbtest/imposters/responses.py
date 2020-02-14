@@ -9,7 +9,20 @@ from mbtest.imposters.base import JsonSerializable, JsonStructure
 
 
 class Response(JsonSerializable):
-    """Represents a Mountebank 'is' response behavior - see http://www.mbtest.org/docs/api/stubs"""
+    """Represents a `Mountebank 'is' response behavior <http://www.mbtest.org/docs/api/stubs>`_.
+
+    :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
+    :param status_code: HTTP status code
+    :param wait: `Add latency, in ms <http://www.mbtest.org/docs/api/behaviors#behavior-wait>`_.
+    :param repeat: `Repeat this many times before moving on to next response
+        <http://www.mbtest.org/docs/api/behaviors#behavior-repeat>`_.
+    :param headers: Response HTTP headers
+    :param mode: Mode - text or binary
+    :param copy: Copy behavior
+    :param decorate: `Decorate behavior <http://www.mbtest.org/docs/api/behaviors#behavior-decorate>`_.
+    :param lookup: Lookup behavior
+    :param shell_transform: shellTransform behavior
+    """
 
     class Mode(Enum):
         TEXT = "text"
@@ -28,28 +41,6 @@ class Response(JsonSerializable):
         lookup: Optional[Lookup] = None,
         shell_transform: Optional[Union[str, Iterable[str]]] = None,
     ) -> None:
-        """
-        :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
-        :type body: str or dict or list or xml.etree.ElementTree.Element or bytes
-        :param status_code: HTTP status code
-        :type status_code: int or str
-        :param wait: Add latency, in ms
-        :type wait: int
-        :param repeat: Repeat this many times before moving on to next response.
-        :type repeat: int
-        :param headers: Response HTTP headers
-        :type headers: dict mapping from HTTP header name to header value
-        :param mode: Mode - text or binary
-        :type mode: Mode
-        :param copy: Copy behavior
-        :type copy: Copy or list(Copy)
-        :param decorate: Decorate behavior
-        :type decorate: str
-        :param lookup: Lookup behavior
-        :type lookup: Lookup or list(Lookup)
-        :param shell_transform: shellTransform behavior
-        :type shell_transform: str or list(str)
-        """
         self._body = body
         self.status_code = status_code
         self.wait = wait
@@ -78,13 +69,13 @@ class Response(JsonSerializable):
     def as_structure(self) -> JsonStructure:
         return {"is": (self._is_structure()), "_behaviors": self._behaviors_structure()}
 
-    def _is_structure(self):
+    def _is_structure(self) -> Mapping[str, str]:
         is_structure = {"statusCode": self.status_code, "_mode": self.mode.value}
         self._add_if_true(is_structure, "body", self.body)
         self._add_if_true(is_structure, "headers", self.headers)
         return is_structure
 
-    def _behaviors_structure(self):
+    def _behaviors_structure(self) -> Mapping[str, str]:
         behaviors = {}
         self._add_if_true(behaviors, "wait", self.wait)
         self._add_if_true(behaviors, "repeat", self.repeat)
@@ -99,7 +90,7 @@ class Response(JsonSerializable):
     @staticmethod
     def from_structure(structure: JsonStructure) -> "Response":
         response = Response()
-        response.fields_from_structure(structure)
+        response._fields_from_structure(structure)
         behaviors = structure.get("_behaviors")
         response._set_if_in_dict(behaviors, "wait", "wait")
         response._set_if_in_dict(behaviors, "repeat", "repeat")
@@ -111,7 +102,7 @@ class Response(JsonSerializable):
             response.lookup = [Lookup.from_structure(l) for l in behaviors["lookup"]]
         return response
 
-    def fields_from_structure(self, structure: JsonStructure) -> None:
+    def _fields_from_structure(self, structure: JsonStructure) -> None:
         inner = structure["is"]
         if "body" in inner:
             self._body = inner["body"]
