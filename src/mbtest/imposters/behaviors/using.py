@@ -8,7 +8,7 @@ from mbtest.imposters.base import JsonSerializable, JsonStructure
 
 class Using(JsonSerializable, metaclass=abc.ABCMeta):
     """
-    TODO
+    How to select values from the response.
 
     :param method: The method used to select the value(s) from the request.
     :param selector: The selector used to select the value(s) from the request.
@@ -39,7 +39,7 @@ class Using(JsonSerializable, metaclass=abc.ABCMeta):
 
 class UsingRegex(Using):
     """
-    TODO
+    `Select values from the response using a regular expression. <http://www.mbtest.org/docs/api/behaviors#copy-regex-replacement>`_
 
     :param selector: The selector used to select the value(s) from the request.
     :param ignore_case: Uses a case-insensitive regular expression
@@ -67,7 +67,7 @@ class UsingRegex(Using):
 
 class UsingXpath(Using):
     """
-    TODO
+    `Select values from the response using an xpath expression. <http://www.mbtest.org/docs/api/behaviors#copy-xpath-replacement>`_
 
     :param selector: The selector used to select the value(s) from the request.
     :param ns: The ns object maps namespace aliases to URLs
@@ -92,7 +92,7 @@ class UsingXpath(Using):
 
 class UsingJsonpath(Using):
     """
-    TODO
+    `Select values from the response using a jsonpath expression. <http://www.mbtest.org/docs/api/behaviors#copy-jsonpath-replacement>`_
 
     :param selector: The selector used to select the value(s) from the request.
     """

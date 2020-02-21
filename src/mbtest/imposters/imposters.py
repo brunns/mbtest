@@ -30,7 +30,7 @@ class Imposter(JsonSerializable):
 
     def __init__(
         self,
-        stubs: Union[Stub, Iterable[Stub], Proxy, Iterable[Proxy]],
+        stubs: Union[Stub, Proxy, Iterable[Union[Stub, Proxy]]],
         port: Optional[int] = None,
         protocol: Protocol = Protocol.HTTP,
         name: Optional[str] = None,

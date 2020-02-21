@@ -11,8 +11,7 @@ class Copy(JsonSerializable):
     :param from_: The name of the request field to copy from, or, if the request field is an object, then an object
         specifying the path to the request field.
     :param into: The token to replace in the response with the selected request value.
-    :param using: The configuration needed to select values from the response
-
+    :param using: The configuration needed to select values from the response.
     """
 
     def __init__(self, from_: Union[str, Mapping[str, str]], into: str, using: Using) -> None:

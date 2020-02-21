@@ -11,7 +11,9 @@ ANYTHING = anything()
 def had_request(
     method=ANYTHING, path=ANYTHING, query=ANYTHING, headers=ANYTHING, body=ANYTHING, times=ANYTHING
 ):
-    """Mountebank server has recorded call matching"""
+    """Mountebank server has recorded call matching
+
+    :param method: TODO..."""
     return HadRequest(
         method=method, path=path, query=query, headers=headers, body=body, times=times
     )

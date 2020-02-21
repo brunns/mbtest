@@ -6,7 +6,7 @@ import subprocess  # nosec
 import time
 from pathlib import Path
 from threading import Lock
-from typing import Iterable, List, Mapping, Union
+from typing import Iterable, List, Mapping, MutableMapping, Set, Union
 
 import requests
 from _pytest.fixtures import FixtureRequest
@@ -93,7 +93,7 @@ class MountebankServer:
 
     def __call__(self, imposters: List[Imposter]) -> "MountebankServer":
         self.imposters = imposters
-        self.running_imposters_by_port = {}
+        self.running_imposters_by_port = {}  # type: MutableMapping[int, Imposter]
         return self
 
     def __enter__(self) -> "MountebankServer":
@@ -168,7 +168,7 @@ class ExecutingMountebankServer(MountebankServer):
     :param timeout: How long to wait for the Mountebank server to start.
     """
 
-    running = set()
+    running = set()  # type: Set[int]
     start_lock = Lock()
 
     def __init__(

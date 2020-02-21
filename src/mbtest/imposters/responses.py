@@ -69,14 +69,14 @@ class Response(JsonSerializable):
     def as_structure(self) -> JsonStructure:
         return {"is": (self._is_structure()), "_behaviors": self._behaviors_structure()}
 
-    def _is_structure(self) -> Mapping[str, str]:
+    def _is_structure(self) -> JsonStructure:
         is_structure = {"statusCode": self.status_code, "_mode": self.mode.value}
         self._add_if_true(is_structure, "body", self.body)
         self._add_if_true(is_structure, "headers", self.headers)
         return is_structure
 
-    def _behaviors_structure(self) -> Mapping[str, str]:
-        behaviors = {}
+    def _behaviors_structure(self) -> JsonStructure:
+        behaviors = {}  # type: JsonStructure
         self._add_if_true(behaviors, "wait", self.wait)
         self._add_if_true(behaviors, "repeat", self.repeat)
         self._add_if_true(behaviors, "decorate", self.decorate)

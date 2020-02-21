@@ -1,7 +1,7 @@
 # encoding=utf-8
 from collections.abc import Sequence
 from enum import Enum
-from typing import Iterable, Mapping, Optional, Union
+from typing import Iterable, List, Mapping, Optional, Union
 
 from furl import furl
 from mbtest.imposters.base import JsonSerializable, JsonStructure
@@ -10,7 +10,7 @@ from mbtest.imposters.responses import Response
 
 
 class Stub(JsonSerializable):
-    """Represents a Mountebank stub - see http://www.mbtest.org/docs/api/stubs.
+    """Represents a `Mountebank stub <http://www.mbtest.org/docs/api/stubs>`_.
     Think of a stub as a behavior, triggered by a matching predicate.
 
     :param predicates: Trigger this stub if one of these predicates matches the request
@@ -20,7 +20,7 @@ class Stub(JsonSerializable):
     def __init__(
         self,
         predicates: Optional[Union[Predicate, Iterable[Predicate]]] = None,
-        responses: Optional[Union[Response, Iterable[Response], "Proxy", Iterable["Proxy"]]] = None,
+        responses: Optional[Union[Response, "Proxy", Iterable[Union[Response, "Proxy"]]]] = None,
     ) -> None:
         if predicates:
             self.predicates = predicates if isinstance(predicates, Sequence) else [predicates]
@@ -39,7 +39,7 @@ class Stub(JsonSerializable):
 
     @staticmethod
     def from_structure(structure: JsonStructure) -> "Stub":
-        responses = []
+        responses = []  # type: List[Union[Proxy, Response]]
         for response in structure.get("responses", ()):
             if "proxy" in response:
                 responses.append(Proxy.from_structure(response))
@@ -52,12 +52,13 @@ class Stub(JsonSerializable):
 
 
 class Proxy(JsonSerializable):
-    """TODO
+    """Represents a `Mountebank proxy <http://www.mbtest.org/docs/api/proxies>`_.
 
-    :param to: TODO"""
+    :param to: The origin server, to which the request should proxy.
+    """
 
     class Mode(Enum):
-        """TODO Mode"""
+        """Defines the replay behavior of the proxy."""
 
         ONCE = "proxyOnce"
         ALWAYS = "proxyAlways"
