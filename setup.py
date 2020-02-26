@@ -30,7 +30,7 @@ setup(
     url="https://github.com/brunns/mbtest/",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    package_data={"": ["README.md"]},
+    package_data={"": ["README.md"], "mbtest": ["py.typed"]},
     include_package_data=True,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
