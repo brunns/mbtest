@@ -6,12 +6,13 @@ import subprocess  # nosec
 import time
 from pathlib import Path
 from threading import Lock
-from typing import Iterable, List, Mapping, MutableMapping, Set, Union
+from typing import Iterable, List, Mapping, MutableMapping, Set, Union, cast
 
 import requests
-from _pytest.fixtures import FixtureRequest
+from _pytest.fixtures import FixtureRequest  # type: ignore
 from furl import furl
 from mbtest.imposters import Imposter
+from mbtest.imposters.base import JsonStructure
 from requests import RequestException
 
 DEFAULT_MB_EXECUTABLE = str(
@@ -117,21 +118,21 @@ class MountebankServer:
             post = requests.post(self.server_url, json=json, timeout=10)
             post.raise_for_status()
             definition.port = post.json()["port"]
-            self.running_imposters_by_port[definition.port] = definition
+            self.running_imposters_by_port[cast("int", definition.port)] = definition
 
     def delete_imposters(self) -> None:
         while self.running_imposters_by_port:
             imposter_port, imposter = self.running_imposters_by_port.popitem()
             requests.delete(self.imposter_url(imposter_port)).raise_for_status()
 
-    def get_actual_requests(self) -> Mapping[int, Imposter]:
-        impostors = {}
+    def get_actual_requests(self) -> Mapping[int, JsonStructure]:
+        requests_by_impostor = {}
         for imposter_port in self.running_imposters_by_port:
             response = requests.get(self.imposter_url(imposter_port), timeout=5)
             response.raise_for_status()
             json = response.json()
-            impostors[imposter_port] = json["requests"]
-        return impostors
+            requests_by_impostor[imposter_port] = json["requests"]
+        return requests_by_impostor
 
     @property
     def server_url(self) -> furl:

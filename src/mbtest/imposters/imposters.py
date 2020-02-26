@@ -1,7 +1,7 @@
 # encoding=utf-8
 import collections.abc as abc
 from enum import Enum
-from typing import Iterable, Optional, Union
+from typing import Iterable, Optional, Union, cast
 
 from furl import furl
 from mbtest.imposters.base import JsonSerializable, JsonStructure
@@ -36,7 +36,9 @@ class Imposter(JsonSerializable):
         name: Optional[str] = None,
         record_requests: bool = True,
     ) -> None:
-        stubs = stubs if isinstance(stubs, abc.Sequence) else [stubs]
+        stubs = cast(
+            "Iterable[Union[Stub, Proxy]]", stubs if isinstance(stubs, abc.Sequence) else [stubs]
+        )
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
         self.stubs = [Stub(responses=stub) if isinstance(stub, Proxy) else stub for stub in stubs]
         self.port = port

@@ -49,7 +49,7 @@ docs:  ## Generate documentation
 	tox -e docs
 
 .PHONY: precommit
-precommit: test lint coverage docs ## Pre-commit targets
+precommit: test lint coverage mypy docs ## Pre-commit targets
 	@ python -m this
 
 .PHONY: recreate

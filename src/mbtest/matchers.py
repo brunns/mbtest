@@ -1,44 +1,69 @@
 # encoding=utf-8
+from typing import Mapping, Union
+
+from furl import furl
 from hamcrest import anything
 from hamcrest.core.base_matcher import BaseMatcher
 from hamcrest.core.core.isanything import IsAnything
+from hamcrest.core.description import Description
 from hamcrest.core.helpers.wrap_matcher import wrap_matcher
+from hamcrest.core.matcher import Matcher
+from mbtest.server import MountebankServer
 from more_itertools import flatten
 
 ANYTHING = anything()
 
 
 def had_request(
-    method=ANYTHING, path=ANYTHING, query=ANYTHING, headers=ANYTHING, body=ANYTHING, times=ANYTHING
-):
+    method: Union[str, Matcher[str]] = ANYTHING,
+    path: Union[furl, str, Matcher[Union[furl, str]]] = ANYTHING,
+    query: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
+    headers: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
+    body: Union[str, Matcher[str]] = ANYTHING,
+    times: Union[int, Matcher[int]] = ANYTHING,
+) -> Matcher[MountebankServer]:
     """Mountebank server has recorded call matching
 
-    :param method: TODO..."""
+    :param method: Request's method matched...
+    :param path: Request's path matched...
+    :param query: Request's query matched...
+    :param headers: Request's headers matched...
+    :param body: Request's body matched...
+    :param times: Request's number of times called matched matched...
+    """
     return HadRequest(
         method=method, path=path, query=query, headers=headers, body=body, times=times
     )
 
 
 class HadRequest(BaseMatcher):
-    """Mountebank server has recorded call matching"""
+    """Mountebank server has recorded call matching
+
+    :param method: Request's method matched...
+    :param path: Request's path matched...
+    :param query: Request's query matched...
+    :param headers: Request's headers matched...
+    :param body: Request's body matched...
+    :param times: Request's number of times called matched matched...
+    """
 
     def __init__(
         self,
-        method=ANYTHING,
-        path=ANYTHING,
-        query=ANYTHING,
-        headers=ANYTHING,
-        body=ANYTHING,
-        times=ANYTHING,
+        method: Union[str, Matcher[str]] = ANYTHING,
+        path: Union[furl, str, Matcher[Union[furl, str]]] = ANYTHING,
+        query: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
+        headers: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
+        body: Union[str, Matcher[str]] = ANYTHING,
+        times: Union[int, Matcher[int]] = ANYTHING,
     ):
-        self.method = wrap_matcher(method)
-        self.path = wrap_matcher(path)
-        self.query = wrap_matcher(query)
-        self.headers = wrap_matcher(headers)
-        self.body = wrap_matcher(body)
-        self.times = wrap_matcher(times)
+        self.method = wrap_matcher(method)  # type: Matcher[str]
+        self.path = wrap_matcher(path)  # type: Matcher[Union[furl, str]]
+        self.query = wrap_matcher(query)  # type Matcher[Mapping[str, str]]
+        self.headers = wrap_matcher(headers)  # type Matcher[Mapping[str, str]]
+        self.body = wrap_matcher(body)  # type: Matcher[str]
+        self.times = wrap_matcher(times)  # type: Matcher[int]
 
-    def describe_to(self, description):
+    def describe_to(self, description: Description) -> None:
         if isinstance(self.times, IsAnything):
             description.append_text("call with")
         else:
@@ -46,26 +71,26 @@ class HadRequest(BaseMatcher):
 
         self._optional_description(description)
 
-    def _optional_description(self, description):
-        self._append_matcher_descrption(description, self.method, "method")
-        self._append_matcher_descrption(description, self.path, "path")
-        self._append_matcher_descrption(description, self.query, "query parameters")
-        self._append_matcher_descrption(description, self.headers, "headers")
-        self._append_matcher_descrption(description, self.body, "body")
+    def _optional_description(self, description: Description) -> None:
+        self._append_matcher_description(description, self.method, "method")
+        self._append_matcher_description(description, self.path, "path")
+        self._append_matcher_description(description, self.query, "query parameters")
+        self._append_matcher_description(description, self.headers, "headers")
+        self._append_matcher_description(description, self.body, "body")
 
     @staticmethod
-    def _append_matcher_descrption(description, matcher, text):
+    def _append_matcher_description(description: Description, matcher: Matcher, text: str) -> None:
         if not isinstance(matcher, IsAnything):
             description.append_text(" {0}: ".format(text)).append_description_of(matcher)
 
-    def describe_mismatch(self, server, description):
+    def describe_mismatch(self, server: MountebankServer, description: Description) -> None:
         description.append_text("found ").append_description_of(len(self.matching_requests))
         description.append_text(" matching requests: ").append_description_of(
             self.matching_requests
         )
         description.append_text(". All requests: ").append_description_of(self.all_requests)
 
-    def _matches(self, server):
+    def _matches(self, server: MountebankServer) -> bool:
         self.all_requests = list(flatten(server.get_actual_requests().values()))
         self.matching_requests = [
             request
@@ -83,39 +108,60 @@ class HadRequest(BaseMatcher):
         return self.times.matches(len(self.matching_requests))
 
 
-def email_sent(to=ANYTHING, subject=ANYTHING, body_text=ANYTHING):
-    """TODO"""
+def email_sent(
+    to: Union[str, Matcher[str]] = ANYTHING,
+    subject: Union[str, Matcher[str]] = ANYTHING,
+    body_text: Union[str, Matcher[str]] = ANYTHING,
+) -> Matcher[MountebankServer]:
+    """Mountebank SMTP server was asked to sent email matching:
+
+    :param to: Email's to field matched...
+    :param subject: Email's subject field matched...
+    :param body_text: Email's body matched...
+    """
     return EmailSent(to, subject, body_text)
 
 
 class EmailSent(BaseMatcher):
-    def __init__(self, to=ANYTHING, subject=ANYTHING, body_text=ANYTHING):
+    """Mountebank SMTP server was asked to sent email matching:
+
+    :param to: Email's to field matched...
+    :param subject: Email's subject field matched...
+    :param body_text: Email's body matched...
+    """
+
+    def __init__(
+        self,
+        to: Union[str, Matcher[str]] = ANYTHING,
+        subject: Union[str, Matcher[str]] = ANYTHING,
+        body_text: Union[str, Matcher[str]] = ANYTHING,
+    ) -> None:
         self.body_text = wrap_matcher(body_text)
         self.subject = wrap_matcher(subject)
         self.to = wrap_matcher(to)
 
-    def describe_to(self, description):
+    def describe_to(self, description: Description) -> None:
         description.append_text("email with")
         self._optional_description(description)
 
-    def _optional_description(self, description):
-        self._append_matcher_descrption(description, self.body_text, "body text")
-        self._append_matcher_descrption(description, self.subject, "subject")
-        self._append_matcher_descrption(description, self.to, "to")
+    def _optional_description(self, description: Description) -> None:
+        self._append_matcher_description(description, self.body_text, "body text")
+        self._append_matcher_description(description, self.subject, "subject")
+        self._append_matcher_description(description, self.to, "to")
 
     @staticmethod
-    def _append_matcher_descrption(description, matcher, text):
+    def _append_matcher_description(description: Description, matcher: Matcher, text: str) -> None:
         if not isinstance(matcher, IsAnything):
             description.append_text(" {0}: ".format(text)).append_description_of(matcher)
 
-    def describe_mismatch(self, server, description):
+    def describe_mismatch(self, server: MountebankServer, description: Description) -> None:
         description.append_text("found ").append_description_of(len(self.matching_requests))
         description.append_text(" matching requests: ").append_description_of(
             self.matching_requests
         )
         description.append_text(". All requests: ").append_description_of(self.all_requests)
 
-    def _matches(self, server):
+    def _matches(self, server: MountebankServer) -> bool:
         self.all_requests = list(flatten(server.get_actual_requests().values()))
         self.matching_requests = [
             request
