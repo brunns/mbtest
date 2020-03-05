@@ -1,7 +1,7 @@
 # encoding=utf-8
 import abc
 from enum import Enum
-from typing import Mapping, cast
+from typing import Mapping, Type, cast
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 
@@ -30,7 +30,7 @@ class Using(JsonSerializable, metaclass=abc.ABCMeta):
     def from_structure(structure: JsonStructure) -> "Using":
         method = Using.Method(structure["method"])
         cls = cast(
-            "Using",
+            Type["Using"],
             {
                 Using.Method.REGEX: UsingRegex,
                 Using.Method.XPATH: UsingXpath,

@@ -37,7 +37,7 @@ class Imposter(JsonSerializable):
         record_requests: bool = True,
     ) -> None:
         stubs = cast(
-            "Iterable[Union[Stub, Proxy]]", stubs if isinstance(stubs, abc.Sequence) else [stubs]
+            Iterable[Union[Stub, Proxy]], stubs if isinstance(stubs, abc.Sequence) else [stubs]
         )
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
         self.stubs = [Stub(responses=stub) if isinstance(stub, Proxy) else stub for stub in stubs]
