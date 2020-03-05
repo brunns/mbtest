@@ -6,7 +6,7 @@ import subprocess  # nosec
 import time
 from pathlib import Path
 from threading import Lock
-from typing import Iterable, List, Mapping, MutableMapping, Set, Union, cast
+from typing import Iterable, List, Mapping, MutableMapping, Sequence, Set, Union, cast
 
 import requests
 from _pytest.fixtures import FixtureRequest  # type: ignore
@@ -54,6 +54,12 @@ def mock_server(
     :param executable: Alternate location for the Mountebank executable.
     :param port: Server port.
     :param timeout: specifies how long to wait for the Mountebank server to start.
+    :param debug: Start the server in debug mode, which records all requests. This needs to be `True` for the
+        :py:func:`mbtest.matchers.had_request` matcher to work.
+    :param allow_injection: Allow JavaScript injection. If `True`, `local_only` should also be `True`,as per
+        `Mountebank security <http://www.mbtest.org/docs/security>`_.
+    :param local_only: Accept request only from localhost.
+    :param data_dir: Persist all operations to disk, in this directory.
 
     :returns: Mock server.
     """
@@ -92,7 +98,7 @@ class MountebankServer:
     def __init__(self, port: int):
         self.server_port = port
 
-    def __call__(self, imposters: List[Imposter]) -> "MountebankServer":
+    def __call__(self, imposters: Sequence[Imposter]) -> "MountebankServer":
         self.imposters = imposters
         self.running_imposters_by_port = {}  # type: MutableMapping[int, Imposter]
         return self
@@ -118,7 +124,7 @@ class MountebankServer:
             post = requests.post(self.server_url, json=json, timeout=10)
             post.raise_for_status()
             definition.port = post.json()["port"]
-            self.running_imposters_by_port[cast("int", definition.port)] = definition
+            self.running_imposters_by_port[cast(int, definition.port)] = definition
 
     def delete_imposters(self) -> None:
         while self.running_imposters_by_port:
@@ -167,6 +173,12 @@ class ExecutingMountebankServer(MountebankServer):
     :param executable: Optional, alternate location for the Mountebank executable.
     :param port: Server port.
     :param timeout: How long to wait for the Mountebank server to start.
+    :param debug: Start the server in debug mode, which records all requests. This needs to be `True` for the
+        :py:func:`mbtest.matchers.had_request` matcher to work.
+    :param allow_injection: Allow JavaScript injection. If `True`, `local_only` should also be `True`,as per
+        `Mountebank security <http://www.mbtest.org/docs/security>`_.
+    :param local_only: Accept request only from localhost.
+    :param data_dir: Persist all operations to disk, in this directory.
     """
 
     running = set()  # type: Set[int]
@@ -177,6 +189,10 @@ class ExecutingMountebankServer(MountebankServer):
         executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
         port: int = 2525,
         timeout: int = 5,
+        debug: bool = True,
+        allow_injection: bool = True,
+        local_only: bool = True,
+        data_dir: Union[str, None] = ".mbdb",
     ) -> None:
         super(ExecutingMountebankServer, self).__init__(port)
         with self.start_lock:
@@ -185,17 +201,8 @@ class ExecutingMountebankServer(MountebankServer):
                     "Already running on port {0}.".format(self.server_port)
                 )
             try:
-                self.mb_process = subprocess.Popen(  # nosec
-                    [
-                        executable,
-                        "--port",
-                        str(port),
-                        "--debug",
-                        "--allowInjection",
-                        "--datadir",
-                        ".mbdb",
-                    ]
-                )
+                options = self._build_options(port, debug, allow_injection, local_only, data_dir)
+                self.mb_process = subprocess.Popen([executable] + options)  # nosec
                 self._await_start(timeout)
                 self.running.add(port)
                 logger.info(
@@ -207,6 +214,28 @@ class ExecutingMountebankServer(MountebankServer):
                     executable,
                 )
                 raise
+
+    @staticmethod
+    def _build_options(
+        port: int, debug: bool, allow_injection: bool, local_only: bool, data_dir: Union[str, None]
+    ):
+        options = [
+            "start",
+            "--port",
+            str(port),
+        ]  # type: List[str]
+        if debug:
+            options.append("--debug")
+        if allow_injection:
+            options.append("--allowInjection")
+        if local_only:
+            options.append("--localOnly")
+        if data_dir:
+            options += [
+                "--datadir",
+                data_dir,
+            ]
+        return options
 
     def _await_start(self, timeout: int) -> None:
         start_time = time.time()
