@@ -14,7 +14,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../src/brunns/'))
+sys.path.insert(0, os.path.abspath('../src/'))
 
 
 # -- Project information -----------------------------------------------------
@@ -24,7 +24,7 @@ copyright = '2020, Simon Brunning'
 author = 'Simon Brunning'
 
 # The short X.Y version
-version = '2.0'
+version = '2.3 '
 # The full version, including alpha/beta/rc tags
 release = '2.3.0'
 
@@ -53,6 +53,8 @@ intersphinx_mapping = {
     'python': ('http://docs.python.org/3', None),
     'requests': ('http://requests.readthedocs.org/en/latest', None),
     'pyhamcrest': ('http://pyhamcrest.readthedocs.org/en/latest', None),
+    'brunns-matchers': ('http://brunns-matchers.readthedocs.org/en/latest', None),
+    'pytest': ('https://docs.pytest.org/en/latest/', None),
 }
 
 # Add any paths that contain templates here, relative to this directory.
