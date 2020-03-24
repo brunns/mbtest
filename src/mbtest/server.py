@@ -27,6 +27,10 @@ def mock_server(
     executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
     port: int = 2525,
     timeout: int = 5,
+    debug: bool = True,
+    allow_injection: bool = True,
+    local_only: bool = True,
+    data_dir: Union[str, None] = ".mbdb",
 ) -> "ExecutingMountebankServer":
     """`Pytest fixture <https://docs.pytest.org/en/latest/fixture.html>`_, making available a mock server, running one
     or more impostors, one for each domain being mocked.
@@ -63,7 +67,15 @@ def mock_server(
 
     :returns: Mock server.
     """
-    server = ExecutingMountebankServer(executable=executable, port=port, timeout=timeout)
+    server = ExecutingMountebankServer(
+        executable=executable,
+        port=port,
+        timeout=timeout,
+        debug=debug,
+        allow_injection=allow_injection,
+        local_only=local_only,
+        data_dir=data_dir,
+    )
 
     def close():
         server.close()
