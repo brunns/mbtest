@@ -2,7 +2,7 @@
 import logging
 from unittest.mock import patch
 
-from mbtest.server import ExecutingMountebankServer
+from mbtest.server import DEFAULT_MB_EXECUTABLE, ExecutingMountebankServer
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ def test_server_default_options():
         # Then
         popen.assert_called_with(
             [
-                "node_modules/.bin/mb",
+                DEFAULT_MB_EXECUTABLE,
                 "start",
                 "--port",
                 "1234",
