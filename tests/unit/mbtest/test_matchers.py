@@ -2,7 +2,7 @@
 from unittest.mock import MagicMock
 
 from brunns.matchers.matcher import mismatches_with
-from hamcrest import all_of, assert_that, contains_string, has_string, not_
+from hamcrest import all_of, assert_that, contains_string, has_entries, has_string, not_
 from mbtest.matchers import email_sent, had_request
 
 
@@ -15,18 +15,21 @@ def test_request_matcher():
     # When
 
     # Then
-    assert_that(server, had_request(path="/test", method="GET"))
-    assert_that(server, had_request(path="/test", method="GET", times=2))
-    assert_that(server, not_(had_request(path="/somewhereelse", method="GET")))
+    assert_that(server, had_request().with_path("/test").and_method("GET"))
+    assert_that(server, had_request().with_times(2).and_path("/test").and_method("GET"))
+    assert_that(server, not_(had_request().with_path("/somewhereelse").and_method("GET")))
     assert_that(
-        had_request(path="/sausages", method="PUT"),
+        had_request().with_path("/sausages").and_method("PUT"),
         has_string("call with method: 'PUT' path: '/sausages'"),
     )
     assert_that(
-        had_request(path="/sausages", times=4), has_string("<4> call(s) with path: '/sausages'")
+        had_request().with_times(4).and_query(has_entries(a="b")).and_body("chips"),
+        has_string(
+            "<4> call(s) with query parameters: a dictionary containing {'a': 'b'} body: 'chips'"
+        ),
     )
     assert_that(
-        had_request(path="/sausages", method="PUT"),
+        had_request().with_path("/sausages").and_method("PUT").and_times(99),
         mismatches_with(
             server,
             all_of(

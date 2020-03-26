@@ -51,7 +51,7 @@ def mock_server(
             with mock_server(imposter) as s:
                 r = requests.get('{0}/test'.format(imposter.url))
 
-                assert_that(r, is_(response_with(status_code=200, body="sausages")))
+                assert_that(r, is_response().with_status_code(200).and_body("sausages"))
                 assert_that(s, had_request(path='/test', method="GET"))
 
     :param request: Request for a fixture from a test or fixture function.
@@ -99,7 +99,7 @@ class MountebankServer:
             with mb(imposter) as s:
                 r = requests.get('{0}/test'.format(imposter.url))
 
-                assert_that(r, is_(response_with(status_code=200, body="sausages")))
+                assert_that(r, is_response().with_status_code(200).and_body("sausages"))
                 assert_that(s, had_request(path='/test', method="GET"))
 
     Impostors will be torn down when the `with` block is exited.
@@ -174,7 +174,7 @@ class ExecutingMountebankServer(MountebankServer):
             with mb(imposter) as s:
                 r = requests.get('{0}/test'.format(imposter.url))
 
-                assert_that(r, is_(response_with(status_code=200, body="sausages")))
+                assert_that(r, is_response().with_status_code(200).and_body("sausages"))
                 assert_that(s, had_request(path='/test', method="GET"))
 
             mb.close()

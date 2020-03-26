@@ -37,8 +37,8 @@ Install with pip:
 
 ```python
 import requests
-from hamcrest import assert_that, is_
-from brunns.matchers.response import response_with
+from hamcrest import assert_that
+from brunns.matchers.response import is_response
 from mbtest.matchers import had_request
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 
@@ -52,9 +52,9 @@ def test_request_to_mock_server(mock_server):
         response = requests.get("{}/test".format(imposter.url))
 
         assert_that("We got the expected response", 
-                    response, is_(response_with(status_code=200, body="sausages")))
+                    response, is_response().with_status_code(200).and_body("sausages"))
         assert_that("The mock server recorded the request", 
-                    server, had_request(path="/test", method="GET"))
+                    server, had_request().with_path("/test").and_method("GET"))
 ```
 
 Needs a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily defined in [`conftest.py`](https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions):

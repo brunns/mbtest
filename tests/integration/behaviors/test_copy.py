@@ -2,8 +2,8 @@
 import logging
 
 import requests
-from brunns.matchers.response import response_with
-from hamcrest import assert_that, has_entry, is_
+from brunns.matchers.response import is_response
+from hamcrest import assert_that, has_entry
 from mbtest.imposters import Copy, Imposter, Response, Stub, UsingJsonpath, UsingRegex, UsingXpath
 from tests.utils.data2xml import data2xml, et2string
 
@@ -33,13 +33,10 @@ def test_regex_copy(mock_server):
 
         assert_that(
             response,
-            is_(
-                response_with(
-                    status_code=456,
-                    body="Hello, Alice!",
-                    headers=has_entry("X-Test", "Header value"),
-                )
-            ),
+            is_response()
+            .with_status_code(456)
+            .with_body("Hello, Alice!")
+            .with_headers(has_entry("X-Test", "Header value")),
         )
 
 
@@ -55,7 +52,7 @@ def test_xpath_copy(mock_server):
     with mock_server(imposter):
         response = requests.post(imposter.url, data=BOOKS_XML)
 
-        assert_that(response, is_(response_with(body="Have you read Harry Potter?")))
+        assert_that(response, is_response().with_body("Have you read Harry Potter?"))
 
 
 def test_xpath_copy_namespaced(mock_server):
@@ -77,7 +74,7 @@ def test_xpath_copy_namespaced(mock_server):
     with mock_server(imposter):
         response = requests.post(imposter.url, data=BOOKS_XML_NAMESPACED)
 
-        assert_that(response, is_(response_with(body="Have you read Game of Thrones?")))
+        assert_that(response, is_response().with_body("Have you read Game of Thrones?"))
 
 
 def test_jsonpath_copy(mock_server):
@@ -106,7 +103,7 @@ def test_jsonpath_copy(mock_server):
             },
         )
 
-        assert_that(response, is_(response_with(body="Have you read Game of Thrones?")))
+        assert_that(response, is_response().with_body("Have you read Game of Thrones?"))
 
 
 BOOKS_XML = et2string(

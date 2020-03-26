@@ -2,7 +2,7 @@
 import logging
 
 import requests
-from brunns.matchers.response import response_with
+from brunns.matchers.response import is_response
 from hamcrest import assert_that
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 
@@ -20,8 +20,8 @@ def test_multiple_imposters(mock_server):
         r1 = requests.get("{0}/test1".format(imposters[0].url))
         r2 = requests.get("{0}/test2".format(imposters[1].url))
 
-    assert_that(r1, response_with(status_code=200, body="sausages"))
-    assert_that(r2, response_with(status_code=201, body="chips"))
+    assert_that(r1, is_response().with_status_code(200).and_body("sausages"))
+    assert_that(r2, is_response().with_status_code(201).and_body("chips"))
 
 
 def test_default_imposter(mock_server):
@@ -31,4 +31,4 @@ def test_default_imposter(mock_server):
         logger.debug("server: %s", s)
         r = requests.get("{0}/".format(imposter.url))
 
-    assert_that(r, response_with(status_code=200, body=""))
+    assert_that(r, is_response().with_status_code(200).and_body(""))

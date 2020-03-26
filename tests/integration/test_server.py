@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 import requests
-from brunns.matchers.response import response_with
-from hamcrest import assert_that, is_
+from brunns.matchers.response import is_response
+from hamcrest import assert_that
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 from mbtest.matchers import had_request
 from mbtest.server import (
@@ -29,10 +29,12 @@ def test_request_to_mock_server(mock_server):
         assert_that(
             "We got the expected response",
             response,
-            is_(response_with(status_code=200, body="sausages")),
+            is_response().with_status_code(200).and_body("sausages"),
         )
         assert_that(
-            "The mock server recorded the request", server, had_request(path="/test", method="GET")
+            "The mock server recorded the request",
+            server,
+            had_request().with_path("/test").and_method("GET"),
         )
 
 
@@ -89,8 +91,8 @@ def test_allow_multiple_servers_on_different_ports():
             response1 = requests.get("{0}/test".format(imposter1.url))
             response2 = requests.get("{0}/test".format(imposter2.url))
 
-            assert_that(response1, is_(response_with(status_code=200, body="sausages")))
-            assert_that(response2, is_(response_with(status_code=200, body="bacon")))
+            assert_that(response1, is_response().with_status_code(200).and_body("sausages"))
+            assert_that(response2, is_response().with_status_code(200).and_body("bacon"))
 
     finally:
         server1.close()

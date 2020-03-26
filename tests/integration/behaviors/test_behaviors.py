@@ -3,9 +3,9 @@ import logging
 
 import requests
 from brunns.matchers.object import between
-from brunns.matchers.response import response_with
+from brunns.matchers.response import is_response
 from contexttimer import Timer
-from hamcrest import assert_that, is_
+from hamcrest import assert_that
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 
 logger = logging.getLogger(__name__)
@@ -46,6 +46,6 @@ def test_repeat(mock_server):
         r3 = requests.get(imposter.url)
 
         # Then
-        assert_that(r1, is_(response_with(body="oranges")))
-        assert_that(r2, is_(response_with(body="oranges")))
-        assert_that(r3, is_(response_with(body="apples")))
+        assert_that(r1, is_response().with_body("oranges"))
+        assert_that(r2, is_response().with_body("oranges"))
+        assert_that(r3, is_response().with_body("apples"))

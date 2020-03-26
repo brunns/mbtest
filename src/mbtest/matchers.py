@@ -1,5 +1,5 @@
 # encoding=utf-8
-from typing import Mapping, Union
+from typing import Any, Mapping, Union
 
 from furl import furl
 from hamcrest import anything
@@ -72,16 +72,20 @@ class HadRequest(BaseMatcher):
         self._optional_description(description)
 
     def _optional_description(self, description: Description) -> None:
-        self._append_matcher_description(description, self.method, "method")
-        self._append_matcher_description(description, self.path, "path")
-        self._append_matcher_description(description, self.query, "query parameters")
-        self._append_matcher_description(description, self.headers, "headers")
-        self._append_matcher_description(description, self.body, "body")
+        self.append_matcher_description(self.method, "method", description)
+        self.append_matcher_description(self.path, "path", description)
+        self.append_matcher_description(self.query, "query parameters", description)
+        self.append_matcher_description(self.headers, "headers", description)
+        self.append_matcher_description(self.body, "body", description)
 
     @staticmethod
-    def _append_matcher_description(description: Description, matcher: Matcher, text: str) -> None:
-        if not isinstance(matcher, IsAnything):
-            description.append_text(" {0}: ".format(text)).append_description_of(matcher)
+    def append_matcher_description(
+        field_matcher: Matcher[Any], field_name: str, description: Description
+    ) -> None:
+        if not isinstance(field_matcher, IsAnything):
+            description.append_text(" {0}: ".format(field_name)).append_description_of(
+                field_matcher
+            )
 
     def describe_mismatch(self, server: MountebankServer, description: Description) -> None:
         description.append_text("found ").append_description_of(len(self.matching_requests))
@@ -106,6 +110,48 @@ class HadRequest(BaseMatcher):
             return len(self.matching_requests) > 0
 
         return self.times.matches(len(self.matching_requests))
+
+    def with_method(self, method: Union[str, Matcher[str]]):
+        self.method = wrap_matcher(method)
+        return self
+
+    def and_method(self, method: Union[str, Matcher[str]]):
+        return self.with_method(method)
+
+    def with_path(self, path: Union[furl, str, Matcher[Union[furl, str]]]):
+        self.path = wrap_matcher(path)
+        return self
+
+    def and_path(self, path: Union[furl, str, Matcher[Union[furl, str]]]):
+        return self.with_path(path)
+
+    def with_query(self, query: Union[Mapping[str, str], Matcher[Mapping[str, str]]]):
+        self.query = wrap_matcher(query)
+        return self
+
+    def and_query(self, query: Union[Mapping[str, str], Matcher[Mapping[str, str]]]):
+        return self.with_query(query)
+
+    def with_headers(self, headers: Union[Mapping[str, str], Matcher[Mapping[str, str]]]):
+        self.headers = wrap_matcher(headers)
+        return self
+
+    def and_headers(self, headers: Union[Mapping[str, str], Matcher[Mapping[str, str]]]):
+        return self.with_headers(headers)
+
+    def with_body(self, body: Union[str, Matcher[str]]):
+        self.body = wrap_matcher(body)
+        return self
+
+    def and_body(self, body: Union[str, Matcher[str]]):
+        return self.with_body(body)
+
+    def with_times(self, times: Union[int, Matcher[int]]):
+        self.times = wrap_matcher(times)
+        return self
+
+    def and_times(self, times: Union[int, Matcher[int]]):
+        return self.with_times(times)
 
 
 def email_sent(

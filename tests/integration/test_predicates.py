@@ -2,8 +2,8 @@
 import logging
 
 import requests
-from brunns.matchers.response import response_with
-from hamcrest import assert_that, is_, not_
+from brunns.matchers.response import is_response
+from hamcrest import assert_that, not_
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 
 logger = logging.getLogger(__name__)
@@ -23,8 +23,8 @@ def test_and_predicate_and_query_strings(mock_server):
         r1 = requests.get("{0}/".format(imposter.url), params={"dinner": "chips", "foo": "bar"})
         r2 = requests.get("{0}/".format(imposter.url), params={"dinner": "chips"})
 
-        assert_that(r1, is_(response_with(status_code=200, body="black pudding")))
-        assert_that(r2, not_(response_with(status_code=200, body="black pudding")))
+        assert_that(r1, is_response().with_status_code(200).and_body("black pudding"))
+        assert_that(r2, not_(is_response().with_status_code(200).and_body("black pudding")))
 
 
 def test_or_predicate_and_body(mock_server):
@@ -39,9 +39,9 @@ def test_or_predicate_and_body(mock_server):
         r2 = requests.get(imposter.url, data="bar")
         r3 = requests.get(imposter.url, data="baz")
 
-        assert_that(r1, is_(response_with(status_code=200, body="oranges")))
-        assert_that(r2, is_(response_with(status_code=200, body="oranges")))
-        assert_that(r3, not_(response_with(status_code=200, body="oranges")))
+        assert_that(r1, is_response().with_status_code(200).and_body("oranges"))
+        assert_that(r2, is_response().with_status_code(200).and_body("oranges"))
+        assert_that(r3, not_(is_response().with_status_code(200).and_body("oranges")))
 
 
 def test_query_predicate(mock_server):
@@ -57,9 +57,9 @@ def test_query_predicate(mock_server):
         r3 = requests.get(imposter.url)
 
         # Then
-        assert_that(r1, is_(response_with(body="oranges")))
-        assert_that(r2, is_(response_with(body=not_("oranges"))))
-        assert_that(r3, is_(response_with(body=not_("oranges"))))
+        assert_that(r1, is_response().with_body("oranges"))
+        assert_that(r2, is_response().with_body(not_("oranges")))
+        assert_that(r3, is_response().with_body(not_("oranges")))
 
 
 def test_headers_predicate(mock_server):
@@ -75,9 +75,9 @@ def test_headers_predicate(mock_server):
         r3 = requests.get(imposter.url)
 
         # Then
-        assert_that(r1, is_(response_with(body="oranges")))
-        assert_that(r2, is_(response_with(body=not_("oranges"))))
-        assert_that(r3, is_(response_with(body=not_("oranges"))))
+        assert_that(r1, is_response().with_body("oranges"))
+        assert_that(r2, is_response().with_body(not_("oranges")))
+        assert_that(r3, is_response().with_body(not_("oranges")))
 
 
 def test_methods(mock_server):
@@ -103,8 +103,8 @@ def test_methods(mock_server):
         head = requests.head(imposter.url)
 
         # Then
-        assert_that(delete, is_(response_with(body="delete")))
-        assert_that(post, is_(response_with(body="post")))
-        assert_that(put, is_(response_with(body="put")))
-        assert_that(get, is_(response_with(body="get")))
-        assert_that(head, is_(response_with(status_code=789)))
+        assert_that(delete, is_response().with_body("delete"))
+        assert_that(post, is_response().with_body("post"))
+        assert_that(put, is_response().with_body("put"))
+        assert_that(get, is_response().with_body("get"))
+        assert_that(head, is_response().with_status_code(789))

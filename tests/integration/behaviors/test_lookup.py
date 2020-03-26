@@ -3,8 +3,8 @@ import logging
 from pathlib import Path
 
 import requests
-from brunns.matchers.response import response_with
-from hamcrest import assert_that, has_entry, is_
+from brunns.matchers.response import is_response
+from hamcrest import assert_that, has_entry
 from mbtest.imposters import Imposter, Key, Lookup, Response, Stub, UsingRegex
 
 logger = logging.getLogger(__name__)
@@ -30,13 +30,10 @@ def test_lookup(mock_server):
 
         assert_that(
             response,
-            is_(
-                response_with(
-                    status_code=400,
-                    body="Hello liquid, have you done your farmer today?",
-                    headers=has_entry("X-Tree", "mango"),
-                )
-            ),
+            is_response()
+            .with_status_code(400)
+            .with_body("Hello liquid, have you done your farmer today?")
+            .with_headers(has_entry("X-Tree", "mango")),
         )
 
 
@@ -60,11 +57,8 @@ def test_lookup_with_Path_type(mock_server):
 
         assert_that(
             response,
-            is_(
-                response_with(
-                    status_code=400,
-                    body="Hello liquid, have you done your farmer today?",
-                    headers=has_entry("X-Tree", "mango"),
-                )
-            ),
+            is_response()
+            .with_status_code(400)
+            .with_body("Hello liquid, have you done your farmer today?")
+            .with_headers(has_entry("X-Tree", "mango")),
         )

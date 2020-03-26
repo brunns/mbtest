@@ -5,8 +5,8 @@ import platform
 import pytest
 import requests
 from brunns.matchers.data import json_matching
-from brunns.matchers.response import response_with
-from hamcrest import assert_that, is_
+from brunns.matchers.response import is_response
+from hamcrest import assert_that
 from mbtest.imposters import Imposter, Response, Stub
 
 logger = logging.getLogger(__name__)
@@ -36,4 +36,4 @@ def test_shell_transform(mock_server):
     with mock_server(imposter):
         response = requests.post(imposter.url, json={"person": {"name": "Alice"}})
 
-        assert_that(response, is_(response_with(body=json_matching({"person": {"name": "ALICE"}}))))
+        assert_that(response, is_response().with_body(json_matching({"person": {"name": "ALICE"}})))

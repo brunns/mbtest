@@ -3,8 +3,8 @@ import logging
 
 import requests
 from brunns.matchers.data import json_matching
-from brunns.matchers.response import response_with
-from hamcrest import assert_that, is_, not_
+from brunns.matchers.response import is_response
+from hamcrest import assert_that, not_
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 
 logger = logging.getLogger(__name__)
@@ -20,8 +20,8 @@ def test_json_payload(mock_server):
         r2 = requests.post(imposter.url, json={"baz": ["bar", "foo"]})
 
         # Then
-        assert_that(r1, is_(response_with(body="sausages")))
-        assert_that(r2, not_(response_with(body="sausages")))
+        assert_that(r1, is_response().with_body("sausages"))
+        assert_that(r2, not_(is_response().with_body("sausages")))
 
 
 def test_json_response(mock_server):
@@ -33,4 +33,4 @@ def test_json_response(mock_server):
         r = requests.get(imposter.url)
 
         # Then
-        assert_that(r, is_(response_with(body=json_matching({"foo": ["bar", "baz"]}))))
+        assert_that(r, is_response().with_body(json_matching({"foo": ["bar", "baz"]})))
