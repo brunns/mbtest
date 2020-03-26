@@ -22,7 +22,13 @@ def had_request(
     body: Union[str, Matcher[str]] = ANYTHING,
     times: Union[int, Matcher[int]] = ANYTHING,
 ) -> Matcher[MountebankServer]:
-    """Mountebank server has recorded call matching
+    """Mountebank server has recorded call matching.
+
+    Build criteria with `with_` and `and_` methods:
+
+        assert_that(server, had_request().with_path("/test").and_method("GET"))
+
+    Available attributes as per parameters.
 
     :param method: Request's method matched...
     :param path: Request's path matched...
