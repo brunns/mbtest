@@ -81,6 +81,6 @@ install:
   - pip --version
   - node --version
   - npm --version
-  - npm install mountebank@"${MBTEST_VERSION:-2.2}" --production
+  - npm install mountebank@"${MBTEST_VERSION:-2.2.1}" --production
 script:
   - tox -e $TOX_ENV
