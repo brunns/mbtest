@@ -1,6 +1,9 @@
 # encoding=utf-8
 import logging
+import os
+from decimal import Decimal
 
+import pytest
 import requests
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, not_
@@ -110,6 +113,10 @@ def test_methods(mock_server):
         assert_that(head, is_response().with_status_code(789))
 
 
+@pytest.mark.skipif(
+    Decimal(os.environ.get("MBTEST_VERSION", "2.0")) < 2,
+    reason="Injection requires Mountebank version 2.0 or higher.",
+)
 def test_injection_predicate(mock_server):
     # Given
     imposter = Imposter(

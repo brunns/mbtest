@@ -1,6 +1,9 @@
 # encoding=utf-8
 import logging
+import os
+from decimal import Decimal
 
+import pytest
 import requests
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, has_entry
@@ -64,6 +67,10 @@ def test_multiple_responses(mock_server):
         assert_that(r3, is_response().with_body("sausages"))
 
 
+@pytest.mark.skipif(
+    Decimal(os.environ.get("MBTEST_VERSION", "2.0")) < 2,
+    reason="Injection requires Mountebank version 2.0 or higher.",
+)
 def test_injection_response(mock_server):
     imposter = Imposter(
         Stub(
