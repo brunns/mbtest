@@ -105,10 +105,23 @@ class MountebankServer:
     Impostors will be torn down when the `with` block is exited.
 
     :param port: Server port.
+    :param scheme: Server scheme, if not `http`.
+    :param host: Server host, if not `localhost`.
+    :param imposters_path: Impostors path, if not `imposters`.
+
     """
 
-    def __init__(self, port: int):
+    def __init__(
+        self,
+        port: int,
+        scheme: str = "http",
+        host: str = "localhost",
+        imposters_path: str = "imposters",
+    ):
         self.server_port = port
+        self.host = host
+        self.scheme = scheme
+        self.imposters_path = imposters_path
 
     def __call__(self, imposters: Sequence[Imposter]) -> "MountebankServer":
         self.imposters = imposters
@@ -154,7 +167,9 @@ class MountebankServer:
 
     @property
     def server_url(self) -> furl:
-        return furl().set(scheme="http", host="localhost", port=self.server_port, path="imposters")
+        return furl().set(
+            scheme=self.scheme, host=self.host, port=self.server_port, path=self.imposters_path
+        )
 
     def imposter_url(self, imposter_port: int) -> furl:
         return self.server_url.add(path=str(imposter_port))
