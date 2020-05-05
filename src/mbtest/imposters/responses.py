@@ -11,7 +11,15 @@ from mbtest.imposters.behaviors import Copy, Lookup
 
 
 class BaseResponse(JsonSerializable, metaclass=ABCMeta):
-    pass
+    @staticmethod
+    def from_structure(structure: JsonStructure) -> "BaseResponse":
+        if "is" in structure and "_behaviors" in structure:
+            return Response.from_structure(structure)
+        elif "is" in structure and "data" in structure["is"]:
+            return TcpResponse.from_structure(structure)
+        elif "proxy" in structure:
+            return Proxy.from_structure(structure)
+        raise NotImplementedError()  # pragma: no cover
 
 
 class Response(BaseResponse):
