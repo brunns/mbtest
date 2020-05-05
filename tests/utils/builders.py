@@ -5,6 +5,7 @@ from brunns.builder.internet import UrlBuilder
 from mbtest.imposters import (
     Copy,
     Imposter,
+    InjectionResponse,
     Key,
     Lookup,
     Predicate,
@@ -186,6 +187,11 @@ class ResponseBuilder(Builder):
     decorate = lambda: one_of(None, a_string())
     lookup = lambda: one_of(None, LookupBuilder().build())
     shell_transform = lambda: one_of(None, a_string())
+
+
+class InjectionResponseBuilder(Builder):
+    target = InjectionResponse
+    inject = a_string()
 
 
 class StubBuilder(Builder):

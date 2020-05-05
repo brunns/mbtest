@@ -19,6 +19,8 @@ class BaseResponse(JsonSerializable, metaclass=ABCMeta):
             return TcpResponse.from_structure(structure)
         elif "proxy" in structure:
             return Proxy.from_structure(structure)
+        elif "inject" in structure:
+            return InjectionResponse.from_structure(structure)
         raise NotImplementedError()  # pragma: no cover
 
 
@@ -189,3 +191,17 @@ class Proxy(BaseResponse):
         if wait:
             proxy.wait = wait
         return proxy
+
+
+class InjectionResponse(BaseResponse):
+    """TODO"""
+
+    def __init__(self, inject: str) -> None:
+        self.inject = inject
+
+    def as_structure(self) -> JsonStructure:
+        return {"inject": self.inject}
+
+    @staticmethod
+    def from_structure(structure: JsonStructure) -> "InjectionResponse":
+        return InjectionResponse(inject=structure["inject"])

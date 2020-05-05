@@ -5,6 +5,7 @@ import requests
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, has_entry
 from mbtest.imposters import Imposter, Response, Stub
+from mbtest.imposters.responses import InjectionResponse
 
 logger = logging.getLogger(__name__)
 
@@ -61,3 +62,18 @@ def test_multiple_responses(mock_server):
         assert_that(r1, is_response().with_body("sausages"))
         assert_that(r2, is_response().with_body("egg"))
         assert_that(r3, is_response().with_body("sausages"))
+
+
+def test_injection_response(mock_server):
+    imposter = Imposter(
+        Stub(
+            responses=InjectionResponse(
+                inject="function (config) {return {body: config.request.headers['foo'].toUpperCase()};}"
+            )
+        )
+    )
+
+    with mock_server(imposter):
+        response = requests.get(imposter.url, headers={"foo": "bar"})
+
+        assert_that(response, is_response().with_body("BAR"))
