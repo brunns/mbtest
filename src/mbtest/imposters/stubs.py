@@ -1,12 +1,10 @@
 # encoding=utf-8
 from collections.abc import Sequence
-from enum import Enum
-from typing import Iterable, List, Mapping, Optional, Union
+from typing import Iterable, List, Optional, Union
 
-from furl import furl
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.predicates import BasePredicate, Predicate
-from mbtest.imposters.responses import Response
+from mbtest.imposters.responses import BaseResponse, Proxy, Response
 
 
 class Stub(JsonSerializable):
@@ -20,7 +18,7 @@ class Stub(JsonSerializable):
     def __init__(
         self,
         predicates: Optional[Union[BasePredicate, Iterable[BasePredicate]]] = None,
-        responses: Optional[Union[Response, "Proxy", Iterable[Union[Response, "Proxy"]]]] = None,
+        responses: Optional[Union[BaseResponse, Iterable[BaseResponse]]] = None,
     ) -> None:
         if predicates:
             self.predicates = predicates if isinstance(predicates, Sequence) else [predicates]
@@ -49,55 +47,3 @@ class Stub(JsonSerializable):
             [Predicate.from_structure(predicate) for predicate in structure.get("predicates", ())],
             responses,
         )
-
-
-class Proxy(JsonSerializable):
-    """Represents a `Mountebank proxy <http://www.mbtest.org/docs/api/proxies>`_.
-
-    :param to: The origin server, to which the request should proxy.
-    """
-
-    class Mode(Enum):
-        """Defines the replay behavior of the proxy."""
-
-        ONCE = "proxyOnce"
-        ALWAYS = "proxyAlways"
-        TRANSPARENT = "proxyTransparent"
-
-    def __init__(
-        self,
-        to: Union[furl, str],
-        wait: Optional[int] = None,
-        inject_headers: Optional[Mapping[str, str]] = None,
-        mode: "Proxy.Mode" = Mode.ALWAYS,
-    ) -> None:
-        self.to = to
-        self.wait = wait
-        self.inject_headers = inject_headers
-        self.mode = mode
-
-    def as_structure(self) -> JsonStructure:
-        proxy = {
-            "to": self.to.url if isinstance(self.to, furl) else self.to,
-            "mode": self.mode.value,
-        }
-        self._add_if_true(proxy, "injectHeaders", self.inject_headers)
-        response = {"proxy": proxy}
-        if self.wait:
-            response["_behaviors"] = {"wait": self.wait}
-        return response
-
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "Proxy":
-        proxy_structure = structure["proxy"]
-        proxy = Proxy(
-            to=furl(proxy_structure["to"]),
-            inject_headers=proxy_structure["injectHeaders"]
-            if "injectHeaders" in proxy_structure
-            else None,
-            mode=Proxy.Mode(proxy_structure["mode"]),
-        )
-        wait = structure.get("_behaviors", {}).get("wait")
-        if wait:
-            proxy.wait = wait
-        return proxy

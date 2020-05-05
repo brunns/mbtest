@@ -5,7 +5,8 @@ from typing import Iterable, Optional, Union, cast
 
 from furl import furl
 from mbtest.imposters.base import JsonSerializable, JsonStructure
-from mbtest.imposters.stubs import Proxy, Stub
+from mbtest.imposters.responses import Proxy
+from mbtest.imposters.stubs import Stub
 
 
 class Imposter(JsonSerializable):
@@ -30,17 +31,17 @@ class Imposter(JsonSerializable):
 
     def __init__(
         self,
-        stubs: Union[Stub, Proxy, Iterable[Union[Stub, Proxy]]],
+        stubs: Union[Stub, Iterable[Stub]],
         port: Optional[int] = None,
         protocol: Protocol = Protocol.HTTP,
         name: Optional[str] = None,
         record_requests: bool = True,
     ) -> None:
-        stubs = cast(
-            Iterable[Union[Stub, Proxy]], stubs if isinstance(stubs, abc.Sequence) else [stubs]
-        )
+        stubs = cast(Iterable[Stub], stubs if isinstance(stubs, abc.Sequence) else [stubs])
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
-        self.stubs = [Stub(responses=stub) if isinstance(stub, Proxy) else stub for stub in stubs]
+        self.stubs = [
+            Stub(responses=cast(Proxy, stub)) if isinstance(stub, Proxy) else stub for stub in stubs
+        ]
         self.port = port
         self.protocol = (
             protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
