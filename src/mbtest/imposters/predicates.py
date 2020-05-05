@@ -8,12 +8,6 @@ from mbtest.imposters.base import JsonSerializable, JsonStructure
 
 
 class BasePredicate(JsonSerializable, metaclass=ABCMeta):
-    def __and__(self, other: "BasePredicate") -> "AndPredicate":
-        return AndPredicate(self, other)
-
-    def __or__(self, other: "BasePredicate") -> "OrPredicate":
-        return OrPredicate(self, other)
-
     @staticmethod
     def from_structure(structure: JsonStructure) -> "BasePredicate":
         if "and" in structure:
@@ -22,6 +16,8 @@ class BasePredicate(JsonSerializable, metaclass=ABCMeta):
             return OrPredicate.from_structure(structure)
         elif "contains" in structure and "data" in structure["contains"]:
             return TcpPredicate.from_structure(structure)
+        elif "inject" in structure:
+            return InjectionPredicate.from_structure(structure)
         elif set(structure.keys()).intersection(
             {o.value for o in Predicate.Operator}
         ):  # pragma: no cover
@@ -29,7 +25,15 @@ class BasePredicate(JsonSerializable, metaclass=ABCMeta):
         raise NotImplementedError()  # pragma: no cover
 
 
-class Predicate(BasePredicate):
+class LogicallyCombinablePredicate(BasePredicate, metaclass=ABCMeta):
+    def __and__(self, other: "BasePredicate") -> "AndPredicate":
+        return AndPredicate(self, other)
+
+    def __or__(self, other: "BasePredicate") -> "OrPredicate":
+        return OrPredicate(self, other)
+
+
+class Predicate(LogicallyCombinablePredicate):
     """ Represents a `Mountebank predicate <http://www.mbtest.org/docs/api/predicates>`_.
     A predicate can be thought of as a trigger, which may or may not match a request.
 
@@ -142,7 +146,7 @@ class Predicate(BasePredicate):
         return fields
 
 
-class AndPredicate(BasePredicate):
+class AndPredicate(LogicallyCombinablePredicate):
     def __init__(self, left: BasePredicate, right: BasePredicate) -> None:
         self.left = left
         self.right = right
@@ -158,7 +162,7 @@ class AndPredicate(BasePredicate):
         )
 
 
-class OrPredicate(BasePredicate):
+class OrPredicate(LogicallyCombinablePredicate):
     def __init__(self, left: BasePredicate, right: BasePredicate) -> None:
         self.left = left
         self.right = right
@@ -174,7 +178,9 @@ class OrPredicate(BasePredicate):
         )
 
 
-class TcpPredicate(BasePredicate):
+class TcpPredicate(LogicallyCombinablePredicate):
+    """TODO"""
+
     def __init__(self, data: str) -> None:
         self.data = data
 
@@ -184,3 +190,17 @@ class TcpPredicate(BasePredicate):
     @staticmethod
     def from_structure(structure: JsonStructure) -> "TcpPredicate":
         return TcpPredicate(structure["contains"]["data"])
+
+
+class InjectionPredicate(BasePredicate):
+    """TODO"""
+
+    def __init__(self, inject: str) -> None:
+        self.inject = inject
+
+    def as_structure(self) -> JsonStructure:
+        return {"inject": self.inject}
+
+    @staticmethod
+    def from_structure(structure: JsonStructure) -> "InjectionPredicate":
+        return InjectionPredicate(inject=structure["inject"])

@@ -4,7 +4,7 @@ import logging
 import requests
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, not_
-from mbtest.imposters import Imposter, Predicate, Response, Stub
+from mbtest.imposters import Imposter, InjectionPredicate, Predicate, Response, Stub
 
 logger = logging.getLogger(__name__)
 
@@ -108,3 +108,26 @@ def test_methods(mock_server):
         assert_that(put, is_response().with_body("put"))
         assert_that(get, is_response().with_body("get"))
         assert_that(head, is_response().with_status_code(789))
+
+
+def test_injection_predicate(mock_server):
+    # Given
+    imposter = Imposter(
+        Stub(
+            InjectionPredicate(
+                inject="function (config) {return config.request.headers['foo'] === 'bar'}"
+            ),
+            Response(body="matched"),
+        )
+    )
+
+    with mock_server(imposter) as s:
+        logger.debug("server: %s", s)
+
+        # When
+        r1 = requests.get(imposter.url, headers={"foo": "bar"})
+        r2 = requests.get(imposter.url, headers={"foo": "baz"})
+
+        # Then
+        assert_that(r1, is_response().with_body("matched"))
+        assert_that(r2, is_response().with_body(not_("matched")))

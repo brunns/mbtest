@@ -5,8 +5,19 @@ import pytest
 from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, instance_of
 from mbtest.imposters import Predicate
-from mbtest.imposters.predicates import AndPredicate, BasePredicate, OrPredicate, TcpPredicate
-from tests.utils.builders import AndPredicateBuilder, OrPredicateBuilder, TcpPredicateBuilder
+from mbtest.imposters.predicates import (
+    AndPredicate,
+    BasePredicate,
+    InjectionPredicate,
+    OrPredicate,
+    TcpPredicate,
+)
+from tests.utils.builders import (
+    AndPredicateBuilder,
+    InjectionPredicateBuilder,
+    OrPredicateBuilder,
+    TcpPredicateBuilder,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -104,4 +115,17 @@ def test_tcp_predicate_structure_roundtrip():
 
     # Then
     assert_that(actual, instance_of(TcpPredicate))
+    assert_that(actual, has_identical_properties_to(expected))
+
+
+def test_injection_predicate_roundtrip():
+    # Given
+    expected = InjectionPredicateBuilder().build()
+    structure = expected.as_structure()
+
+    # When
+    actual = BasePredicate.from_structure(structure)
+
+    # Then
+    assert_that(actual, instance_of(InjectionPredicate))
     assert_that(actual, has_identical_properties_to(expected))

@@ -16,7 +16,7 @@ from mbtest.imposters import (
     UsingRegex,
     UsingXpath,
 )
-from mbtest.imposters.predicates import AndPredicate, OrPredicate, TcpPredicate
+from mbtest.imposters.predicates import AndPredicate, InjectionPredicate, OrPredicate, TcpPredicate
 
 
 class PredicateBuilder(Builder):
@@ -86,6 +86,11 @@ class TcpPredicateBuilder(Builder):
     target = TcpPredicate
 
     data = a_string
+
+
+class InjectionPredicateBuilder(Builder):
+    target = InjectionPredicate
+    inject = a_string()
 
 
 class KeyBuilder(Builder):

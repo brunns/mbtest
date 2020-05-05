@@ -5,7 +5,7 @@ from typing import Iterable, List, Mapping, Optional, Union
 
 from furl import furl
 from mbtest.imposters.base import JsonSerializable, JsonStructure
-from mbtest.imposters.predicates import Predicate
+from mbtest.imposters.predicates import BasePredicate, Predicate
 from mbtest.imposters.responses import Response
 
 
@@ -19,7 +19,7 @@ class Stub(JsonSerializable):
 
     def __init__(
         self,
-        predicates: Optional[Union[Predicate, Iterable[Predicate]]] = None,
+        predicates: Optional[Union[BasePredicate, Iterable[BasePredicate]]] = None,
         responses: Optional[Union[Response, "Proxy", Iterable[Union[Response, "Proxy"]]]] = None,
     ) -> None:
         if predicates:
