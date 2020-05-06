@@ -101,7 +101,7 @@ class KeyBuilder(Builder):
     using = lambda: one_of(
         UsingRegexBuilder().build(), UsingXpathBuilder().build(), UsingJsonpathBuilder().build()
     )
-    index = an_integer
+    index = lambda: an_integer(1, 50)
 
 
 class LookupBuilder(Builder):
@@ -216,5 +216,5 @@ class ImposterBuilder(Builder):
     stubs = lambda: [StubBuilder().build(), StubBuilder().build()]
     port = lambda: one_of(None, an_integer(1, 5000))
     protocol = one_of(*Imposter.Protocol)
-    name = lambda: one_of(None, a_string)
+    name = lambda: one_of(None, a_string())
     record_requests = a_boolean

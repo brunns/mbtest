@@ -5,8 +5,9 @@ from pathlib import Path
 
 import pytest
 import requests
+from brunns.matchers.object import has_identical_properties_to
 from brunns.matchers.response import is_response
-from hamcrest import assert_that
+from hamcrest import assert_that, contains_inanyorder
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 from mbtest.matchers import had_request
 from mbtest.server import (
@@ -97,3 +98,17 @@ def test_allow_multiple_servers_on_different_ports():
     finally:
         server1.close()
         server2.close()
+
+
+def test_query_all_impostors(mock_server):
+    imposter1 = Imposter(Stub(Predicate(path="/test1"), Response(body="sausages")))
+    imposter2 = Imposter(Stub(Predicate(path="/test2"), Response(body="egg")))
+
+    with mock_server([imposter1, imposter2]) as server:
+        actual = list(server.query_all_impostors())
+        assert_that(
+            actual,
+            contains_inanyorder(
+                has_identical_properties_to(imposter1), has_identical_properties_to(imposter2)
+            ),
+        )

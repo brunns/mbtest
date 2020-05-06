@@ -174,6 +174,12 @@ class MountebankServer:
     def imposter_url(self, imposter_port: int) -> furl:
         return self.server_url.add(path=str(imposter_port))
 
+    def query_all_impostors(self):
+        server_info = requests.get(self.server_url)
+        imposters = server_info.json()["imposters"]
+        for imposter in imposters:
+            yield Imposter.from_structure(requests.get(imposter["_links"]["self"]["href"]).json())
+
 
 class ExecutingMountebankServer(MountebankServer):
     """A Mountebank mock server, running one or more impostors, one for each domain being mocked.
