@@ -1,4 +1,5 @@
 # encoding=utf-8
+import warnings
 from typing import Any, Mapping, Union
 
 from furl import furl
@@ -62,6 +63,15 @@ class HadRequest(BaseMatcher):
         body: Union[str, Matcher[str]] = ANYTHING,
         times: Union[int, Matcher[int]] = ANYTHING,
     ):
+        if (
+            method != ANYTHING
+            or path != ANYTHING
+            or query != ANYTHING
+            or headers != ANYTHING
+            or body != ANYTHING
+            or times != ANYTHING
+        ):  # pragma: no cover
+            warnings.warn("Use builder-style with_X and and_X methods, rather than arguments.")
         self.method = wrap_matcher(method)  # type: Matcher[str]
         self.path = wrap_matcher(path)  # type: Matcher[Union[furl, str]]
         self.query = wrap_matcher(query)  # type Matcher[Mapping[str, str]]
