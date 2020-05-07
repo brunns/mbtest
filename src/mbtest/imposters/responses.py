@@ -194,10 +194,11 @@ class Proxy(BaseResponse):
 
 
 class InjectionResponse(BaseResponse):
-    """TODO
+    """Represents a `Mountebank injection response <http://www.mbtest.org/docs/api/injection>`_.
 
     Injection requires Mountebank version 2.0 or higher.
-    http://www.mbtest.org/docs/api/injection
+
+    :param inject: JavaScript function to inject .
     """
 
     def __init__(self, inject: str) -> None:

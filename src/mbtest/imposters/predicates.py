@@ -179,7 +179,11 @@ class OrPredicate(LogicallyCombinablePredicate):
 
 
 class TcpPredicate(LogicallyCombinablePredicate):
-    """TODO"""
+    """Represents a `Mountebank TCP predicate <http://www.mbtest.org/docs/protocols/tcp>`_.
+    A predicate can be thought of as a trigger, which may or may not match a request.
+
+    :param data: Data to match the request.
+    """
 
     def __init__(self, data: str) -> None:
         self.data = data
@@ -193,10 +197,12 @@ class TcpPredicate(LogicallyCombinablePredicate):
 
 
 class InjectionPredicate(BasePredicate):
-    """TODO
+    """Represents a `Mountebank injection predicate <http://www.mbtest.org/docs/api/injection>`_.
+    A predicate can be thought of as a trigger, which may or may not match a request.
 
     Injection requires Mountebank version 2.0 or higher.
-    http://www.mbtest.org/docs/api/injection
+
+    :param inject: JavaScript function to inject.
     """
 
     def __init__(self, inject: str) -> None:
