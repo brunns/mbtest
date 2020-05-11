@@ -36,7 +36,6 @@ class Imposter(JsonSerializable):
         protocol: Protocol = Protocol.HTTP,
         name: Optional[str] = None,
         record_requests: bool = True,
-        host: str = "localhost"
     ) -> None:
         stubs = cast(Iterable[Stub], stubs if isinstance(stubs, abc.Sequence) else [stubs])
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
@@ -49,11 +48,7 @@ class Imposter(JsonSerializable):
         )
         self.name = name
         self.record_requests = record_requests
-        self.host = host
-
-    @property
-    def host(self) -> str:
-        return self.host
+        self.host = "localhost"
 
     @property
     def url(self) -> furl:

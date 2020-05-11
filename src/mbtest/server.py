@@ -135,16 +135,23 @@ class MountebankServer:
     def __exit__(self, ex_type, ex_value, ex_traceback) -> None:
         self.delete_imposters()
 
+    def _ensure_imposter_host_matches_server_host(self, imposter: Imposter) -> Imposter:
+        if imposter.host != self.host:
+            imposter.host = self.host
+        return imposter
+
     def add_imposters(self, definition: Union[Imposter, Iterable[Imposter]]) -> None:
         """Add imposters to Mountebank server.
 
         :param definition: One or more Imposters.
         :type definition: Imposter or list(Imposter)
         """
+
         if isinstance(definition, abc.Iterable):
             for imposter in definition:
                 self.add_imposters(imposter)
         else:
+            definition = self._ensure_imposter_host_matches_server_host(imposter=definition)
             json = definition.as_structure()
             post = requests.post(self.server_url, json=json, timeout=10)
             post.raise_for_status()
