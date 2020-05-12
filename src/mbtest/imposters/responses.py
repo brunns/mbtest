@@ -100,7 +100,7 @@ class Response(BaseResponse):
         if self.copy:
             behaviors["copy"] = [c.as_structure() for c in self.copy]
         if self.lookup:
-            behaviors["lookup"] = [l.as_structure() for l in self.lookup]
+            behaviors["lookup"] = [lookup.as_structure() for lookup in self.lookup]
         return behaviors
 
     @staticmethod
@@ -115,7 +115,7 @@ class Response(BaseResponse):
         if "copy" in behaviors:
             response.copy = [Copy.from_structure(c) for c in behaviors["copy"]]
         if "lookup" in behaviors:
-            response.lookup = [Lookup.from_structure(l) for l in behaviors["lookup"]]
+            response.lookup = [Lookup.from_structure(lookup) for lookup in behaviors["lookup"]]
         return response
 
     def _fields_from_structure(self, structure: JsonStructure) -> None:
