@@ -48,10 +48,7 @@ class Imposter(JsonSerializable):
         )
         self.name = name
         self.record_requests = record_requests
-
-    @property
-    def host(self) -> str:
-        return "localhost"
+        self.host = None
 
     @property
     def url(self) -> furl:

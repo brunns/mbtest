@@ -149,6 +149,7 @@ class MountebankServer:
             post = requests.post(self.server_url, json=json, timeout=10)
             post.raise_for_status()
             definition.port = post.json()["port"]
+            definition.host = self.host
             self.running_imposters_by_port[cast(int, definition.port)] = definition
 
     def delete_imposters(self) -> None:

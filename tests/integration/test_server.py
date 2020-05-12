@@ -109,6 +109,7 @@ def test_query_all_impostors(mock_server):
         assert_that(
             actual,
             contains_inanyorder(
-                has_identical_properties_to(imposter1), has_identical_properties_to(imposter2)
+                has_identical_properties_to(imposter1, ignoring={"host", "url"}),
+                has_identical_properties_to(imposter2, ignoring={"host", "url"}),
             ),
         )
