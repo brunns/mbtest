@@ -50,8 +50,9 @@ setup(
     install_requires=[
         "requests~=2.0",
         "furl~=2.0",
-        "pyhamcrest>=1.9,<3.0",
+        "pyhamcrest~=2.0",
         "more-itertools~=8.0",
         "Deprecated~=1.2",
+        "brunns-matchers~=2.4",
     ],
 )
