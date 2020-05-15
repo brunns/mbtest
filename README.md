@@ -57,7 +57,8 @@ def test_request_to_mock_server(mock_server):
                     server, had_request().with_path("/test").and_method("GET"))
 ```
 
-Needs a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily defined in [`conftest.py`](https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions):
+Needs a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily defined in [`conftest.py`]
+(https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions):
 
 ```python
 import pytest
@@ -68,17 +69,39 @@ def mock_server(request):
     return server.mock_server(request)
 ```
 
-This will take care of starting and stopping the Mountebank server for you. Examples of more complex predicates can be found in the [integration tests](https://github.com/brunns/mbtest/tree/master/tests/integration/).
+This will take care of starting and stopping the Mountebank server for you. Examples of more complex predicates can be 
+found in the [integration tests](https://github.com/brunns/mbtest/tree/master/tests/integration/).
 
 ## Developing
 
-Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html) and [tox](https://tox.readthedocs.io). [PyEnv](https://github.com/pyenv/pyenv) may also come in handy so tests can be run against various Python versions.  Run `make precommit` tells you if you're OK to commit. For more options, run:
+Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html) and [tox](https://tox.readthedocs.io). 
+[PyEnv](https://github.com/pyenv/pyenv) may also come in handy so tests can be run against various Python versions. 
+
+Currently, the `Makefile` targets use Python 3.5 and 3.8 via tox, so a quick-start setup could be:
+
+```sh
+pip install pyenv tox tox-pyenv
+pyenv install 3.5.9
+pyenv install 3.8.2
+pyenv local 3.5.9 3.8.2
+```
+
+In order to run `make test`, you'll also need to have Mountebank installed locally:
+
+```sh
+npm install mountebank@2.2 --production
+```
+
+After that, you should be ready to roll; running `make test` will let you know if your setup is correct.
+
+Running `make precommit` tells you if you're OK to commit. For more options, run:
 
     make help
 
 ## Releasing
 
-Requires [hub](https://hub.github.com/), [setuptools](https://setuptools.readthedocs.io) and [twine](https://twine.readthedocs.io). To release version `n.n.n`:
+Requires [hub](https://hub.github.com/), [setuptools](https://setuptools.readthedocs.io) and 
+[twine](https://twine.readthedocs.io). To release version `n.n.n`:
 
     version="n.n.n" # Needs to match new version number in setup.py.
     git checkout -b "release-$version"
