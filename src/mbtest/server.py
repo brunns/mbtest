@@ -6,7 +6,7 @@ import subprocess  # nosec
 import time
 from pathlib import Path
 from threading import Lock
-from typing import Iterable, List, Mapping, MutableMapping, Sequence, Set, Union, cast
+from typing import Iterable, Iterator, List, Mapping, MutableMapping, Sequence, Set, Union, cast
 
 import requests
 from _pytest.fixtures import FixtureRequest  # type: ignore
@@ -148,22 +148,18 @@ class MountebankServer:
             json = definition.as_structure()
             post = requests.post(self.server_url, json=json, timeout=10)
             post.raise_for_status()
-            definition.port = post.json()["port"]
-            definition.host = self.host
+            definition.attach(self.host, post.json()["port"], self.server_url)
             self.running_imposters_by_port[cast(int, definition.port)] = definition
 
     def delete_imposters(self) -> None:
         while self.running_imposters_by_port:
-            imposter_port, imposter = self.running_imposters_by_port.popitem()
-            requests.delete(self.imposter_url(imposter_port)).raise_for_status()
+            _, imposter = self.running_imposters_by_port.popitem()
+            requests.delete(imposter.configuration_url).raise_for_status()
 
     def get_actual_requests(self) -> Mapping[int, JsonStructure]:
         requests_by_impostor = {}
-        for imposter_port in self.running_imposters_by_port:
-            response = requests.get(self.imposter_url(imposter_port), timeout=5)
-            response.raise_for_status()
-            json = response.json()
-            requests_by_impostor[imposter_port] = json["requests"]
+        for port, imposter in self.running_imposters_by_port.items():
+            requests_by_impostor[port] = imposter.get_actual_requests()
         return requests_by_impostor
 
     @property
@@ -172,10 +168,8 @@ class MountebankServer:
             scheme=self.scheme, host=self.host, port=self.server_port, path=self.imposters_path
         )
 
-    def imposter_url(self, imposter_port: int) -> furl:
-        return self.server_url.add(path=str(imposter_port))
-
-    def query_all_impostors(self):
+    def query_all_impostors(self) -> Iterator[Imposter]:
+        """Yield all impostors running on the server, including those defines elsewhere."""
         server_info = requests.get(self.server_url)
         imposters = server_info.json()["imposters"]
         for imposter in imposters:

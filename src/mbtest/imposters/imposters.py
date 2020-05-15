@@ -3,6 +3,7 @@ import collections.abc as abc
 from enum import Enum
 from typing import Iterable, Optional, Union, cast
 
+import requests
 from furl import furl
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.responses import Proxy
@@ -49,6 +50,7 @@ class Imposter(JsonSerializable):
         self.name = name
         self.record_requests = record_requests
         self.host = None  # type: Optional[str]
+        self.server_url = None  # type: Optional[furl]
 
     @property
     def url(self) -> furl:
@@ -79,6 +81,26 @@ class Imposter(JsonSerializable):
         if "name" in structure:
             imposter.name = structure["name"]
         return imposter
+
+    def get_actual_requests(self):
+        return requests.get(cast(str, self.configuration_url)).json()["requests"]
+
+    def attach(self, host, port, server_url):
+        """Attach impostor to a running MB server."""
+        self.host = host
+        self.port = port
+        self.server_url = server_url
+
+    @property
+    def attached(self):
+        """Impostor is attached to a running MB server."""
+        return self.port and self.host and self.server_url
+
+    @property
+    def configuration_url(self):
+        return (
+            self.server_url / str(self.port) if self.attached else None
+        )  # TODO: Get rid of the `None`s - a Maybe, maybe?
 
 
 def smtp_imposter(name="smtp", record_requests=True) -> Imposter:

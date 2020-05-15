@@ -159,7 +159,7 @@ class Proxy(BaseResponse):
         to: Union[furl, str],
         wait: Optional[int] = None,
         inject_headers: Optional[Mapping[str, str]] = None,
-        mode: "Proxy.Mode" = Mode.ALWAYS,
+        mode: "Proxy.Mode" = Mode.ONCE,
     ) -> None:
         self.to = to
         self.wait = wait

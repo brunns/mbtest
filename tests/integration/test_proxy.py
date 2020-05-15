@@ -19,7 +19,7 @@ INTERNET_CONNECTED = internet_connection()
 
 @pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
 def test_proxy(mock_server):
-    imposter = Imposter(Proxy(to="http://example.com"))
+    imposter = Imposter(Stub(responses=Proxy(to="http://example.com")))
 
     with mock_server(imposter) as server:
         response = requests.get(imposter.url)
@@ -31,8 +31,19 @@ def test_proxy(mock_server):
 
 
 @pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
-def test_proxy_in_stub(mock_server):
-    imposter = Imposter(Stub(responses=Proxy(to="http://example.com")))
+def test_proxy_playback(mock_server):
+    imposter = Imposter(Stub(responses=Proxy(to="https://httpbin.org", mode=Proxy.Mode.ONCE)))
+
+    with mock_server(imposter):
+        requests.get(imposter.url / "status/418")
+
+        imposter.get_actual_requests()
+        # print(r)
+
+
+@pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
+def test_proxy_without_stub(mock_server):
+    imposter = Imposter(Proxy(to="http://example.com"))
 
     with mock_server(imposter):
         response = requests.get(imposter.url)
