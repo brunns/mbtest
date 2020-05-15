@@ -1,6 +1,7 @@
 # encoding=utf-8
 
 from brunns.builder import Builder, a_boolean, a_string, an_integer, one_of
+from brunns.builder.email import EmailBuilder
 from brunns.builder.internet import UrlBuilder
 from mbtest.imposters import (
     Copy,
@@ -17,6 +18,7 @@ from mbtest.imposters import (
     UsingRegex,
     UsingXpath,
 )
+from mbtest.imposters.imposters import Address, HttpRequest, SentEmail
 from mbtest.imposters.predicates import AndPredicate, InjectionPredicate, OrPredicate, TcpPredicate
 
 
@@ -218,3 +220,31 @@ class ImposterBuilder(Builder):
     protocol = one_of(*Imposter.Protocol)
     name = lambda: one_of(None, a_string())
     record_requests = a_boolean
+
+
+class HttpRequestBuilder(Builder):
+    target = HttpRequest
+
+    method = lambda: one_of(*Predicate.Method).name
+    path = lambda: UrlBuilder().build().path
+    query = lambda: {a_string(): a_string(), a_string(): a_string()}
+    headers = lambda: {a_string(): a_string(), a_string(): a_string()}
+    body = lambda: one_of(None, a_string())
+
+
+class AddressBuilder(Builder):
+    target = Address
+
+    address = EmailBuilder
+    name = a_string
+
+
+class SentEmailBuilder(Builder):
+    target = SentEmail
+
+    from_ = lambda: [AddressBuilder().build()]
+    to = lambda: [AddressBuilder().build(), AddressBuilder().build()]
+    cc = lambda: [AddressBuilder().build(), AddressBuilder().build()]
+    bcc = lambda: [AddressBuilder().build(), AddressBuilder().build()]
+    subject = a_string
+    text = a_string

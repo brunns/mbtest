@@ -37,8 +37,8 @@ def test_proxy_playback(mock_server):
     with mock_server(imposter):
         requests.get(imposter.url / "status/418")
 
-        imposter.get_actual_requests()
-        # print(r)
+        r = imposter.get_actual_requests()
+        logger.debug(r)
 
 
 @pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")

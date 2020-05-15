@@ -12,7 +12,7 @@ import requests
 from _pytest.fixtures import FixtureRequest  # type: ignore
 from furl import furl
 from mbtest.imposters import Imposter
-from mbtest.imposters.base import JsonStructure
+from mbtest.imposters.imposters import Request
 from requests import RequestException
 
 DEFAULT_MB_EXECUTABLE = str(
@@ -156,7 +156,7 @@ class MountebankServer:
             _, imposter = self.running_imposters_by_port.popitem()
             requests.delete(imposter.configuration_url).raise_for_status()
 
-    def get_actual_requests(self) -> Mapping[int, JsonStructure]:
+    def get_actual_requests(self) -> Mapping[int, Sequence[Request]]:
         requests_by_impostor = {}
         for port, imposter in self.running_imposters_by_port.items():
             requests_by_impostor[port] = imposter.get_actual_requests()

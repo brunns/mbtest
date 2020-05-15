@@ -1,6 +1,6 @@
 # encoding=utf-8
 import warnings
-from typing import Any, Mapping, Union
+from typing import Any, Mapping, Sequence, Union, cast
 
 from furl import furl
 from hamcrest import anything
@@ -9,6 +9,7 @@ from hamcrest.core.core.isanything import IsAnything
 from hamcrest.core.description import Description
 from hamcrest.core.helpers.wrap_matcher import wrap_matcher
 from hamcrest.core.matcher import Matcher
+from mbtest.imposters.imposters import HttpRequest, SentEmail
 from mbtest.server import MountebankServer
 from more_itertools import flatten
 
@@ -111,15 +112,17 @@ class HadRequest(BaseMatcher):
         description.append_text(". All requests: ").append_description_of(self.all_requests)
 
     def _matches(self, server: MountebankServer) -> bool:
-        self.all_requests = list(flatten(server.get_actual_requests().values()))
+        self.all_requests = cast(
+            Sequence[HttpRequest], list(flatten(server.get_actual_requests().values()))
+        )
         self.matching_requests = [
             request
             for request in self.all_requests
-            if self.method.matches(request.get("method", None))
-            and self.path.matches(request.get("path", None))
-            and self.query.matches(request.get("query", None))
-            and self.headers.matches(request.get("headers", None))
-            and self.body.matches(request.get("body", None))
+            if self.method.matches(request.method)
+            and self.path.matches(request.path)
+            and self.query.matches(request.query)
+            and self.headers.matches(request.headers)
+            and self.body.matches(request.body)
         ]
 
         if isinstance(self.times, IsAnything):
@@ -198,9 +201,12 @@ class EmailSent(BaseMatcher):
         subject: Union[str, Matcher[str]] = ANYTHING,
         body_text: Union[str, Matcher[str]] = ANYTHING,
     ) -> None:
+        # TODO: builder style, & lots more attributes.
         self.body_text = wrap_matcher(body_text)
         self.subject = wrap_matcher(subject)
-        self.to = wrap_matcher(to)
+        self.to = wrap_matcher(
+            to
+        )  # TODO: Type is wrong here - to is a sequence of addresses and names.
 
     def describe_to(self, description: Description) -> None:
         description.append_text("email with")
@@ -224,14 +230,15 @@ class EmailSent(BaseMatcher):
         description.append_text(". All requests: ").append_description_of(self.all_requests)
 
     def _matches(self, server: MountebankServer) -> bool:
-        self.all_requests = list(flatten(server.get_actual_requests().values()))
+        self.all_requests = cast(
+            Sequence[SentEmail], list(flatten(server.get_actual_requests().values()))
+        )
         self.matching_requests = [
             request
             for request in self.all_requests
-            if "envelopeFrom" in request
-            and self.body_text.matches(request.get("text", None))
-            and self.subject.matches(request.get("subject", None))
-            and self.to.matches(request.get("to", None))
+            if self.body_text.matches(request.text)
+            and self.subject.matches(request.subject)
+            and self.to.matches(request.to)  # type: ignore
         ]
 
         return len(self.matching_requests) > 0

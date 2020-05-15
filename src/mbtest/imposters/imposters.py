@@ -1,7 +1,8 @@
 # encoding=utf-8
 import collections.abc as abc
+from abc import ABCMeta
 from enum import Enum
-from typing import Iterable, Optional, Union, cast
+from typing import Iterable, Mapping, NamedTuple, Optional, Sequence, Union, cast
 
 import requests
 from furl import furl
@@ -82,8 +83,9 @@ class Imposter(JsonSerializable):
             imposter.name = structure["name"]
         return imposter
 
-    def get_actual_requests(self):
-        return requests.get(cast(str, self.configuration_url)).json()["requests"]
+    def get_actual_requests(self) -> Sequence["Request"]:
+        json = requests.get(cast(str, self.configuration_url)).json()["requests"]
+        return [Request.from_json(req) for req in json]
 
     def attach(self, host, port, server_url):
         """Attach impostor to a running MB server."""
@@ -101,6 +103,79 @@ class Imposter(JsonSerializable):
         return (
             self.server_url / str(self.port) if self.attached else None
         )  # TODO: Get rid of the `None`s - a Maybe, maybe?
+
+
+class Request(metaclass=ABCMeta):
+    @staticmethod
+    def from_json(json: JsonStructure):
+        if "envelopeFrom" in json:
+            return SentEmail.from_json(json)
+        return HttpRequest.from_json(json)
+
+    def __repr__(self):  # pragma: no cover
+        state = ", ".join(("{0:s}={1!r:s}".format(attr, val) for (attr, val) in vars(self).items()))
+        return "{0:s}.{1:s}({2:s})".format(
+            self.__class__.__module__, self.__class__.__name__, state
+        )
+
+
+class HttpRequest(Request):
+    def __init__(
+        self,
+        method: str,
+        path: str,
+        query: Mapping[str, str],
+        headers: Mapping[str, str],
+        body: str,
+        **kwargs
+    ):
+        self.method = method
+        self.path = path
+        self.query = query
+        self.headers = headers
+        self.body = body
+
+    @staticmethod
+    def from_json(json: JsonStructure):
+        return HttpRequest(**{k: v for k, v in json.items()})
+
+
+Address = NamedTuple("Address", [("address", str), ("name", str)])
+
+
+class SentEmail(Request):
+    def __init__(
+        self,
+        from_: Sequence[Address],
+        to: Sequence[Address],
+        cc: Sequence[Address],
+        bcc: Sequence[Address],
+        subject: str,
+        text: str,
+        **kwargs
+    ):
+        self.from_ = from_
+        self.to = to
+        self.cc = cc
+        self.bcc = bcc
+        self.subject = subject
+        self.text = text
+
+    @staticmethod
+    def from_json(json: JsonStructure):
+        return SentEmail(
+            **{SentEmail._map_key(k): SentEmail._translate_value(v) for k, v in json.items()}
+        )
+
+    @staticmethod
+    def _map_key(key):
+        return {"from": "from_"}.get(key, key)
+
+    @staticmethod
+    def _translate_value(value):
+        if "address" in value and "name" in value:
+            return Address(**value)
+        return value
 
 
 def smtp_imposter(name="smtp", record_requests=True) -> Imposter:

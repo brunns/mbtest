@@ -4,12 +4,13 @@ from unittest.mock import MagicMock
 from brunns.matchers.matcher import mismatches_with
 from hamcrest import all_of, assert_that, contains_string, has_entries, has_string, not_
 from mbtest.matchers import email_sent, had_request
+from tests.utils.builders import HttpRequestBuilder, SentEmailBuilder
 
 
 def test_request_matcher():
     # Given
     server = MagicMock()
-    request = {"path": "/test", "method": "GET"}
+    request = HttpRequestBuilder().with_path("/test").and_method("GET").build()
     server.get_actual_requests.return_value = {"someport": [request, request]}
 
     # When
@@ -33,9 +34,11 @@ def test_request_matcher():
         mismatches_with(
             server,
             all_of(
-                contains_string("found <0> matching requests: <[]>. All requests: <[{"),
-                contains_string("'path': '/test'"),
-                contains_string("'method': 'GET'"),
+                contains_string(
+                    "found <0> matching requests: <[]>. All requests: <[mbtest.imposters.imposters.HttpRequest"
+                ),
+                contains_string("path='/test'"),
+                contains_string("method='GET'"),
             ),
         ),
     )
@@ -44,7 +47,7 @@ def test_request_matcher():
 def test_email_sent():
     # Given
     server = MagicMock()
-    request = {"envelopeFrom": "", "text": "sausages"}
+    request = SentEmailBuilder().with_text("sausages").build()
     server.get_actual_requests.return_value = {"someport": [request, request]}
 
     # When
@@ -58,8 +61,8 @@ def test_email_sent():
         mismatches_with(
             server,
             all_of(
-                contains_string("found <0> matching requests: <[]>. All requests: <[{"),
-                contains_string("'text': 'sausages'"),
+                contains_string("found <0> matching requests: <[]>. All requests: <["),
+                contains_string("text='sausages'"),
             ),
         ),
     )
