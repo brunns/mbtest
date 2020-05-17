@@ -18,6 +18,37 @@ except IOError:
     logger.warning("README file not found or unreadable.")
     long_description = "See https://github.com/brunns/mbtest/"
 
+install_dependencies = [
+    "requests~=2.0",
+    "furl~=2.0",
+    "pyhamcrest~=2.0",
+    "more-itertools~=8.0",
+    "Deprecated~=1.2",
+    "brunns-matchers~=2.4",
+]
+test_dependencies = [
+    "pytest~=5.0",
+    "contexttimer~=0.3",
+    "brunns-builder~=0.2",
+]
+
+coverage_dependencies = [
+    "pytest-cov~=2.5",
+    "codacy-coverage~=1.0",
+]
+
+docs_dependencies = [
+    "sphinx~=2.4",
+    "sphinx-autodoc-typehints~=1.10",
+]
+
+extras = {
+    "install": install_dependencies,
+    "test": test_dependencies,
+    "coverage": coverage_dependencies,
+    "docs": docs_dependencies,
+}
+
 setup(
     name="mbtest",
     zip_safe=False,
@@ -47,12 +78,7 @@ setup(
         "Topic :: Software Development :: Testing",
     ],
     python_requires=">=3.5",
-    install_requires=[
-        "requests~=2.0",
-        "furl~=2.0",
-        "pyhamcrest~=2.0",
-        "more-itertools~=8.0",
-        "Deprecated~=1.2",
-        "brunns-matchers~=2.4",
-    ],
+    install_requires=install_dependencies,
+    tests_require=test_dependencies,
+    extras_require=extras,
 )
