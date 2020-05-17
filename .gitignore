@@ -115,4 +115,6 @@ package-lock.json
 .DS_Store
 
 # Mountebank data
+mb*.pid
+mb.log
 .mbdb/
