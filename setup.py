@@ -38,7 +38,7 @@ coverage_dependencies = [
 ]
 
 docs_dependencies = [
-    "sphinx~=2.4",
+    "sphinx>=2.4,<4.0",
     "sphinx-autodoc-typehints~=1.10",
 ]
 
