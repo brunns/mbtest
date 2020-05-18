@@ -13,3 +13,5 @@
         * Existing server
     * Proxies
         * Record/Playback
+* Fix email matcher
+* `had_request()` matcher for impostors - deprecate server version?
