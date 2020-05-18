@@ -88,6 +88,11 @@ repl: ## Python REPL
 outdated: ## List outdated dependancies
 	tox -e py38 -- pip list --outdated
 
+.PHONY: use-docker
+use-docker: ## Use Docker-based local development workflow
+	mv Makefile Makefile.tox
+	mv Makefile.Docker Makefile
+
 .PHONY: help
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1,$$2}'

@@ -97,6 +97,14 @@ After that, you should be ready to roll; running `make test` will let you know i
 Running `make precommit` tells you if you're OK to commit. For more options, run:
 
     make help
+    
+### Developing with Docker
+
+An alternative to using PyEnv and tox is to use Docker. To get started, run `make use-docker` then `make build`; this
+will build the required Docker images. 
+
+Note that the Docker-based development workflow is currently a work in progress and does not yet offer the same set of 
+development commands as the tox-based workflow. To switch back, run `make use-tox`.
 
 ## Releasing
 

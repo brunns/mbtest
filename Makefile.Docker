@@ -1,0 +1,45 @@
+SHELL = /bin/bash
+
+default: help
+
+PYTHON_VERSIONS = 3.5 3.6 3.7 3.8
+DEFAULT_PYTHON_VERSION = 3.8 # The version to use for commands other than testing, such as document generation.
+IMAGE_NAME = mbtest-dev
+
+USER_ID = $(shell id -u $${USER})
+USERNAME = $(shell id -un)
+
+build_all = $(addprefix build-with-python, $(PYTHON_VERSIONS))
+test_all = $(addprefix test-with-python, $(PYTHON_VERSIONS))
+
+.PHONY: build-with-python%
+build-with-python%: ## Build Docker image for containerised development with specified Python version
+	docker build . --build-arg user=$(USERNAME) \
+				   --build-arg user_id=$(USER_ID) \
+				  --build-arg python_version=$* -t $(IMAGE_NAME):python$*
+
+.PHONY: build
+build: $(build_all) ## Build Docker images for containerised development
+
+.PHONY: shell-with-python%
+shell-with-python%: ## Open an interactive shell in the development Docker container with the specified Python version
+	docker run --volume $(PWD):/mbtest --volume node_modules:/mbtest/node_modules -it $(IMAGE_NAME):python$* bash
+
+.PHONY: test-with-python%
+test-with-python%: ## Test with the specified Python version
+	docker run --volume $(PWD):/mbtest --volume node_modules:/mbtest/node_modules -it $(IMAGE_NAME):python$* bash -c "python -m pytest -rf ./tests"
+
+.PHONY: test
+test: $(test_all) ## Run tests
+
+.PHONY: use-tox
+use-tox: ## Use the tox-based local development workflow
+	mv Makefile Makefile.Docker
+	mv Makefile.tox Makefile
+
+
+.PHONY: help
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1,$$2}'
+
+
