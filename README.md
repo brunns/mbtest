@@ -101,11 +101,13 @@ Running `make precommit` tells you if you're OK to commit. For more options, run
 ## Releasing
 
 Requires [hub](https://hub.github.com/), [setuptools](https://setuptools.readthedocs.io) and 
-[twine](https://twine.readthedocs.io). To release version `n.n.n`:
+[twine](https://twine.readthedocs.io). To release version `n.n.n`, first update the version number in `setup.py`, then:
 
-    version="n.n.n" # Needs to match new version number in setup.py.
-    git checkout -b "release-$version"
-    make precommit && git commit -am"Release $version" && git push # If not already all pushed, which it should be.
-    hub release create "V$version" -t"release-$version" -m"Version $version"
-    python setup.py sdist bdist_wheel
-    twine upload dist/*$version*
+```sh
+version="n.n.n" # Needs to match new version number in setup.py.
+git checkout -b "release-$version"
+make precommit && git commit -am"Release $version" && git push --set-upstream origin "release-$version" # If not already all pushed, which it should be.
+hub release create "V$version" -t"release-$version" -m"Version $version"
+python setup.py sdist bdist_wheel
+twine upload dist/*$version*
+```
