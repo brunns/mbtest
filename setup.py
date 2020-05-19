@@ -29,7 +29,7 @@ install_dependencies = [
 test_dependencies = [
     "pytest~=5.0",
     "contexttimer~=0.3",
-    "brunns-builder~=0.2",
+    "brunns-builder~=0.5",
 ]
 
 coverage_dependencies = [
