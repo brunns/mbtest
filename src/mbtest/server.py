@@ -6,7 +6,7 @@ import subprocess  # nosec
 import time
 from pathlib import Path
 from threading import Lock
-from typing import Iterable, Iterator, List, MutableMapping, Sequence, Set, Union, cast
+from typing import Iterable, Iterator, List, MutableSequence, Sequence, Set, Union
 
 import requests
 from _pytest.fixtures import FixtureRequest  # type: ignore
@@ -125,7 +125,7 @@ class MountebankServer:
 
     def __call__(self, imposters: Sequence[Imposter]) -> "MountebankServer":
         self.imposters = imposters
-        self.running_imposters_by_port = {}  # type: MutableMapping[int, Imposter]
+        self._running_imposters = []  # type: MutableSequence[Imposter]
         return self
 
     def __enter__(self) -> "MountebankServer":
@@ -149,15 +149,15 @@ class MountebankServer:
             post = requests.post(self.server_url, json=json, timeout=10)
             post.raise_for_status()
             definition.attach(self.host, post.json()["port"], self.server_url)
-            self.running_imposters_by_port[cast(int, definition.port)] = definition
+            self._running_imposters.append(definition)
 
     def delete_imposters(self) -> None:
-        while self.running_imposters_by_port:
-            _, imposter = self.running_imposters_by_port.popitem()
+        while self._running_imposters:
+            imposter = self._running_imposters.pop()
             requests.delete(imposter.configuration_url).raise_for_status()
 
     def get_actual_requests(self) -> Iterable[Request]:
-        for _, imposter in self.running_imposters_by_port.items():
+        for imposter in self._running_imposters:
             yield from imposter.get_actual_requests()
 
     @property

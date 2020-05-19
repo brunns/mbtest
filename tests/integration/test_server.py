@@ -28,14 +28,10 @@ def test_request_to_mock_server(mock_server):
         response = requests.get("{0}/test".format(imposter.url))
 
         assert_that(
-            "We got the expected response",
-            response,
-            is_response().with_status_code(200).and_body("sausages"),
+            response, is_response().with_status_code(200).and_body("sausages"),
         )
         assert_that(
-            "The mock server recorded the request",
-            server,
-            had_request().with_path("/test").and_method("GET"),
+            server, had_request().with_path("/test").and_method("GET"),
         )
 
 

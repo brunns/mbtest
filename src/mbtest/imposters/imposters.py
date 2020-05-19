@@ -87,32 +87,32 @@ class Imposter(JsonSerializable):
         json = requests.get(cast(str, self.configuration_url)).json()["requests"]
         return [Request.from_json(req) for req in json]
 
-    def attach(self, host, port, server_url):
+    def attach(self, host: str, port: int, server_url: furl) -> None:
         """Attach imposter to a running MB server."""
         self.host = host
         self.port = port
         self.server_url = server_url
 
     @property
-    def attached(self):
+    def attached(self) -> bool:
         """Imposter is attached to a running MB server."""
-        return self.port and self.host and self.server_url
+        return cast(bool, self.port and self.host and self.server_url)
 
     @property
-    def configuration_url(self):
+    def configuration_url(self) -> furl:
         return (
-            self.server_url / str(self.port) if self.attached else None
+            cast(furl, self.server_url) / str(self.port) if self.attached else None
         )  # TODO: Get rid of the `None`s - a Maybe, maybe?
 
 
 class Request(metaclass=ABCMeta):
     @staticmethod
-    def from_json(json: JsonStructure):
+    def from_json(json: JsonStructure) -> "Request":
         if "envelopeFrom" in json:
             return SentEmail.from_json(json)
         return HttpRequest.from_json(json)
 
-    def __repr__(self):  # pragma: no cover
+    def __repr__(self) -> str:  # pragma: no cover
         state = ", ".join(("{0:s}={1!r:s}".format(attr, val) for (attr, val) in vars(self).items()))
         return "{0:s}.{1:s}({2:s})".format(
             self.__class__.__module__, self.__class__.__name__, state
@@ -136,7 +136,7 @@ class HttpRequest(Request):
         self.body = body
 
     @staticmethod
-    def from_json(json: JsonStructure):
+    def from_json(json: JsonStructure) -> "HttpRequest":
         return HttpRequest(**{k: v for k, v in json.items()})
 
 
@@ -162,20 +162,24 @@ class SentEmail(Request):
         self.text = text
 
     @staticmethod
-    def from_json(json: JsonStructure):
-        return SentEmail(
-            **{SentEmail._map_key(k): SentEmail._translate_value(v) for k, v in json.items()}
-        )
+    def from_json(json: JsonStructure) -> "SentEmail":
+        email = {
+            SentEmail._map_key(k): SentEmail._translate_value(v) for k, v in json.items()
+        }  # type: Mapping[str, Union[str, Sequence[Address]]]
+        sent_email = SentEmail(**email)
+        return sent_email
 
     @staticmethod
-    def _map_key(key):
+    def _map_key(key: str) -> str:
         return {"from": "from_"}.get(key, key)
 
     @staticmethod
-    def _translate_value(value):
-        if "address" in value and "name" in value:
-            return Address(**value)
-        return value
+    def _translate_value(value: JsonStructure) -> Union[str, Sequence[Address]]:
+        if isinstance(value, str):
+            return value
+        elif "address" in value and "name" in value:
+            return [Address(**value)]
+        return [Address(**addr) if "address" in addr and "name" in addr else addr for addr in value]
 
 
 def smtp_imposter(name="smtp", record_requests=True) -> Imposter:

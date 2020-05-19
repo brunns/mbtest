@@ -1,6 +1,8 @@
 # encoding=utf-8
+import email
 import logging
 import smtplib
+from random import randint
 
 from brunns.builder import a_string
 from brunns.builder.email import EmailBuilder, EmailMessageBuilder
@@ -15,8 +17,16 @@ def test_email(mock_server):
     # Given
     imposter = smtp_imposter()
 
-    to_email = EmailBuilder().build()
-    from_email = EmailBuilder().build()
+    # TODO - make brunns-builders more realistic, so we don't have to do this here.'
+    to_email = email.utils.formataddr(
+        ((" ".join(a_string() for _ in range(randint(1, 3)))), (EmailBuilder().build()))
+    )
+    from_email = ", ".join(
+        email.utils.formataddr(
+            ((" ".join(a_string() for _ in range(randint(1, 3)))), EmailBuilder().build())
+        )
+        for _ in range(randint(1, 5))
+    )
     body_text = a_string()
     message = (
         EmailMessageBuilder()
@@ -39,4 +49,4 @@ def test_email(mock_server):
             server.quit()
 
         # Then
-        assert_that(s, email_sent(body_text=body_text))
+        assert_that(imposter, email_sent(body_text=body_text))

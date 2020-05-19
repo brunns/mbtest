@@ -21,13 +21,13 @@ INTERNET_CONNECTED = internet_connection()
 def test_proxy(mock_server):
     imposter = Imposter(Stub(responses=Proxy(to="http://example.com")))
 
-    with mock_server(imposter) as server:
+    with mock_server(imposter):
         response = requests.get(imposter.url)
 
         assert_that(
             response, is_response().with_status_code(200).and_body(has_title("Example Domain"))
         )
-        assert_that(server, had_request().with_path("/").and_method("GET"))
+        assert_that(imposter, had_request().with_path("/").and_method("GET"))
 
 
 @pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
@@ -35,10 +35,12 @@ def test_proxy_playback(mock_server):
     imposter = Imposter(Stub(responses=Proxy(to="https://httpbin.org", mode=Proxy.Mode.ONCE)))
 
     with mock_server(imposter):
-        requests.get(imposter.url / "status/418")
+        resp = requests.get(imposter.url / "status/418")
 
-        r = imposter.get_actual_requests()
-        logger.debug(r)
+        logger.debug(resp)
+        reqs = imposter.get_actual_requests()
+        logger.debug(reqs)
+        # TODO finish me
 
 
 @pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
@@ -80,7 +82,7 @@ def test_inject_headers(mock_server):
 
         requests.get(proxy_imposter.url / "test")
         assert_that(
-            server,
+            target_imposter,
             had_request()
             .with_path("/test")
             .and_headers(has_entry("X-Clacks-Overhead", "GNU Terry Pratchett")),
