@@ -6,7 +6,7 @@ import subprocess  # nosec
 import time
 from pathlib import Path
 from threading import Lock
-from typing import Iterable, Iterator, List, Mapping, MutableMapping, Sequence, Set, Union, cast
+from typing import Iterable, Iterator, List, MutableMapping, Sequence, Set, Union, cast
 
 import requests
 from _pytest.fixtures import FixtureRequest  # type: ignore
@@ -156,11 +156,9 @@ class MountebankServer:
             _, imposter = self.running_imposters_by_port.popitem()
             requests.delete(imposter.configuration_url).raise_for_status()
 
-    def get_actual_requests(self) -> Mapping[int, Sequence[Request]]:
-        requests_by_impostor = {}
-        for port, imposter in self.running_imposters_by_port.items():
-            requests_by_impostor[port] = imposter.get_actual_requests()
-        return requests_by_impostor
+    def get_actual_requests(self) -> Iterable[Request]:
+        for _, imposter in self.running_imposters_by_port.items():
+            yield from imposter.get_actual_requests()
 
     @property
     def server_url(self) -> furl:

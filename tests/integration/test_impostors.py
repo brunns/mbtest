@@ -5,6 +5,7 @@ import requests
 from brunns.matchers.response import is_response
 from hamcrest import assert_that
 from mbtest.imposters import Imposter, Predicate, Response, Stub
+from mbtest.matchers import had_request
 
 logger = logging.getLogger(__name__)
 
@@ -15,8 +16,7 @@ def test_multiple_imposters(mock_server):
         Imposter([Stub([Predicate(path="/test2")], [Response("chips", status_code=201)])]),
     ]
 
-    with mock_server(imposters) as s:
-        logger.debug("server: %s", s)
+    with mock_server(imposters):
         r1 = requests.get("{0}/test1".format(imposters[0].url))
         r2 = requests.get("{0}/test2".format(imposters[1].url))
 
@@ -27,8 +27,21 @@ def test_multiple_imposters(mock_server):
 def test_default_imposter(mock_server):
     imposter = Imposter(Stub())
 
-    with mock_server(imposter) as s:
-        logger.debug("server: %s", s)
+    with mock_server(imposter):
         r = requests.get("{0}/".format(imposter.url))
 
     assert_that(r, is_response().with_status_code(200).and_body(""))
+
+
+def test_impostor_had_request_matcher(mock_server):
+    imposter = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")))
+
+    with mock_server(imposter):
+        response = requests.get("{0}/test".format(imposter.url))
+
+        assert_that(
+            response, is_response().with_status_code(200).and_body("sausages"),
+        )
+        assert_that(
+            imposter, had_request().with_path("/test").and_method("GET"),
+        )

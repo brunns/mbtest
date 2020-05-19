@@ -11,7 +11,7 @@ def test_request_matcher():
     # Given
     server = MagicMock()
     request = HttpRequestBuilder().with_path("/test").and_method("GET").build()
-    server.get_actual_requests.return_value = {"someport": [request, request]}
+    server.get_actual_requests.return_value = [request, request]
 
     # When
 
@@ -48,7 +48,7 @@ def test_email_sent():
     # Given
     server = MagicMock()
     request = SentEmailBuilder().with_text("sausages").build()
-    server.get_actual_requests.return_value = {"someport": [request, request]}
+    server.get_actual_requests.return_value = [request, request]
 
     # When
 

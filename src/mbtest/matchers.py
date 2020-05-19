@@ -9,9 +9,8 @@ from hamcrest.core.core.isanything import IsAnything
 from hamcrest.core.description import Description
 from hamcrest.core.helpers.wrap_matcher import wrap_matcher
 from hamcrest.core.matcher import Matcher
-from mbtest.imposters.imposters import HttpRequest, SentEmail
+from mbtest.imposters.imposters import HttpRequest, Imposter, SentEmail
 from mbtest.server import MountebankServer
-from more_itertools import flatten
 
 ANYTHING = anything()
 
@@ -23,7 +22,7 @@ def had_request(
     headers: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
     body: Union[str, Matcher[str]] = ANYTHING,
     times: Union[int, Matcher[int]] = ANYTHING,
-) -> Matcher[MountebankServer]:
+) -> Matcher[Union[Imposter, MountebankServer]]:
     """Mountebank server has recorded call matching.
 
     Build criteria with `with_` and `and_` methods:
@@ -104,17 +103,17 @@ class HadRequest(BaseMatcher):
                 field_matcher
             )
 
-    def describe_mismatch(self, server: MountebankServer, description: Description) -> None:
+    def describe_mismatch(
+        self, actual: Union[Imposter, MountebankServer], description: Description
+    ) -> None:
         description.append_text("found ").append_description_of(len(self.matching_requests))
         description.append_text(" matching requests: ").append_description_of(
             self.matching_requests
         )
         description.append_text(". All requests: ").append_description_of(self.all_requests)
 
-    def _matches(self, server: MountebankServer) -> bool:
-        self.all_requests = cast(
-            Sequence[HttpRequest], list(flatten(server.get_actual_requests().values()))
-        )
+    def _matches(self, actual: Union[Imposter, MountebankServer]) -> bool:
+        self.all_requests = cast(Sequence[HttpRequest], list(actual.get_actual_requests()))
         self.matching_requests = [
             request
             for request in self.all_requests
@@ -177,7 +176,7 @@ def email_sent(
     to: Union[str, Matcher[str]] = ANYTHING,
     subject: Union[str, Matcher[str]] = ANYTHING,
     body_text: Union[str, Matcher[str]] = ANYTHING,
-) -> Matcher[MountebankServer]:
+) -> Matcher[Union[Imposter, MountebankServer]]:
     """Mountebank SMTP server was asked to sent email matching:
 
     :param to: Email's to field matched...
@@ -222,17 +221,17 @@ class EmailSent(BaseMatcher):
         if not isinstance(matcher, IsAnything):
             description.append_text(" {0}: ".format(text)).append_description_of(matcher)
 
-    def describe_mismatch(self, server: MountebankServer, description: Description) -> None:
+    def describe_mismatch(
+        self, acrual: Union[Imposter, MountebankServer], description: Description
+    ) -> None:
         description.append_text("found ").append_description_of(len(self.matching_requests))
         description.append_text(" matching requests: ").append_description_of(
             self.matching_requests
         )
         description.append_text(". All requests: ").append_description_of(self.all_requests)
 
-    def _matches(self, server: MountebankServer) -> bool:
-        self.all_requests = cast(
-            Sequence[SentEmail], list(flatten(server.get_actual_requests().values()))
-        )
+    def _matches(self, actual: Union[Imposter, MountebankServer]) -> bool:
+        self.all_requests = cast(Sequence[SentEmail], list(actual.get_actual_requests()))
         self.matching_requests = [
             request
             for request in self.all_requests

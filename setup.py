@@ -22,7 +22,6 @@ install_dependencies = [
     "requests~=2.0",
     "furl~=2.0",
     "pyhamcrest~=2.0",
-    "more-itertools~=8.0",
     "Deprecated~=1.2",
     "brunns-matchers~=2.4",
 ]
