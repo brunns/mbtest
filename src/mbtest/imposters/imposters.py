@@ -19,8 +19,8 @@ class Imposter(JsonSerializable):
     :param stubs: One or more Stubs.
     :param port: Port.
     :param protocol: Protocol to run on.
-    :param name: Impostor name - useful for interactive exploration of impostors on http://localhost:2525/impostors
-    :param record_requests: Record requests made against this impostor, so they can be asserted against later.
+    :param name: Imposter name - useful for interactive exploration of imposters on http://localhost:2525/imposters
+    :param record_requests: Record requests made against this imposter, so they can be asserted against later.
     """
 
     class Protocol(Enum):
@@ -88,14 +88,14 @@ class Imposter(JsonSerializable):
         return [Request.from_json(req) for req in json]
 
     def attach(self, host, port, server_url):
-        """Attach impostor to a running MB server."""
+        """Attach imposter to a running MB server."""
         self.host = host
         self.port = port
         self.server_url = server_url
 
     @property
     def attached(self):
-        """Impostor is attached to a running MB server."""
+        """Imposter is attached to a running MB server."""
         return self.port and self.host and self.server_url
 
     @property
@@ -179,7 +179,7 @@ class SentEmail(Request):
 
 
 def smtp_imposter(name="smtp", record_requests=True) -> Imposter:
-    """Canned SMTP server impostor."""
+    """Canned SMTP server imposter."""
     return Imposter(
         [], 4525, protocol=Imposter.Protocol.SMTP, name=name, record_requests=record_requests
     )

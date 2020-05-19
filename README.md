@@ -47,14 +47,14 @@ def test_request_to_mock_server(mock_server):
     imposter = Imposter(Stub(Predicate(path="/test"), 
                              Response(body="sausages")))
 
-    with mock_server(imposter) as server:
+    with mock_server(imposter):
         # Make request to mock server - exercise code under test here
         response = requests.get("{}/test".format(imposter.url))
 
         assert_that("We got the expected response", 
                     response, is_response().with_status_code(200).and_body("sausages"))
         assert_that("The mock server recorded the request", 
-                    server, had_request().with_path("/test").and_method("GET"))
+                    imposter, had_request().with_path("/test").and_method("GET"))
 ```
 
 Needs a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily defined in [`conftest.py`]

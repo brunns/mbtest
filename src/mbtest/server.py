@@ -33,7 +33,7 @@ def mock_server(
     data_dir: Union[str, None] = ".mbdb",
 ) -> "ExecutingMountebankServer":
     """`Pytest fixture <https://docs.pytest.org/en/latest/fixture.html>`_, making available a mock server, running one
-    or more impostors, one for each domain being mocked.
+    or more imposters, one for each domain being mocked.
 
     Use in a pytest conftest.py fixture as follows::
 
@@ -96,18 +96,18 @@ class MountebankServer:
                                      Response(body='sausages')),
                                 record_requests=True)
 
-            with mb(imposter) as s:
+            with mb(imposter):
                 r = requests.get('{0}/test'.format(imposter.url))
 
                 assert_that(r, is_response().with_status_code(200).and_body("sausages"))
-                assert_that(s, had_request(path='/test', method="GET"))
+                assert_that(imposter, had_request(path='/test', method="GET"))
 
-    Impostors will be torn down when the `with` block is exited.
+    Imposters will be torn down when the `with` block is exited.
 
     :param port: Server port.
     :param scheme: Server scheme, if not `http`.
     :param host: Server host, if not `localhost`.
-    :param imposters_path: Impostors path, if not `imposters`.
+    :param imposters_path: Imposters path, if not `imposters`.
 
     """
 
@@ -166,8 +166,8 @@ class MountebankServer:
             scheme=self.scheme, host=self.host, port=self.server_port, path=self.imposters_path
         )
 
-    def query_all_impostors(self) -> Iterator[Imposter]:
-        """Yield all impostors running on the server, including those defines elsewhere."""
+    def query_all_imposters(self) -> Iterator[Imposter]:
+        """Yield all imposters running on the server, including those defines elsewhere."""
         server_info = requests.get(self.server_url)
         imposters = server_info.json()["imposters"]
         for imposter in imposters:
@@ -175,7 +175,7 @@ class MountebankServer:
 
 
 class ExecutingMountebankServer(MountebankServer):
-    """A Mountebank mock server, running one or more impostors, one for each domain being mocked.
+    """A Mountebank mock server, running one or more imposters, one for each domain being mocked.
 
     Test will look like::
 

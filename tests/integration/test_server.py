@@ -100,12 +100,12 @@ def test_allow_multiple_servers_on_different_ports():
         server2.close()
 
 
-def test_query_all_impostors(mock_server):
+def test_query_all_imposters(mock_server):
     imposter1 = Imposter(Stub(Predicate(path="/test1"), Response(body="sausages")))
     imposter2 = Imposter(Stub(Predicate(path="/test2"), Response(body="egg")))
 
     with mock_server([imposter1, imposter2]) as server:
-        actual = list(server.query_all_impostors())
+        actual = list(server.query_all_imposters())
         assert_that(
             actual,
             contains_inanyorder(

@@ -33,7 +33,7 @@ def test_default_imposter(mock_server):
     assert_that(r, is_response().with_status_code(200).and_body(""))
 
 
-def test_impostor_had_request_matcher(mock_server):
+def test_imposter_had_request_matcher(mock_server):
     imposter = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")))
 
     with mock_server(imposter):

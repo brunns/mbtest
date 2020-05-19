@@ -4,7 +4,7 @@
 * Does the TCP protocol stuff work? I need to add `endOfRequestResolver` I think, at least.
 * `NotPredicate`
 * Proxy record/playback
-* Test for saving & rehydrating impostors from file.
+* Test for saving & rehydrating imposters from file.
 * Tutorial
     * Basics
     * Stubs, predicates, responses
@@ -14,4 +14,4 @@
     * Proxies
         * Record/Playback
 * Fix email matcher
-* `had_request()` matcher for impostors - deprecate server version?
+* `had_request()` matcher for imposters - deprecate server version?
