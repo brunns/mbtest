@@ -107,7 +107,7 @@ class Response(BaseResponse):
     def from_structure(structure: JsonStructure) -> "Response":
         response = Response()
         response._fields_from_structure(structure)
-        behaviors = structure.get("_behaviors")
+        behaviors = structure.get("_behaviors", {})
         response._set_if_in_dict(behaviors, "wait", "wait")
         response._set_if_in_dict(behaviors, "repeat", "repeat")
         response._set_if_in_dict(behaviors, "decorate", "decorate")

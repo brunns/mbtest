@@ -167,7 +167,7 @@ class MountebankServer:
         )
 
     def query_all_imposters(self) -> Iterator[Imposter]:
-        """Yield all imposters running on the server, including those defines elsewhere."""
+        """Yield all imposters running on the server, including those defined elsewhere."""
         server_info = requests.get(self.server_url)
         imposters = server_info.json()["imposters"]
         for imposter in imposters:
