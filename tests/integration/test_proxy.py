@@ -9,6 +9,7 @@ from brunns.matchers.response import is_response
 from contexttimer import Timer
 from hamcrest import assert_that, contains_string, has_entry
 from mbtest.imposters import Imposter, Predicate, Proxy, Stub
+from mbtest.imposters.responses import PredicateGenerator
 from mbtest.matchers import had_request
 from tests.utils.network import internet_connection
 
@@ -35,7 +36,10 @@ def test_proxy_playback(mock_server):
     proxy_imposter = Imposter(Stub(responses=Proxy(to="https://httpbin.org", mode=Proxy.Mode.ONCE)))
 
     with mock_server(proxy_imposter):
-        requests.get(proxy_imposter.url / "status/418")
+        response = requests.get(proxy_imposter.url / "status/418")
+        assert_that(
+            response, is_response().with_status_code(418).and_body(contains_string("teapot"))
+        )
         response = requests.get(proxy_imposter.url / "status/200")
         assert_that(
             response, is_response().with_status_code(418).and_body(contains_string("teapot"))
@@ -49,6 +53,38 @@ def test_proxy_playback(mock_server):
         assert_that(
             response, is_response().with_status_code(418).and_body(contains_string("teapot"))
         )
+
+
+@pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
+def test_proxy_uses_path_predicate_generator(mock_server):
+    proxy_imposter = Imposter(
+        Stub(
+            responses=Proxy(
+                to="https://httpbin.org",
+                mode=Proxy.Mode.ONCE,
+                predicate_generators=[PredicateGenerator(path=True)],
+            )
+        )
+    )
+
+    with mock_server(proxy_imposter):
+        response = requests.get(proxy_imposter.url / "status/418")
+        assert_that(
+            response, is_response().with_status_code(418).and_body(contains_string("teapot"))
+        )
+        response = requests.get(proxy_imposter.url / "status/200")
+        assert_that(response, is_response().with_status_code(200))
+
+        recorded_stubs = proxy_imposter.playback()
+
+    playback_impostor = Imposter(recorded_stubs)
+    with mock_server(playback_impostor):
+        response = requests.get(playback_impostor.url / "status/418")
+        assert_that(
+            response, is_response().with_status_code(418).and_body(contains_string("teapot"))
+        )
+        response = requests.get(playback_impostor.url / "status/200")
+        assert_that(response, is_response().with_status_code(200))
 
 
 @pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")

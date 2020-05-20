@@ -8,6 +8,7 @@ from xml.etree import ElementTree as et  # nosec - We are creating, not parsing 
 from furl import furl
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.behaviors import Copy, Lookup
+from mbtest.imposters.predicates import Predicate
 
 
 class BaseResponse(JsonSerializable, metaclass=ABCMeta):
@@ -160,11 +161,13 @@ class Proxy(BaseResponse):
         wait: Optional[int] = None,
         inject_headers: Optional[Mapping[str, str]] = None,
         mode: "Proxy.Mode" = Mode.ONCE,
+        predicate_generators: Optional[Iterable["PredicateGenerator"]] = None,
     ) -> None:
         self.to = to
         self.wait = wait
         self.inject_headers = inject_headers
         self.mode = mode
+        self.predicate_generators = predicate_generators if predicate_generators is not None else []
 
     def as_structure(self) -> JsonStructure:
         proxy = {
@@ -172,6 +175,9 @@ class Proxy(BaseResponse):
             "mode": self.mode.value,
         }
         self._add_if_true(proxy, "injectHeaders", self.inject_headers)
+        self._add_if_true(
+            proxy, "predicateGenerators", [pg.as_structure() for pg in self.predicate_generators]
+        )
         response = {"proxy": proxy}
         if self.wait:
             response["_behaviors"] = {"wait": self.wait}
@@ -186,11 +192,44 @@ class Proxy(BaseResponse):
             if "injectHeaders" in proxy_structure
             else None,
             mode=Proxy.Mode(proxy_structure["mode"]),
+            predicate_generators=[
+                PredicateGenerator.from_structure(pg)
+                for pg in proxy_structure["predicateGenerators"]
+            ]
+            if "predicateGenerators" in proxy_structure
+            else None,
         )
         wait = structure.get("_behaviors", {}).get("wait")
         if wait:
             proxy.wait = wait
         return proxy
+
+
+class PredicateGenerator(JsonSerializable):
+    def __init__(
+        self,
+        path: bool = False,
+        operator: Predicate.Operator = Predicate.Operator.EQUALS,
+        case_sensitive: bool = True,
+    ):
+        self.path = path
+        self.operator = operator
+        self.case_sensitive = case_sensitive
+
+    def as_structure(self) -> JsonStructure:
+        predicate = {"caseSensitive": self.case_sensitive, "matches": {"path": self.path}}
+        return predicate
+
+    @staticmethod
+    def from_structure(structure: JsonStructure) -> "PredicateGenerator":
+        path = structure["matches"].get("path", None)
+        operator = (
+            Predicate.Operator[structure["operator"]]
+            if "operator" in structure
+            else Predicate.Operator.EQUALS
+        )
+        case_sensitive = structure.get("caseSensitive", False)
+        return PredicateGenerator(path=path, operator=operator, case_sensitive=case_sensitive)
 
 
 class InjectionResponse(BaseResponse):
