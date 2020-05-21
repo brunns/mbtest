@@ -129,6 +129,56 @@ def test_proxy_uses_query_predicate_generator(mock_server):
 
 
 @pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
+def test_proxy_uses_query_predicate_generator_with_key(mock_server):
+    proxy_imposter = Imposter(
+        Stub(
+            responses=Proxy(
+                to="https://httpbin.org",
+                mode=Proxy.Mode.ONCE,
+                predicate_generators=[PredicateGenerator(query={"foo": "whatever"})],
+            )
+        )
+    )
+
+    with mock_server(proxy_imposter):
+        response = requests.get(proxy_imposter.url / "get", params={"foo": "bar", "quxx": "buzz"})
+        assert_that(
+            response,
+            is_response().with_body(
+                json_matching(has_entries(args=has_entries(foo="bar", quxx="buzz")))
+            ),
+        )
+        response = requests.get(proxy_imposter.url / "get", params={"foo": "baz", "quxx": "buxx"})
+        assert_that(
+            response,
+            is_response().with_body(json_matching(has_entries(args=has_entries(foo="baz")))),
+        )
+
+        recorded_stubs = proxy_imposter.playback()
+
+    playback_impostor = Imposter(recorded_stubs)
+    with mock_server(playback_impostor):
+        response = requests.get(
+            playback_impostor.url / "get", params={"foo": "bar", "quxx": "whatever"}
+        )
+        assert_that(
+            response,
+            is_response().with_body(
+                json_matching(has_entries(args=has_entries(foo="bar", quxx="buzz")))
+            ),
+        )
+        response = requests.get(
+            playback_impostor.url / "get", params={"foo": "baz", "quxx": "anything"}
+        )
+        assert_that(
+            response,
+            is_response().with_body(
+                json_matching(has_entries(args=has_entries(foo="baz", quxx="buxx")))
+            ),
+        )
+
+
+@pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
 def test_proxy_without_stub(mock_server):
     imposter = Imposter(Proxy(to="http://example.com"))
 
