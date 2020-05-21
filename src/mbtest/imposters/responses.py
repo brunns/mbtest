@@ -2,7 +2,7 @@
 from abc import ABCMeta
 from collections.abc import Sequence
 from enum import Enum
-from typing import Iterable, Mapping, Optional, Union
+from typing import Iterable, Mapping, MutableMapping, Optional, Union
 from xml.etree import ElementTree as et  # nosec - We are creating, not parsing XML.
 
 from furl import furl
@@ -209,27 +209,35 @@ class PredicateGenerator(JsonSerializable):
     def __init__(
         self,
         path: bool = False,
+        query: Union[bool, Mapping[str, str]] = False,
         operator: Predicate.Operator = Predicate.Operator.EQUALS,
         case_sensitive: bool = True,
     ):
         self.path = path
+        self.query = query
         self.operator = operator
         self.case_sensitive = case_sensitive
 
     def as_structure(self) -> JsonStructure:
-        predicate = {"caseSensitive": self.case_sensitive, "matches": {"path": self.path}}
+        matches = {}  # type: MutableMapping[str, str]
+        self._add_if_true(matches, "path", self.path)
+        self._add_if_true(matches, "query", self.query)
+        predicate = {"caseSensitive": self.case_sensitive, "matches": matches}
         return predicate
 
     @staticmethod
     def from_structure(structure: JsonStructure) -> "PredicateGenerator":
         path = structure["matches"].get("path", None)
+        query = structure["matches"].get("query", None)
         operator = (
             Predicate.Operator[structure["operator"]]
             if "operator" in structure
             else Predicate.Operator.EQUALS
         )
         case_sensitive = structure.get("caseSensitive", False)
-        return PredicateGenerator(path=path, operator=operator, case_sensitive=case_sensitive)
+        return PredicateGenerator(
+            path=path, query=query, operator=operator, case_sensitive=case_sensitive
+        )
 
 
 class InjectionResponse(BaseResponse):

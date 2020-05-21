@@ -3,11 +3,12 @@ import logging
 
 import pytest
 import requests
+from brunns.matchers.data import json_matching
 from brunns.matchers.html import has_title
 from brunns.matchers.object import between
 from brunns.matchers.response import is_response
 from contexttimer import Timer
-from hamcrest import assert_that, contains_string, has_entry
+from hamcrest import assert_that, contains_string, has_entries, has_entry
 from mbtest.imposters import Imposter, Predicate, Proxy, Stub
 from mbtest.imposters.responses import PredicateGenerator
 from mbtest.matchers import had_request
@@ -85,6 +86,46 @@ def test_proxy_uses_path_predicate_generator(mock_server):
         )
         response = requests.get(playback_impostor.url / "status/200")
         assert_that(response, is_response().with_status_code(200))
+
+
+@pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
+def test_proxy_uses_query_predicate_generator(mock_server):
+    proxy_imposter = Imposter(
+        Stub(
+            responses=Proxy(
+                to="https://httpbin.org",
+                mode=Proxy.Mode.ONCE,
+                predicate_generators=[PredicateGenerator(query=True)],
+            )
+        )
+    )
+
+    with mock_server(proxy_imposter):
+        response = requests.get(proxy_imposter.url / "get", params={"foo": "bar"})
+        assert_that(
+            response,
+            is_response().with_body(json_matching(has_entries(args=has_entries(foo="bar")))),
+        )
+        response = requests.get(proxy_imposter.url / "get", params={"foo": "baz"})
+        assert_that(
+            response,
+            is_response().with_body(json_matching(has_entries(args=has_entries(foo="baz")))),
+        )
+
+        recorded_stubs = proxy_imposter.playback()
+
+    playback_impostor = Imposter(recorded_stubs)
+    with mock_server(playback_impostor):
+        response = requests.get(playback_impostor.url / "get", params={"foo": "bar"})
+        assert_that(
+            response,
+            is_response().with_body(json_matching(has_entries(args=has_entries(foo="bar")))),
+        )
+        response = requests.get(playback_impostor.url / "get", params={"foo": "baz"})
+        assert_that(
+            response,
+            is_response().with_body(json_matching(has_entries(args=has_entries(foo="baz")))),
+        )
 
 
 @pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
