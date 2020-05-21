@@ -104,9 +104,15 @@ class Imposter(JsonSerializable):
             cast(furl, self.server_url) / str(self.port) if self.attached else None
         )  # TODO: Get rid of the `None`s - a Maybe, maybe?
 
-    def playback(self) -> Sequence[Stub]:
+    def query_all_stubs(self):
+        """Return all stubs running on the impostor, including those defined elsewhere."""
         json = requests.get(cast(str, self.configuration_url)).json()["stubs"]
-        return [Stub.from_structure(s) for s in json]
+        all_stubs = [Stub.from_structure(s) for s in json]
+        return all_stubs
+
+    def playback(self) -> Sequence[Stub]:
+        all_stubs = self.query_all_stubs()
+        return [s for s in all_stubs if any(not isinstance(r, Proxy) for r in s.responses)]
 
 
 class Request(metaclass=ABCMeta):
