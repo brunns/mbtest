@@ -2,7 +2,7 @@ ARG python_version
 FROM python:${python_version}-slim
 
 ARG nodejs_major_version=14
-ARG nodejs_minor_version=2
+ARG nodejs_minor_version=3
 ARG nodejs_revision=0
 ARG mountebank_version=2.2.1
 ARG nodejs_apt_version=$nodejs_major_version.$nodejs_minor_version.${nodejs_revision}-1nodesource1
@@ -20,7 +20,7 @@ ARG group_id=1002
 ARG user=travisci
 ARG group=travisci
 RUN addgroup --system $group --gid $group_id && adduser $user --gid $group_id --uid $user_id
-ARG workdir=/mbtest/
+ARG workdir=/mbtest
 RUN mkdir -p $workdir && chown $user:$group $workdir
 USER $user
 ENV PATH /home/$user/.local/bin:/home/$user/bin:$PATH
