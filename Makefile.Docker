@@ -37,6 +37,9 @@ use-tox: ## Use the tox-based local development workflow
 	mv Makefile Makefile.Docker
 	mv Makefile.tox Makefile
 
+.PHONY: precommit
+precommit: use-tox ## Revert to using the tox-based workflow, and run precommit checks
+	make precommit
 
 .PHONY: help
 help: ## Show this help
