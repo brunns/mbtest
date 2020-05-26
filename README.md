@@ -29,7 +29,7 @@ Install with pip:
 
     pip install mbtest
 
-(As usual, use of a [venv](https://docs.python.org/3/library/venv.html) or [virtualenv](https://virtualenv.pypa.io) is recommended.) Also requires(optionally) [Mountebank](http://www.mbtest.org/) to have been installed:
+(As usual, use of a [venv](https://docs.python.org/3/library/venv.html) or [virtualenv](https://virtualenv.pypa.io) is recommended.) Also, if you want to run new instance of mountebank, it requires [Mountebank](http://www.mbtest.org/) to have been installed:
 
     npm install mountebank@2.2 --production
 
@@ -49,7 +49,7 @@ def test_request_to_mock_server(mock_server):
 
     with mock_server(imposter):
         # Make request to mock server - exercise code under test here
-        response = requests.get(f"{imposter.url}/test")
+        response = requests.get("{}/test".format(imposter.url))
 
         assert_that("We got the expected response", 
                     response, is_response().with_status_code(200).and_body("sausages"))
@@ -58,7 +58,7 @@ def test_request_to_mock_server(mock_server):
 ```
 Imposter will be killed after `with`.
 
-If you need a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily it can be defined in [`conftest.py`](https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions):
+Needs a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily it can be defined in [`conftest.py`](https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions):
 ```python
 import pytest
 from mbtest import server
@@ -101,7 +101,7 @@ imposter = Imposter(
     port=IMPOSTER_PORT)
 
 with mock_server(imposter) as ms:
-    response = requests.get(f"{imposter.url}/test")
+    response = requests.get("{}/test".format(imposter.url))
     # Check your request
     print(ms.get_actual_requests())
 ```
