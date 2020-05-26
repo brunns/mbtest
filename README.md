@@ -56,7 +56,7 @@ def test_request_to_mock_server(mock_server):
         assert_that("The mock server recorded the request", 
                     imposter, had_request().with_path("/test").and_method("GET"))
 ```
-Imposter will be kill after `with`.
+Imposter will be killed after `with`.
 
 Needs a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily defined in [`conftest.py`](https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions):
 
@@ -74,12 +74,12 @@ found in the [integration tests](https://github.com/brunns/mbtest/tree/master/te
 
 ## Use with Docker
 
-If you want to use your own mountebank service instance ([Docker](https://hub.docker.com/r/andyrbell/mountebank), for example) you **no need npm** requirements.
+If you want to use your own mountebank service instance ([Docker](https://hub.docker.com/r/andyrbell/mountebank), for example) you have **no need to use npm** requirements.
 ```sh
 docker run -p 2525:2525 -p IMPOSTER_PORT:IMPOSTER_PORT -d andyrbell/mountebank
 ```
 
-You can do in [`conftest.py`] like this:
+You can do like this in your [`conftest.py`]:
 ```python
 import pytest
 from mbtest.server import MountebankServer
@@ -89,7 +89,7 @@ def mock_server():
     return MountebankServer(port=2525, host="localhost")
 ```
 
-Don't forget open docker ports for mountebank (default 2525) and for each imposters.
+Don't forget to open docker ports for mountebank (default 2525) and for each it's imposters.
 ```python
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 
@@ -106,7 +106,7 @@ with mock_server(imposter) as ms:
     # Check your request
     print(ms.get_actual_requests())
 ```
-If don't specify port for Imposter it will be done randomly.
+If you don't specify port for Imposter it will be done randomly.
 
 ## Extra
 
