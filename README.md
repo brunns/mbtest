@@ -58,7 +58,7 @@ def test_request_to_mock_server(mock_server):
 ```
 Imposter will be killed after `with`.
 
-Needs a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily it can be defined in [`conftest.py`](https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions):
+Needs a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily defined in [`conftest.py`](https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions):
 ```python
 import pytest
 from mbtest import server
