@@ -5,13 +5,6 @@
 * `NotPredicate`
 * Proxy record/playback
 * Test for saving & rehydrating imposters from file.
-* Tutorial
-    * Basics
-    * Stubs, predicates, responses
-    * Stubbing vs. Mocking
-    * Server options
-        * Existing server
-    * Proxies
-        * Record/Playback
+* Tutorial & guide
 * Fix email matcher
 * `had_request()` matcher for imposters - deprecate server version?

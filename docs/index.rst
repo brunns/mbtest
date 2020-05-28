@@ -10,6 +10,7 @@ Includes `pytest`_ fixture and `PyHamcrest`_ matchers.
    :maxdepth: 2
    :caption: Contents:
 
+      Guide <guide.rst>
       API <api.rst>
 
 Installation

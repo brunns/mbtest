@@ -29,9 +29,11 @@ Install with pip:
 
     pip install mbtest
 
-(As usual, use of a [venv](https://docs.python.org/3/library/venv.html) or [virtualenv](https://virtualenv.pypa.io) is recommended.) Also, if you want to run new instance of mountebank, it requires [Mountebank](http://www.mbtest.org/) to have been installed:
+(As usual, use of a [venv](https://docs.python.org/3/library/venv.html) or [virtualenv](https://virtualenv.pypa.io) is recommended.) Also requires [Mountebank](http://www.mbtest.org/) to have been installed:
 
     npm install mountebank@2.2 --production
+
+(Alternatively, you can attach to an instance of Mountebank running elsewhere, perhaps [in docker](https://mbtest.readthedocs.io/en/latest/guide/docker.html).)
 
 ## Basic example
 
@@ -56,9 +58,10 @@ def test_request_to_mock_server(mock_server):
         assert_that("The mock server recorded the request", 
                     imposter, had_request().with_path("/test").and_method("GET"))
 ```
-Imposter will be killed after `with`.
 
-Needs a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily defined in [`conftest.py`](https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions):
+Needs a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily defined in [`conftest.py`]
+(https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions):
+
 ```python
 import pytest
 from mbtest import server
@@ -71,45 +74,8 @@ def mock_server(request):
 This will take care of starting and stopping the Mountebank server for you. Examples of more complex predicates can be 
 found in the [integration tests](https://github.com/brunns/mbtest/tree/master/tests/integration/).
 
-## Use with Docker
+See the [Dounumentation](https://mbtest.readthedocs.io/) for more.
 
-If you want to use your own mountebank service instance ([Docker](https://hub.docker.com/r/andyrbell/mountebank), for example) you have **no need to use npm** requirements.
-```sh
-docker run -p 2525:2525 -p IMPOSTER_PORT:IMPOSTER_PORT -d andyrbell/mountebank
-```
-
-You can do like this in your [`conftest.py`]:
-```python
-import pytest
-from mbtest.server import MountebankServer
-
-@pytest.fixture(scope="session")
-def mock_server():
-    return MountebankServer(port=2525, host="localhost")
-```
-
-Don't forget to open docker ports for mountebank (default 2525) and for each it's imposters.
-```python
-from mbtest.imposters import Imposter, Predicate, Response, Stub
-
-imposter = Imposter(
-    Stub(
-        Predicate(path="/test") & Predicate(query={}) & Predicate(method="GET"),
-        Response(body="sausages")
-    ),
-    record_requests=True,
-    port=IMPOSTER_PORT)
-
-with mock_server(imposter) as ms:
-    response = requests.get("{}/test".format(imposter.url))
-    # Check your request
-    print(ms.get_actual_requests())
-```
-If you don't specify port for Imposter it will be done randomly.
-
-## Extra
-
-You can combine your Predicate with `&`(and), `|`(or).
 
 ## Developing
 
