@@ -30,7 +30,8 @@ def test_shell_transform(mock_server):
             responses=Response(
                 body="Hello ${name}!", shell_transform=('python -c "{0}" '.format(SCRIPT))
             )
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(imposter):

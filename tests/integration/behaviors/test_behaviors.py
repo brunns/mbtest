@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def test_wait(mock_server):
-    imposter = Imposter(Stub(responses=Response(wait=100)))
+    imposter = Imposter(Stub(responses=Response(wait=100)), port=4545)
 
     with mock_server(imposter), Timer() as timer:
         requests.get(imposter.url)
@@ -22,7 +22,10 @@ def test_wait(mock_server):
 
 def test_wait_function(mock_server):
     imposter = Imposter(
-        Stub(responses=Response(wait="function() { return Math.floor(Math.random() * 50) + 100; }"))
+        Stub(
+            responses=Response(wait="function() { return Math.floor(Math.random() * 50) + 100; }")
+        ),
+        port=4545,
     )
 
     with mock_server(imposter), Timer() as timer:
@@ -34,7 +37,7 @@ def test_wait_function(mock_server):
 def test_repeat(mock_server):
     # Given
     imposter = Imposter(
-        Stub(Predicate(), [Response(body="oranges", repeat=2), Response(body="apples")])
+        Stub(Predicate(), [Response(body="oranges", repeat=2), Response(body="apples")]), port=4545
     )
 
     with mock_server(imposter) as s:

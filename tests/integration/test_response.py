@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def test_body(mock_server):
-    imposter = Imposter(Stub(responses=Response(body="sausages")))
+    imposter = Imposter(Stub(responses=Response(body="sausages")), port=4545)
 
     with mock_server(imposter):
         response = requests.get(imposter.url)
@@ -23,7 +23,7 @@ def test_body(mock_server):
 
 
 def test_status(mock_server):
-    imposter = Imposter(Stub(responses=Response(status_code=204)))
+    imposter = Imposter(Stub(responses=Response(status_code=204)), port=4545)
 
     with mock_server(imposter):
         response = requests.get(imposter.url)
@@ -33,7 +33,7 @@ def test_status(mock_server):
 
 def test_headers(mock_server):
     imposter = Imposter(
-        Stub(responses=Response(headers={"X-Clacks-Overhead": "GNU Terry Pratchett"}))
+        Stub(responses=Response(headers={"X-Clacks-Overhead": "GNU Terry Pratchett"})), port=4545
     )
 
     with mock_server(imposter):
@@ -46,7 +46,9 @@ def test_headers(mock_server):
 
 
 def test_binary_mode(mock_server):
-    imposter = Imposter(Stub(responses=Response(mode=Response.Mode.BINARY, body=b"c2F1c2FnZXM=")))
+    imposter = Imposter(
+        Stub(responses=Response(mode=Response.Mode.BINARY, body=b"c2F1c2FnZXM=")), port=4545
+    )
 
     with mock_server(imposter):
         response = requests.get(imposter.url)
@@ -55,7 +57,9 @@ def test_binary_mode(mock_server):
 
 
 def test_multiple_responses(mock_server):
-    imposter = Imposter(Stub(responses=[Response(body="sausages"), Response(body="egg")]))
+    imposter = Imposter(
+        Stub(responses=[Response(body="sausages"), Response(body="egg")]), port=4545
+    )
 
     with mock_server(imposter):
         r1 = requests.get(imposter.url)
@@ -77,7 +81,8 @@ def test_injection_response(mock_server):
             responses=InjectionResponse(
                 inject="function (config) {return {body: config.request.headers['foo'].toUpperCase()};}"
             )
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(imposter):

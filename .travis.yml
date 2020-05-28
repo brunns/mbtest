@@ -6,9 +6,21 @@ matrix:
     - os: osx
     - python: 3.9-dev
   include:
+    - python: 3.8
+      env:
+        - TOX_ENV=py38
     - python: 3.7
       env:
         - TOX_ENV=py37
+    - python: 3.6
+      env:
+        - TOX_ENV=py36
+    - python: 3.5
+      env:
+        - TOX_ENV=py35
+    - python: 3.9-dev
+      env:
+        - TOX_ENV=py39
     - os: osx
       language: generic
       python: 3.7
@@ -24,18 +36,15 @@ matrix:
         - python -m pip install --upgrade pip wheel tox
       env:
         - TOX_ENV=py37
-    - python: 3.5
-      env:
-        - TOX_ENV=py35
-    - python: 3.6
-      env:
-        - TOX_ENV=py36
     - python: 3.8
       env:
         - TOX_ENV=py38
-    - python: 3.9-dev
-      env:
-        - TOX_ENV=py39
+        - DOCKER_MB_HOST=2525
+      services:
+        - docker
+      before_install:
+        - docker run -p 2525:2525 -p 2526:2526 -p 4525:4525 -p 4545:4545 -p 4546:4546 -d bbyars/mountebank "mb" "--allowInjection"
+        - pip install --upgrade tox
     - python: 3.6
       env:
         - TOX_ENV=pypy3.6

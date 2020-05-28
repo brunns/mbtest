@@ -21,7 +21,7 @@ INTERNET_CONNECTED = internet_connection()
 
 @pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
 def test_proxy(mock_server):
-    imposter = Imposter(Stub(responses=Proxy(to="http://example.com")))
+    imposter = Imposter(Stub(responses=Proxy(to="http://example.com")), port=4545)
 
     with mock_server(imposter):
         response = requests.get(imposter.url)
@@ -34,7 +34,9 @@ def test_proxy(mock_server):
 
 @pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
 def test_proxy_playback(mock_server):
-    proxy_imposter = Imposter(Stub(responses=Proxy(to="https://httpbin.org", mode=Proxy.Mode.ONCE)))
+    proxy_imposter = Imposter(
+        Stub(responses=Proxy(to="https://httpbin.org", mode=Proxy.Mode.ONCE)), port=4545
+    )
 
     with mock_server(proxy_imposter):
         response = requests.get(proxy_imposter.url / "status/418")
@@ -48,7 +50,7 @@ def test_proxy_playback(mock_server):
 
         recorded_stubs = proxy_imposter.playback()
 
-    playback_impostor = Imposter(recorded_stubs)
+    playback_impostor = Imposter(recorded_stubs, port=4545)
     with mock_server(playback_impostor):
         response = requests.get(playback_impostor.url)
         assert_that(
@@ -65,7 +67,8 @@ def test_proxy_uses_path_predicate_generator(mock_server):
                 mode=Proxy.Mode.ONCE,
                 predicate_generators=[PredicateGenerator(path=True)],
             )
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(proxy_imposter):
@@ -78,7 +81,7 @@ def test_proxy_uses_path_predicate_generator(mock_server):
 
         recorded_stubs = proxy_imposter.playback()
 
-    playback_impostor = Imposter(recorded_stubs)
+    playback_impostor = Imposter(recorded_stubs, port=4545)
     with mock_server(playback_impostor):
         response = requests.get(playback_impostor.url / "status/418")
         assert_that(
@@ -97,7 +100,8 @@ def test_proxy_uses_query_predicate_generator(mock_server):
                 mode=Proxy.Mode.ONCE,
                 predicate_generators=[PredicateGenerator(query=True)],
             )
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(proxy_imposter):
@@ -114,7 +118,7 @@ def test_proxy_uses_query_predicate_generator(mock_server):
 
         recorded_stubs = proxy_imposter.playback()
 
-    playback_impostor = Imposter(recorded_stubs)
+    playback_impostor = Imposter(recorded_stubs, port=4545)
     with mock_server(playback_impostor):
         response = requests.get(playback_impostor.url / "get", params={"foo": "bar"})
         assert_that(
@@ -137,7 +141,8 @@ def test_proxy_uses_query_predicate_generator_with_key(mock_server):
                 mode=Proxy.Mode.ONCE,
                 predicate_generators=[PredicateGenerator(query={"foo": "whatever"})],
             )
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(proxy_imposter):
@@ -156,7 +161,7 @@ def test_proxy_uses_query_predicate_generator_with_key(mock_server):
 
         recorded_stubs = proxy_imposter.playback()
 
-    playback_impostor = Imposter(recorded_stubs)
+    playback_impostor = Imposter(recorded_stubs, port=4545)
     with mock_server(playback_impostor):
         response = requests.get(
             playback_impostor.url / "get", params={"foo": "bar", "quxx": "whatever"}
@@ -180,7 +185,7 @@ def test_proxy_uses_query_predicate_generator_with_key(mock_server):
 
 @pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
 def test_proxy_without_stub(mock_server):
-    imposter = Imposter(Proxy(to="http://example.com"))
+    imposter = Imposter(Proxy(to="http://example.com"), port=4545)
 
     with mock_server(imposter):
         response = requests.get(imposter.url)
@@ -191,9 +196,11 @@ def test_proxy_without_stub(mock_server):
 
 
 def test_proxy_delay(mock_server):
-    target_imposter = Imposter(Stub(Predicate(path="/test")))
+    target_imposter = Imposter(Stub(Predicate(path="/test")), port=4545)
     with mock_server(target_imposter) as server:
-        proxy_imposter = Imposter(Stub(responses=Proxy(to=target_imposter.url, wait=100)))
+        proxy_imposter = Imposter(
+            Stub(responses=Proxy(to=target_imposter.url, wait=100)), port=4546
+        )
         server.add_imposters(proxy_imposter)
 
         with Timer() as timer:
@@ -203,7 +210,7 @@ def test_proxy_delay(mock_server):
 
 
 def test_inject_headers(mock_server):
-    target_imposter = Imposter(Stub(Predicate(path="/test")))
+    target_imposter = Imposter(Stub(Predicate(path="/test")), port=4545)
     with mock_server(target_imposter) as server:
         proxy_imposter = Imposter(
             Stub(
@@ -211,7 +218,8 @@ def test_inject_headers(mock_server):
                     to=target_imposter.url,
                     inject_headers={"X-Clacks-Overhead": "GNU Terry Pratchett"},
                 )
-            )
+            ),
+            port=4546,
         )
         server.add_imposters(proxy_imposter)
 

@@ -19,7 +19,9 @@ JS = """\
 
 
 def test_decorate(mock_server):
-    imposter = Imposter(Stub(responses=Response(body="The time is ${TIME}.", decorate=JS)))
+    imposter = Imposter(
+        Stub(responses=Response(body="The time is ${TIME}.", decorate=JS)), port=4545
+    )
 
     with mock_server(imposter):
         response = requests.get(imposter.url)

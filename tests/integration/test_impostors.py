@@ -12,8 +12,10 @@ logger = logging.getLogger(__name__)
 
 def test_multiple_imposters(mock_server):
     imposters = [
-        Imposter(Stub(Predicate(path="/test1"), Response("sausages"))),
-        Imposter([Stub([Predicate(path="/test2")], [Response("chips", status_code=201)])]),
+        Imposter(Stub(Predicate(path="/test1"), Response("sausages")), port=4545),
+        Imposter(
+            [Stub([Predicate(path="/test2")], [Response("chips", status_code=201)])], port=4546
+        ),
     ]
 
     with mock_server(imposters):
@@ -25,7 +27,7 @@ def test_multiple_imposters(mock_server):
 
 
 def test_default_imposter(mock_server):
-    imposter = Imposter(Stub())
+    imposter = Imposter(Stub(), port=4545)
 
     with mock_server(imposter):
         r = requests.get("{0}/".format(imposter.url))
@@ -34,7 +36,7 @@ def test_default_imposter(mock_server):
 
 
 def test_imposter_had_request_matcher(mock_server):
-    imposter = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")))
+    imposter = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")), port=4545)
 
     with mock_server(imposter):
         response = requests.get("{0}/test".format(imposter.url))

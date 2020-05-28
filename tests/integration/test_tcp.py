@@ -12,6 +12,7 @@ def test_tcp(mock_server):
     imposter = Imposter(
         Stub(TcpPredicate(data="request"), TcpResponse(data="*" * 1024)),
         protocol=Imposter.Protocol.TCP,
+        port=4545,
     )
 
     with mock_server(imposter):

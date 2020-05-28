@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 def test_request_to_mock_server(mock_server):
     # Start mock server with required behavior
-    imposter = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")))
+    imposter = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")), port=4545)
 
     with mock_server(imposter) as server:
         # Make request to mock server
@@ -80,8 +80,8 @@ def test_allow_multiple_servers_on_different_ports():
     try:
         server1 = ExecutingMountebankServer(port=2526)
         server2 = ExecutingMountebankServer(port=2527)
-        imposter1 = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")))
-        imposter2 = Imposter(Stub(Predicate(path="/test"), Response(body="bacon")))
+        imposter1 = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")), port=4545)
+        imposter2 = Imposter(Stub(Predicate(path="/test"), Response(body="bacon")), port=4546)
 
         with server1(imposter1), server2(imposter2):
 
@@ -97,8 +97,8 @@ def test_allow_multiple_servers_on_different_ports():
 
 
 def test_query_all_imposters(mock_server):
-    imposter1 = Imposter(Stub(Predicate(path="/test1"), Response(body="sausages")))
-    imposter2 = Imposter(Stub(Predicate(path="/test2"), Response(body="egg")))
+    imposter1 = Imposter(Stub(Predicate(path="/test1"), Response(body="sausages")), port=4545)
+    imposter2 = Imposter(Stub(Predicate(path="/test2"), Response(body="egg")), port=4546)
 
     with mock_server([imposter1, imposter2]) as server:
         actual = list(server.query_all_imposters())

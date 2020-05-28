@@ -12,7 +12,9 @@ logger = logging.getLogger(__name__)
 
 def test_json_payload(mock_server):
     # Given
-    imposter = Imposter(Stub(Predicate(body={"foo": ["bar", "baz"]}), Response(body="sausages")))
+    imposter = Imposter(
+        Stub(Predicate(body={"foo": ["bar", "baz"]}), Response(body="sausages")), port=4545
+    )
 
     with mock_server(imposter):
         # When
@@ -26,7 +28,7 @@ def test_json_payload(mock_server):
 
 def test_json_response(mock_server):
     # Given
-    imposter = Imposter(Stub(Predicate(), Response(body={"foo": ["bar", "baz"]})))
+    imposter = Imposter(Stub(Predicate(), Response(body={"foo": ["bar", "baz"]})), port=4545)
 
     with mock_server(imposter):
         # When

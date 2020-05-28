@@ -15,7 +15,7 @@ def test_multiple_stubs(mock_server):
             Stub(Predicate(path="/test1"), Response(body="sausages")),
             Stub(Predicate(path="/test2"), Response(body="chips")),
         ],
-        port=4567,
+        port=4545,
         name="bill",
     )
 

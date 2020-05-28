@@ -17,7 +17,8 @@ def test_and_predicate_and_query_strings(mock_server):
         Stub(
             Predicate(query={"foo": "bar"}) & Predicate(query={"dinner": "chips"}),
             Response(body="black pudding"),
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(imposter) as s:
@@ -32,7 +33,7 @@ def test_and_predicate_and_query_strings(mock_server):
 
 def test_or_predicate_and_body(mock_server):
     imposter = Imposter(
-        Stub(Predicate(body="foo") | Predicate(body="bar"), Response(body="oranges"))
+        Stub(Predicate(body="foo") | Predicate(body="bar"), Response(body="oranges")), port=4545
     )
 
     with mock_server(imposter) as s:
@@ -49,7 +50,7 @@ def test_or_predicate_and_body(mock_server):
 
 def test_query_predicate(mock_server):
     # Given
-    imposter = Imposter(Stub(Predicate(query={"foo": "bar"}), Response(body="oranges")))
+    imposter = Imposter(Stub(Predicate(query={"foo": "bar"}), Response(body="oranges")), port=4545)
 
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
@@ -67,7 +68,9 @@ def test_query_predicate(mock_server):
 
 def test_headers_predicate(mock_server):
     # Given
-    imposter = Imposter(Stub(Predicate(headers={"foo": "bar"}), Response(body="oranges")))
+    imposter = Imposter(
+        Stub(Predicate(headers={"foo": "bar"}), Response(body="oranges")), port=4545
+    )
 
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
@@ -93,7 +96,8 @@ def test_methods(mock_server):
             Stub(Predicate(method=Predicate.Method.DELETE), Response(body="delete")),
             Stub(Predicate(method=Predicate.Method.PATCH), Response(body="patch")),
             Stub(Predicate(method=Predicate.Method.HEAD), Response(status_code=789)),
-        ]
+        ],
+        port=4545,
     )
 
     with mock_server(imposter) as s:
@@ -128,7 +132,8 @@ def test_injection_predicate(mock_server):
                 inject="function (config) {return config.request.headers['foo'] === 'bar'}"
             ),
             Response(body="matched"),
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(imposter) as s:

@@ -23,7 +23,8 @@ def test_regex_copy(mock_server):
                     Copy({"query": "name"}, "${name}", UsingRegex("AL\\w+", ignore_case=True)),
                 ],
             )
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(imposter):
@@ -46,7 +47,8 @@ def test_xpath_copy(mock_server):
             responses=Response(
                 body="Have you read BOOK?", copy=Copy("body", "BOOK", UsingXpath("(//title)[2]"))
             )
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(imposter):
@@ -68,7 +70,8 @@ def test_xpath_copy_namespaced(mock_server):
                     ),
                 ),
             )
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(imposter):
@@ -83,7 +86,8 @@ def test_jsonpath_copy(mock_server):
             responses=Response(
                 body="Have you read BOOK?", copy=Copy("body", "BOOK", UsingJsonpath("$..title"))
             )
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(imposter):

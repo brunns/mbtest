@@ -12,7 +12,9 @@ logger = logging.getLogger(__name__)
 
 def test_xml_response(mock_server):
     # Given
-    imposter = Imposter(Stub(Predicate(), Response(body=data2xml({"foo": {"bar": "baz"}}))))
+    imposter = Imposter(
+        Stub(Predicate(), Response(body=data2xml({"foo": {"bar": "baz"}}))), port=4545
+    )
 
     with mock_server(imposter):
         # When
@@ -28,7 +30,8 @@ def test_xml_payload(mock_server):
         Stub(
             Predicate(xpath="//foo", body="bar", operator=Predicate.Operator.EQUALS),
             Response(body="sausages"),
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(imposter):

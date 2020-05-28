@@ -22,7 +22,8 @@ def test_lookup(mock_server):
                     Key("path", UsingRegex("/(.*)$"), 1), datasource_path, "Name", "${row}"
                 ),
             )
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(imposter):
@@ -49,7 +50,8 @@ def test_lookup_with_Path_type(mock_server):
                     Key("path", UsingRegex("/(.*)$"), 1), datasource_path, "Name", "${row}"
                 ),
             )
-        )
+        ),
+        port=4545,
     )
 
     with mock_server(imposter):
