@@ -2,6 +2,7 @@
 import collections.abc as abc
 import logging
 import platform
+import os
 import subprocess  # nosec
 import time
 from pathlib import Path
@@ -15,9 +16,18 @@ from mbtest.imposters import Imposter
 from mbtest.imposters.imposters import Request
 from requests import RequestException
 
-DEFAULT_MB_EXECUTABLE = str(
-    Path("node_modules") / ".bin" / ("mb.cmd" if platform.system() == "Windows" else "mb")
+GLOBAL_NPM_PATH = subprocess.check_output("npm bin -g", shell=True).decode('utf-8').strip('\n')
+CURRENT_NPM_PATH = subprocess.check_output("npm bin", shell=True).decode('utf-8').strip('\n')
+
+GLOBAL_MB_EXECUTABLE = str(
+    Path(GLOBAL_NPM_PATH) /("mb.cmd" if platform.system() == "Windows" else "mb")
 )
+
+DEFAULT_MB_EXECUTABLE = str(
+    Path(CURRENT_NPM_PATH) / ("mb.cmd" if platform.system() == "Windows" else "mb")
+)
+
+DEFAULT_MB_EXECUTABLE = GLOBAL_MB_EXECUTABLE if not os.path.exists(DEFAULT_MB_EXECUTABLE) else DEFAULT_MB_EXECUTABLE
 
 logger = logging.getLogger(__name__)
 
