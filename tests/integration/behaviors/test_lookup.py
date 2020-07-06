@@ -5,6 +5,7 @@ from pathlib import Path
 import requests
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, has_entry
+
 from mbtest.imposters import Imposter, Key, Lookup, Response, Stub, UsingRegex
 
 logger = logging.getLogger(__name__)

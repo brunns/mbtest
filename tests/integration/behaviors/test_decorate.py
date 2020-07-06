@@ -4,6 +4,7 @@ import logging
 import requests
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, matches_regexp
+
 from mbtest.imposters import Imposter, Response, Stub
 
 logger = logging.getLogger(__name__)

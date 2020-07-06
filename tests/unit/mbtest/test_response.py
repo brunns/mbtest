@@ -3,6 +3,7 @@ import logging
 
 from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, instance_of
+
 from mbtest.imposters.responses import BaseResponse, InjectionResponse, Response, TcpResponse
 from tests.utils.builders import (
     CopyBuilder,

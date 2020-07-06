@@ -1,8 +1,8 @@
 # encoding=utf-8
-
 from brunns.builder import Builder, a_boolean, a_string, an_integer, one_of
 from brunns.builder.email import EmailBuilder
 from brunns.builder.internet import UrlBuilder
+
 from mbtest.imposters import (
     Copy,
     Imposter,

@@ -1,9 +1,9 @@
 ﻿# encoding=utf-8
-import collections.abc as abc
 import logging
 import platform
 import subprocess  # nosec
 import time
+from collections import abc
 from pathlib import Path
 from threading import Lock
 from typing import Iterable, Iterator, List, MutableSequence, Sequence, Set, Union
@@ -11,9 +11,10 @@ from typing import Iterable, Iterator, List, MutableSequence, Sequence, Set, Uni
 import requests
 from _pytest.fixtures import FixtureRequest  # type: ignore
 from furl import furl
+from requests import RequestException
+
 from mbtest.imposters import Imposter
 from mbtest.imposters.imposters import Request
-from requests import RequestException
 
 DEFAULT_MB_EXECUTABLE = str(
     Path("node_modules") / ".bin" / ("mb.cmd" if platform.system() == "Windows" else "mb")

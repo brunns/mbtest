@@ -1,11 +1,12 @@
 # encoding=utf-8
-import collections.abc as abc
 from abc import ABCMeta
+from collections import abc
 from enum import Enum
 from typing import Iterable, Mapping, NamedTuple, Optional, Sequence, Union, cast
 
 import requests
 from furl import furl
+
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.responses import Proxy
 from mbtest.imposters.stubs import Stub

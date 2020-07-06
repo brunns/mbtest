@@ -8,6 +8,7 @@ import requests
 from brunns.matchers.object import has_identical_properties_to
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, contains_inanyorder
+
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 from mbtest.matchers import had_request
 from mbtest.server import (

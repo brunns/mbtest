@@ -3,6 +3,7 @@ import logging
 
 from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, has_entries, instance_of
+
 from mbtest.imposters import Imposter, Predicate, Proxy, Response, Stub
 from tests.utils.builders import ImposterBuilder
 

@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Mapping, Optional, Union
 
 from furl import furl
+
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 
 

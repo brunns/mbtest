@@ -3,6 +3,7 @@ import logging
 import socket
 
 from hamcrest import assert_that, is_
+
 from mbtest.imposters import Imposter, Stub, TcpPredicate, TcpResponse
 
 logger = logging.getLogger(__name__)

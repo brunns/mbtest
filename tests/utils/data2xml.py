@@ -1,7 +1,7 @@
 # encoding=utf-8
-import xml.etree.ElementTree as et
 from collections.abc import Mapping, Sequence
 from functools import singledispatch
+from xml.etree import ElementTree as et
 
 
 def data2xml(data, default_namespace=None) -> et.Element:

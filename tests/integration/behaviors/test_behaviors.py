@@ -6,6 +6,7 @@ from brunns.matchers.object import between
 from brunns.matchers.response import is_response
 from contexttimer import Timer
 from hamcrest import assert_that
+
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 
 logger = logging.getLogger(__name__)

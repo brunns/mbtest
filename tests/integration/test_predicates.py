@@ -7,6 +7,7 @@ import pytest
 import requests
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, not_
+
 from mbtest.imposters import Imposter, InjectionPredicate, Predicate, Response, Stub
 
 logger = logging.getLogger(__name__)

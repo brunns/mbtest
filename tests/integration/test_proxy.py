@@ -9,6 +9,7 @@ from brunns.matchers.object import between
 from brunns.matchers.response import is_response
 from contexttimer import Timer
 from hamcrest import assert_that, contains_string, has_entries, has_entry
+
 from mbtest.imposters import Imposter, Predicate, Proxy, Stub
 from mbtest.imposters.responses import PredicateGenerator
 from mbtest.matchers import had_request

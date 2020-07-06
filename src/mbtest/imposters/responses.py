@@ -6,6 +6,7 @@ from typing import Iterable, Mapping, MutableMapping, Optional, Union
 from xml.etree import ElementTree as et  # nosec - We are creating, not parsing XML.
 
 from furl import furl
+
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.behaviors import Copy, Lookup
 from mbtest.imposters.predicates import Predicate

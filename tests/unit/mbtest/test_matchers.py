@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 
 from brunns.matchers.matcher import mismatches_with
 from hamcrest import all_of, assert_that, contains_string, has_entries, has_string, not_
+
 from mbtest.matchers import email_sent, had_request
 from tests.utils.builders import HttpRequestBuilder, SentEmailBuilder
 

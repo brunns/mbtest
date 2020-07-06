@@ -7,6 +7,7 @@ import requests
 from brunns.matchers.data import json_matching
 from brunns.matchers.response import is_response
 from hamcrest import assert_that
+
 from mbtest.imposters import Imposter, Response, Stub
 
 logger = logging.getLogger(__name__)

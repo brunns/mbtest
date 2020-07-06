@@ -4,6 +4,7 @@ import logging
 import requests
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, not_
+
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 from tests.utils.data2xml import data2xml, et2string
 
