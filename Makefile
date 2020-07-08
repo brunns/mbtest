@@ -10,6 +10,10 @@ test: clean ## Run tests
 coverage: ## Test coverage report
 	tox -e coverage
 
+.PHONY: precommit-test
+precommit-test:
+	tox -e py35,coverage
+
 .PHONY: lint
 lint: check-format flake8 bandit ## Lint code
 
@@ -49,7 +53,7 @@ docs:  ## Generate documentation
 	tox -e docs
 
 .PHONY: precommit
-precommit: test lint coverage mypy docs ## Pre-commit targets
+precommit: precommit-test mypy lint docs ## Pre-commit targets
 	@ python -m this
 
 .PHONY: recreate
