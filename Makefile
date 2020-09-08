@@ -82,7 +82,7 @@ pydeps:
 
 .PHONY: jsdeps
 jsdeps:
-	npm install mountebank@2.2 --production
+	npm install mountebank@2.3 --production
 
 .PHONY: repl
 repl: ## Python REPL

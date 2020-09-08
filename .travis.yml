@@ -62,6 +62,11 @@ matrix:
       sudo: yes
       env:
         - TOX_ENV=py38
+        - MBTEST_VERSION=2.2
+    - python: 3.8
+      sudo: yes
+      env:
+        - TOX_ENV=py38
         - MBTEST_VERSION=2.1
     - python: 3.8
       sudo: yes
@@ -81,6 +86,6 @@ install:
   - pip --version
   - node --version
   - npm --version
-  - npm install mountebank@"${MBTEST_VERSION:-2.2}" --production
+  - npm install mountebank@"${MBTEST_VERSION:-2.3}" --production
 script:
   - tox -e $TOX_ENV
