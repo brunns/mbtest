@@ -4,7 +4,7 @@ default: help
 
 .PHONY: test
 test: clean ## Run tests
-	tox -e py35,py38
+	tox -e py36,py38
 
 .PHONY: coverage
 coverage: ## Test coverage report
@@ -12,7 +12,7 @@ coverage: ## Test coverage report
 
 .PHONY: precommit-test
 precommit-test:
-	tox -e py35,coverage
+	tox -e py36,coverage
 
 .PHONY: lint
 lint: check-format flake8 bandit ## Lint code
@@ -58,7 +58,7 @@ precommit: precommit-test mypy lint docs ## Pre-commit targets
 
 .PHONY: recreate
 recreate: ## Recreate tox environments
-	tox --recreate --notest -e py35,py36,py37,py38,coverage,format,flake8,bandit,piprot,pylint,mypy
+	tox --recreate --notest -e py36,py37,py38,coverage,format,flake8,bandit,piprot,pylint,mypy
 
 .PHONY: clean
 clean: ## Clean generated files

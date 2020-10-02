@@ -138,7 +138,7 @@ class HttpRequest(Request):
         query: Mapping[str, str],
         headers: Mapping[str, str],
         body: str,
-        **kwargs
+        **kwargs,
     ):
         self.method = method
         self.path = path
@@ -163,7 +163,7 @@ class SentEmail(Request):
         bcc: Sequence[Address],
         subject: str,
         text: str,
-        **kwargs
+        **kwargs,
     ):
         self.from_ = from_
         self.to = to
