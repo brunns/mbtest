@@ -40,7 +40,5 @@ class JsonSerializable(metaclass=ABCMeta):
             setattr(self, name, dictionary[key])
 
     def __repr__(self) -> str:  # pragma: no cover
-        state = ("{0:s}={1!r:s}".format(attr, value) for (attr, value) in vars(self).items())
-        return "{0:s}.{1:s}({2:s})".format(
-            self.__class__.__module__, self.__class__.__name__, ", ".join(state)
-        )
+        state = (f"{attr:s}={value!r:s}" for (attr, value) in vars(self).items())
+        return f"{self.__class__.__module__:s}.{self.__class__.__name__:s}({', '.join(state):s})"

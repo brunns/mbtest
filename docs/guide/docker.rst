@@ -35,7 +35,7 @@ each it’s imposters.
        port=IMPOSTER_PORT)
 
    with mock_server(imposter) as ms:
-       response = requests.get("{}/test".format(imposter.url))
+       response = requests.get(f"{imposter.url}/test")
        # Check your request
        print(ms.get_actual_requests())
 

@@ -26,7 +26,7 @@ def test_request_to_mock_server(mock_server):
 
     with mock_server(imposter) as server:
         # Make request to mock server
-        response = requests.get("{0}/test".format(imposter.url))
+        response = requests.get(f"{imposter.url}/test")
 
         assert_that(
             response, is_response().with_status_code(200).and_body("sausages"),
@@ -86,8 +86,8 @@ def test_allow_multiple_servers_on_different_ports():
 
         with server1(imposter1), server2(imposter2):
 
-            response1 = requests.get("{0}/test".format(imposter1.url))
-            response2 = requests.get("{0}/test".format(imposter2.url))
+            response1 = requests.get(f"{imposter1.url}/test")
+            response2 = requests.get(f"{imposter2.url}/test")
 
             assert_that(response1, is_response().with_status_code(200).and_body("sausages"))
             assert_that(response2, is_response().with_status_code(200).and_body("bacon"))

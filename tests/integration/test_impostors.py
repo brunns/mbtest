@@ -18,8 +18,8 @@ def test_multiple_imposters(mock_server):
     ]
 
     with mock_server(imposters):
-        r1 = requests.get("{0}/test1".format(imposters[0].url))
-        r2 = requests.get("{0}/test2".format(imposters[1].url))
+        r1 = requests.get(f"{imposters[0].url}/test1")
+        r2 = requests.get(f"{imposters[1].url}/test2")
 
     assert_that(r1, is_response().with_status_code(200).and_body("sausages"))
     assert_that(r2, is_response().with_status_code(201).and_body("chips"))
@@ -29,7 +29,7 @@ def test_default_imposter(mock_server):
     imposter = Imposter(Stub())
 
     with mock_server(imposter):
-        r = requests.get("{0}/".format(imposter.url))
+        r = requests.get(f"{imposter.url}/")
 
     assert_that(r, is_response().with_status_code(200).and_body(""))
 
@@ -38,7 +38,7 @@ def test_imposter_had_request_matcher(mock_server):
     imposter = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")))
 
     with mock_server(imposter):
-        response = requests.get("{0}/test".format(imposter.url))
+        response = requests.get(f"{imposter.url}/test")
 
         assert_that(
             response, is_response().with_status_code(200).and_body("sausages"),

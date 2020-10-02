@@ -27,11 +27,7 @@ SCRIPT = "\n".join(
 @pytest.mark.skipif(platform.system() == "Windows", reason="TODO: Fix on Windows.")
 def test_shell_transform(mock_server):
     imposter = Imposter(
-        Stub(
-            responses=Response(
-                body="Hello ${name}!", shell_transform=('python -c "{0}" '.format(SCRIPT))
-            )
-        )
+        Stub(responses=Response(body="Hello ${name}!", shell_transform=f'python -c "{SCRIPT}" '))
     )
 
     with mock_server(imposter):

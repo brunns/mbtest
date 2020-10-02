@@ -50,7 +50,7 @@ def mock_server(
                                 record_requests=True)
 
             with mock_server(imposter) as s:
-                r = requests.get('{0}/test'.format(imposter.url))
+                r = requests.get(f"{imposter.url}/test")
 
                 assert_that(r, is_response().with_status_code(200).and_body("sausages"))
                 assert_that(s, had_request(path='/test', method="GET"))
@@ -98,7 +98,7 @@ class MountebankServer:
                                 record_requests=True)
 
             with mb(imposter):
-                r = requests.get('{0}/test'.format(imposter.url))
+                r = requests.get(f"{imposter.url}/test")
 
                 assert_that(r, is_response().with_status_code(200).and_body("sausages"))
                 assert_that(imposter, had_request(path='/test', method="GET"))
@@ -187,7 +187,7 @@ class ExecutingMountebankServer(MountebankServer):
                                 record_requests=True)
 
             with mb(imposter) as s:
-                r = requests.get('{0}/test'.format(imposter.url))
+                r = requests.get(f"{imposter.url}/test")
 
                 assert_that(r, is_response().with_status_code(200).and_body("sausages"))
                 assert_that(s, had_request(path='/test', method="GET"))
@@ -224,9 +224,7 @@ class ExecutingMountebankServer(MountebankServer):
         super(ExecutingMountebankServer, self).__init__(port)
         with self.start_lock:
             if self.server_port in self.running:
-                raise MountebankPortInUseException(
-                    "Already running on port {0}.".format(self.server_port)
-                )
+                raise MountebankPortInUseException(f"Already running on port {self.server_port}.")
             try:
                 options = self._build_options(port, debug, allow_injection, local_only, data_dir)
                 self.mb_process = subprocess.Popen([executable] + options)  # nosec
@@ -277,9 +275,7 @@ class ExecutingMountebankServer(MountebankServer):
                 time.sleep(0.1)
 
         if not started:
-            raise MountebankTimeoutError(
-                "Mountebank failed to start within {0} seconds.".format(timeout)
-            )
+            raise MountebankTimeoutError(f"Mountebank failed to start within {timeout} seconds.")
 
         logger.debug("Server started at %s.", self.server_url)
 

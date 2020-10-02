@@ -13,7 +13,7 @@ def data2xml(data, default_namespace=None) -> et.Element:
     root, body = data.popitem()
     root = et.Element(root)
     if default_namespace:
-        root.set("xmlns:{0}".format(default_namespace[0]), default_namespace[1])
+        root.set(f"xmlns:{default_namespace[0]}", default_namespace[1])
     return buildxml(body, root)
 
 

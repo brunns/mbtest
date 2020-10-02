@@ -100,9 +100,7 @@ class HadRequest(BaseMatcher):
         field_matcher: Matcher[Any], field_name: str, description: Description
     ) -> None:
         if not isinstance(field_matcher, IsAnything):
-            description.append_text(" {0}: ".format(field_name)).append_description_of(
-                field_matcher
-            )
+            description.append_text(f" {field_name}: ").append_description_of(field_matcher)
 
     def describe_mismatch(
         self, actual: Union[Imposter, MountebankServer], description: Description
@@ -220,7 +218,7 @@ class EmailSent(BaseMatcher):
     @staticmethod
     def _append_matcher_description(description: Description, matcher: Matcher, text: str) -> None:
         if not isinstance(matcher, IsAnything):
-            description.append_text(" {0}: ".format(text)).append_description_of(matcher)
+            description.append_text(f" {text}: ").append_description_of(matcher)
 
     def describe_mismatch(
         self, acrual: Union[Imposter, MountebankServer], description: Description

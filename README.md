@@ -51,7 +51,7 @@ def test_request_to_mock_server(mock_server):
 
     with mock_server(imposter):
         # Make request to mock server - exercise code under test here
-        response = requests.get("{}/test".format(imposter.url))
+        response = requests.get(f"{imposter.url}/test")
 
         assert_that("We got the expected response", 
                     response, is_response().with_status_code(200).and_body("sausages"))

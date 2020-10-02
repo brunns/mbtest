@@ -24,8 +24,8 @@ def test_and_predicate_and_query_strings(mock_server):
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
 
-        r1 = requests.get("{0}/".format(imposter.url), params={"dinner": "chips", "foo": "bar"})
-        r2 = requests.get("{0}/".format(imposter.url), params={"dinner": "chips"})
+        r1 = requests.get(f"{imposter.url}/", params={"dinner": "chips", "foo": "bar"})
+        r2 = requests.get(f"{imposter.url}/", params={"dinner": "chips"})
 
         assert_that(r1, is_response().with_status_code(200).and_body("black pudding"))
         assert_that(r2, not_(is_response().with_status_code(200).and_body("black pudding")))

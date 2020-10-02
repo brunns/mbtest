@@ -22,8 +22,8 @@ def test_multiple_stubs(mock_server):
 
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
-        r1 = requests.get("{0}/test1".format(imposter.url))
-        r2 = requests.get("{0}/test2".format(imposter.url))
+        r1 = requests.get(f"{imposter.url}/test1")
+        r2 = requests.get(f"{imposter.url}/test2")
 
     assert_that(r1, is_response().with_body("sausages"))
     assert_that(r2, is_response().with_body("chips"))

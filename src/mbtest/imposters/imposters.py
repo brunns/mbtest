@@ -124,10 +124,8 @@ class Request(metaclass=ABCMeta):
         return HttpRequest.from_json(json)
 
     def __repr__(self) -> str:  # pragma: no cover
-        state = ", ".join(("{0:s}={1!r:s}".format(attr, val) for (attr, val) in vars(self).items()))
-        return "{0:s}.{1:s}({2:s})".format(
-            self.__class__.__module__, self.__class__.__name__, state
-        )
+        state = ", ".join((f"{attr:s}={val!r:s}" for (attr, val) in vars(self).items()))
+        return f"{self.__class__.__module__:s}.{self.__class__.__name__:s}({state:s})"
 
 
 class HttpRequest(Request):
