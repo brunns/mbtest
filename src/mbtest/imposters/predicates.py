@@ -35,7 +35,7 @@ class LogicallyCombinablePredicate(BasePredicate, metaclass=ABCMeta):
 
 
 class Predicate(LogicallyCombinablePredicate):
-    """ Represents a `Mountebank predicate <http://www.mbtest.org/docs/api/predicates>`_.
+    """Represents a `Mountebank predicate <http://www.mbtest.org/docs/api/predicates>`_.
     A predicate can be thought of as a trigger, which may or may not match a request.
 
     :param path: URL path.

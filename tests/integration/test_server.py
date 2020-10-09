@@ -28,12 +28,8 @@ def test_request_to_mock_server(mock_server):
         # Make request to mock server
         response = requests.get(f"{imposter.url}/test")
 
-        assert_that(
-            response, is_response().with_status_code(200).and_body("sausages"),
-        )
-        assert_that(
-            server, had_request().with_path("/test").and_method("GET"),
-        )
+        assert_that(response, is_response().with_status_code(200).and_body("sausages"))
+        assert_that(server, had_request().with_path("/test").and_method("GET"))
 
 
 def test_nonexistent_executable():

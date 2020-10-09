@@ -5,7 +5,7 @@ from xml.etree import ElementTree as et
 
 
 def data2xml(data, default_namespace=None) -> et.Element:
-    """ Convert data structure to XML
+    """Convert data structure to XML
     :param data: data to convert to XML
     :param default_namespace: Namespace
     :returns: Element

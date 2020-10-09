@@ -7,13 +7,13 @@ JsonStructure = Any  # TODO Pending a better solution to https://github.com/pyth
 
 
 class JsonSerializable(metaclass=ABCMeta):
-    """ Object capable of being converted to a JSON serializable structure (using :py:meth:`as_structure`)
+    """Object capable of being converted to a JSON serializable structure (using :py:meth:`as_structure`)
     or from such a structure ((using :py:meth:`from_structure`).
     """
 
     @abstractmethod
     def as_structure(self) -> JsonStructure:  # pragma: no cover
-        """ Converted to a JSON serializable structure.
+        """Converted to a JSON serializable structure.
 
         :returns: Structure suitable for JSON serialisation.
         """
@@ -22,7 +22,7 @@ class JsonSerializable(metaclass=ABCMeta):
     @staticmethod
     @abstractmethod
     def from_structure(structure: JsonStructure) -> "JsonSerializable":  # pragma: no cover
-        """ Converted from a JSON serializable structure.
+        """Converted from a JSON serializable structure.
 
         :param structure: JSON structure to be converted.
 

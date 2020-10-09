@@ -40,9 +40,5 @@ def test_imposter_had_request_matcher(mock_server):
     with mock_server(imposter):
         response = requests.get(f"{imposter.url}/test")
 
-        assert_that(
-            response, is_response().with_status_code(200).and_body("sausages"),
-        )
-        assert_that(
-            imposter, had_request().with_path("/test").and_method("GET"),
-        )
+        assert_that(response, is_response().with_status_code(200).and_body("sausages"))
+        assert_that(imposter, had_request().with_path("/test").and_method("GET"))
