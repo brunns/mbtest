@@ -256,10 +256,7 @@ class ExecutingMountebankServer(MountebankServer):
         if local_only:
             options.append("--localOnly")
         if data_dir:
-            options += [
-                "--datadir",
-                data_dir,
-            ]
+            options += ["--datadir", data_dir]
         return options
 
     def _await_start(self, timeout: int) -> None:
