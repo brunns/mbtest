@@ -51,8 +51,8 @@ class Imposter(JsonSerializable):
         )
         self.name = name
         self.record_requests = record_requests
-        self.host = None  # type: Optional[str]
-        self.server_url = None  # type: Optional[furl]
+        self.host: Optional[str] = None
+        self.server_url: Optional[furl] = None
 
     @property
     def url(self) -> furl:
@@ -172,9 +172,9 @@ class SentEmail(Request):
 
     @staticmethod
     def from_json(json: JsonStructure) -> "SentEmail":
-        email = {
+        email: Mapping[str, Union[str, Sequence[Address]]] = {
             SentEmail._map_key(k): SentEmail._translate_value(v) for k, v in json.items()
-        }  # type: Mapping[str, Union[str, Sequence[Address]]]
+        }
         sent_email = SentEmail(**email)
         return sent_email
 

@@ -3,8 +3,8 @@ SHELL = /bin/bash
 default: help
 
 .PHONY: test
-test: clean ## Run tests
-	tox -e py36,py38
+test: ## Run tests
+	tox -e py36,py39
 
 .PHONY: coverage
 coverage: ## Test coverage report
@@ -15,7 +15,7 @@ precommit-test:
 	tox -e py36,coverage
 
 .PHONY: lint
-lint: check-format flake8 bandit ## Lint code
+lint: check-format flake8 bandit safety ## Lint code
 
 .PHONY: flake8
 flake8:
@@ -35,6 +35,10 @@ pylint:
 .PHONY: mypy
 mypy:
 	tox -e mypy
+
+.PHONY: safety
+safety:
+	tox -e safety
 
 .PHONY: check-format
 check-format:
@@ -58,39 +62,23 @@ precommit: precommit-test mypy lint docs ## Pre-commit targets
 
 .PHONY: recreate
 recreate: ## Recreate tox environments
-	tox --recreate --notest -e py36,py37,py38,coverage,format,flake8,bandit,piprot,pylint,mypy
+	tox --recreate --notest -e py36,py37,py38,py39,py310,format,flake8,bandit,safety,piprot,mypy
 
 .PHONY: clean
 clean: ## Clean generated files
-	@find . -name '*.pyc' -delete
-	@find . -name '*.pyo' -delete
-	@rm -rf build/ dist/ *.egg-info/ .cache .coverage .pytest_cache coverage.* coverage.* .mbdb/
-	@find . -name "*.egg-info" -type d -print | xargs rm -r
-	@find . -name "__pycache__" -type d -print | xargs rm -r
-	@find . -name "test-output" -type d -print | xargs rm -r
-
-.PHONY: deps
-deps: jsdeps ## Install or update dependencies
-
-.PHONY: pydeps
-pydeps:
-	pip install -U -r requirements.txt -c constraints.txt
-	pip install -U -r test_requirements.txt -c constraints.txt
-	pip check
-	@ echo "Outdated:"
-	@ pip list --outdated
-
-.PHONY: jsdeps
-jsdeps:
-	npm install mountebank@2.3 --production
+	find . -name '*.pyc' -delete
+	find . -name '*.pyo' -delete
+	rm -rf build/ dist/ *.egg-info/ .cache .coverage .pytest_cache
+	find . -name "__pycache__" -type d -print | xargs -t rm -r
+	find . -name "test-output" -type d -print | xargs -t rm -r
 
 .PHONY: repl
 repl: ## Python REPL
-	tox -e py38 -- python
+	tox -e py39 -- python
 
 .PHONY: outdated
 outdated: ## List outdated dependancies
-	tox -e py38 -- pip list --outdated
+	tox -e py39 -- pip list -o
 
 .PHONY: help
 help: ## Show this help

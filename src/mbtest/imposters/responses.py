@@ -94,7 +94,7 @@ class Response(BaseResponse):
         return is_structure
 
     def _behaviors_structure(self) -> JsonStructure:
-        behaviors = {}  # type: JsonStructure
+        behaviors: JsonStructure = {}
         self._add_if_true(behaviors, "wait", self.wait)
         self._add_if_true(behaviors, "repeat", self.repeat)
         self._add_if_true(behaviors, "decorate", self.decorate)
@@ -220,7 +220,7 @@ class PredicateGenerator(JsonSerializable):
         self.case_sensitive = case_sensitive
 
     def as_structure(self) -> JsonStructure:
-        matches = {}  # type: MutableMapping[str, str]
+        matches: MutableMapping[str, str] = {}
         self._add_if_true(matches, "path", self.path)
         self._add_if_true(matches, "query", self.query)
         predicate = {"caseSensitive": self.case_sensitive, "matches": matches}

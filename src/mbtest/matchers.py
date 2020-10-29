@@ -73,12 +73,12 @@ class HadRequest(BaseMatcher):
             or times != ANYTHING
         ):  # pragma: no cover
             warnings.warn("Use builder-style with_X and and_X methods, rather than arguments.")
-        self.method = wrap_matcher(method)  # type: Matcher[str]
-        self.path = wrap_matcher(path)  # type: Matcher[Union[furl, str]]
-        self.query = wrap_matcher(query)  # type Matcher[Mapping[str, str]]
-        self.headers = wrap_matcher(headers)  # type Matcher[Mapping[str, str]]
-        self.body = wrap_matcher(body)  # type: Matcher[str]
-        self.times = wrap_matcher(times)  # type: Matcher[int]
+        self.method: Matcher[str] = wrap_matcher(method)
+        self.path: Matcher[Union[furl, str]] = wrap_matcher(path)
+        self.query: Matcher[Mapping[str, str]] = wrap_matcher(query)
+        self.headers: Matcher[Mapping[str, str]] = wrap_matcher(headers)
+        self.body: Matcher[str] = wrap_matcher(body)
+        self.times: Matcher[int] = wrap_matcher(times)
 
     def describe_to(self, description: Description) -> None:
         if isinstance(self.times, IsAnything):

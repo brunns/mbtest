@@ -126,7 +126,7 @@ class MountebankServer:
 
     def __call__(self, imposters: Sequence[Imposter]) -> "MountebankServer":
         self.imposters = imposters
-        self._running_imposters = []  # type: MutableSequence[Imposter]
+        self._running_imposters: MutableSequence[Imposter] = []
         return self
 
     def __enter__(self) -> "MountebankServer":
@@ -208,7 +208,7 @@ class ExecutingMountebankServer(MountebankServer):
     :param data_dir: Persist all operations to disk, in this directory.
     """
 
-    running = set()  # type: Set[int]
+    running: Set[int] = set()
     start_lock = Lock()
 
     def __init__(
@@ -244,11 +244,7 @@ class ExecutingMountebankServer(MountebankServer):
     def _build_options(
         port: int, debug: bool, allow_injection: bool, local_only: bool, data_dir: Union[str, None]
     ):
-        options = [
-            "start",
-            "--port",
-            str(port),
-        ]  # type: List[str]
+        options: List[str] = ["start", "--port", str(port)]
         if debug:
             options.append("--debug")
         if allow_injection:
