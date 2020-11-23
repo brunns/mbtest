@@ -1,5 +1,5 @@
 language: python
-dist: bionic
+dist: focal
 matrix:
   allow_failures:
     - os: windows
