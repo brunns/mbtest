@@ -5,7 +5,7 @@ from typing import Mapping, Optional, Union
 
 from furl import furl
 
-from mbtest.imposters.base import JsonSerializable, JsonStructure
+from mbtest.imposters.base import Injecting, JsonSerializable, JsonStructure
 
 
 class BasePredicate(JsonSerializable, metaclass=ABCMeta):
@@ -106,7 +106,7 @@ class Predicate(LogicallyCombinablePredicate):
 
     def as_structure(self) -> JsonStructure:
         predicate = {
-            self.operator.value: self._fields_as_structure(),
+            self.operator.value: self.fields_as_structure(),
             "caseSensitive": self.case_sensitive,
         }
         if self.xpath:
@@ -124,25 +124,25 @@ class Predicate(LogicallyCombinablePredicate):
         predicate = Predicate(
             operator=operator, case_sensitive=structure.get("caseSensitive", True)
         )
-        predicate._fields_from_structure(structure[operator])
+        predicate.fields_from_structure(structure[operator])
         if "xpath" in structure:
             predicate.xpath = structure["xpath"]["selector"]
         return predicate
 
-    def _fields_from_structure(self, inner):
-        self._set_if_in_dict(inner, "path", "path")
-        self._set_if_in_dict(inner, "query", "query")
-        self._set_if_in_dict(inner, "body", "body")
-        self._set_if_in_dict(inner, "headers", "headers")
+    def fields_from_structure(self, inner):
+        self.set_if_in_dict(inner, "path", "path")
+        self.set_if_in_dict(inner, "query", "query")
+        self.set_if_in_dict(inner, "body", "body")
+        self.set_if_in_dict(inner, "headers", "headers")
         if "method" in inner:
             self.method = Predicate.Method(inner["method"])
 
-    def _fields_as_structure(self):
+    def fields_as_structure(self):
         fields = {}
-        self._add_if_true(fields, "path", self.path)
-        self._add_if_true(fields, "query", self.query)
-        self._add_if_true(fields, "body", self.body)
-        self._add_if_true(fields, "headers", self.headers)
+        self.add_if_true(fields, "path", self.path)
+        self.add_if_true(fields, "query", self.query)
+        self.add_if_true(fields, "body", self.body)
+        self.add_if_true(fields, "headers", self.headers)
         if self.method:
             fields["method"] = self.method.value
         return fields
@@ -198,7 +198,7 @@ class TcpPredicate(LogicallyCombinablePredicate):
         return TcpPredicate(structure["contains"]["data"])
 
 
-class InjectionPredicate(BasePredicate):
+class InjectionPredicate(BasePredicate, Injecting):
     """Represents a `Mountebank injection predicate <http://www.mbtest.org/docs/api/injection>`_.
     A predicate can be thought of as a trigger, which may or may not match a request.
 
@@ -206,12 +206,6 @@ class InjectionPredicate(BasePredicate):
 
     :param inject: JavaScript function to inject.
     """
-
-    def __init__(self, inject: str) -> None:
-        self.inject = inject
-
-    def as_structure(self) -> JsonStructure:
-        return {"inject": self.inject}
 
     @staticmethod
     def from_structure(structure: JsonStructure) -> "InjectionPredicate":

@@ -221,22 +221,30 @@ class EmailSent(BaseMatcher):
             description.append_text(f" {text}: ").append_description_of(matcher)
 
     def describe_mismatch(
-        self, acrual: Union[Imposter, MountebankServer], description: Description
+        self, actual: Union[Imposter, MountebankServer], description: Description
     ) -> None:
-        description.append_text("found ").append_description_of(len(self.matching_requests))
-        description.append_text(" matching requests: ").append_description_of(
-            self.matching_requests
-        )
-        description.append_text(". All requests: ").append_description_of(self.all_requests)
+        sent_email = self.get_sent_email(actual)
+        matching_emails = self.get_matching_emails(sent_email)
+
+        description.append_text("found ").append_description_of(len(matching_emails))
+        description.append_text(" matching emails: ").append_description_of(matching_emails)
+        description.append_text(". All emails: ").append_description_of(sent_email)
 
     def _matches(self, actual: Union[Imposter, MountebankServer]) -> bool:
-        self.all_requests = cast(Sequence[SentEmail], list(actual.get_actual_requests()))
-        self.matching_requests = [
-            request
-            for request in self.all_requests
-            if self.body_text.matches(request.text)
-            and self.subject.matches(request.subject)
-            and self.to.matches(request.to)  # type: ignore
-        ]
+        sent_email = self.get_sent_email(actual)
+        matching_emails = self.get_matching_emails(sent_email)
 
-        return len(self.matching_requests) > 0
+        return len(matching_emails) > 0
+
+    @staticmethod
+    def get_sent_email(actual) -> Sequence[SentEmail]:
+        return cast(Sequence[SentEmail], list(actual.get_actual_requests()))
+
+    def get_matching_emails(self, sent_email) -> Sequence[SentEmail]:
+        return [
+            email
+            for email in sent_email
+            if self.body_text.matches(email.text)
+            and self.subject.matches(email.subject)
+            and self.to.matches(email.to)
+        ]

@@ -31,14 +31,22 @@ class JsonSerializable(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @staticmethod
-    def _add_if_true(dictionary: MutableMapping[str, Any], key: str, value: Any) -> None:
+    def add_if_true(dictionary: MutableMapping[str, Any], key: str, value: Any) -> None:
         if value:
             dictionary[key] = value
 
-    def _set_if_in_dict(self, dictionary: Mapping[str, Any], key: str, name: str) -> None:
+    def set_if_in_dict(self, dictionary: Mapping[str, Any], key: str, name: str) -> None:
         if key in dictionary:
             setattr(self, name, dictionary[key])
 
     def __repr__(self) -> str:  # pragma: no cover
         state = (f"{attr:s}={value!r:s}" for (attr, value) in vars(self).items())
         return f"{self.__class__.__module__:s}.{self.__class__.__name__:s}({', '.join(state):s})"
+
+
+class Injecting(JsonSerializable, metaclass=ABCMeta):
+    def __init__(self, inject: str) -> None:
+        self.inject = inject
+
+    def as_structure(self) -> JsonStructure:
+        return {"inject": self.inject}

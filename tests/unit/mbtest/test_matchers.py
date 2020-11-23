@@ -62,7 +62,7 @@ def test_email_sent():
         mismatches_with(
             server,
             all_of(
-                contains_string("found <0> matching requests: <[]>. All requests: <["),
+                contains_string("found <0> matching emails: <[]>. All emails: <["),
                 contains_string("text='sausages'"),
             ),
         ),

@@ -146,7 +146,7 @@ class HttpRequest(Request):
 
     @staticmethod
     def from_json(json: JsonStructure) -> "HttpRequest":
-        return HttpRequest(**{k: v for k, v in json.items()})
+        return HttpRequest(**json)
 
 
 Address = NamedTuple("Address", [("address", str), ("name", str)])

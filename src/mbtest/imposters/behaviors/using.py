@@ -89,7 +89,7 @@ class UsingXpath(Using):
     @staticmethod
     def from_structure(structure: JsonStructure) -> "UsingXpath":
         using = UsingXpath(selector=structure["selector"])
-        using._set_if_in_dict(structure, "ns", "ns")
+        using.set_if_in_dict(structure, "ns", "ns")
         return using
 
 

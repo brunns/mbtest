@@ -7,7 +7,7 @@ from xml.etree import ElementTree as et  # nosec - We are creating, not parsing 
 
 from furl import furl
 
-from mbtest.imposters.base import JsonSerializable, JsonStructure
+from mbtest.imposters.base import Injecting, JsonSerializable, JsonStructure
 from mbtest.imposters.behaviors import Copy, Lookup
 from mbtest.imposters.predicates import Predicate
 
@@ -89,16 +89,16 @@ class Response(BaseResponse):
 
     def _is_structure(self) -> JsonStructure:
         is_structure = {"statusCode": self.status_code, "_mode": self.mode.value}
-        self._add_if_true(is_structure, "body", self.body)
-        self._add_if_true(is_structure, "headers", self.headers)
+        self.add_if_true(is_structure, "body", self.body)
+        self.add_if_true(is_structure, "headers", self.headers)
         return is_structure
 
     def _behaviors_structure(self) -> JsonStructure:
         behaviors: JsonStructure = {}
-        self._add_if_true(behaviors, "wait", self.wait)
-        self._add_if_true(behaviors, "repeat", self.repeat)
-        self._add_if_true(behaviors, "decorate", self.decorate)
-        self._add_if_true(behaviors, "shellTransform", self.shell_transform)
+        self.add_if_true(behaviors, "wait", self.wait)
+        self.add_if_true(behaviors, "repeat", self.repeat)
+        self.add_if_true(behaviors, "decorate", self.decorate)
+        self.add_if_true(behaviors, "shellTransform", self.shell_transform)
         if self.copy:
             behaviors["copy"] = [c.as_structure() for c in self.copy]
         if self.lookup:
@@ -108,19 +108,19 @@ class Response(BaseResponse):
     @staticmethod
     def from_structure(structure: JsonStructure) -> "Response":
         response = Response()
-        response._fields_from_structure(structure)
+        response.fields_from_structure(structure)
         behaviors = structure.get("_behaviors", {})
-        response._set_if_in_dict(behaviors, "wait", "wait")
-        response._set_if_in_dict(behaviors, "repeat", "repeat")
-        response._set_if_in_dict(behaviors, "decorate", "decorate")
-        response._set_if_in_dict(behaviors, "shellTransform", "shell_transform")
+        response.set_if_in_dict(behaviors, "wait", "wait")
+        response.set_if_in_dict(behaviors, "repeat", "repeat")
+        response.set_if_in_dict(behaviors, "decorate", "decorate")
+        response.set_if_in_dict(behaviors, "shellTransform", "shell_transform")
         if "copy" in behaviors:
             response.copy = [Copy.from_structure(c) for c in behaviors["copy"]]
         if "lookup" in behaviors:
             response.lookup = [Lookup.from_structure(lookup) for lookup in behaviors["lookup"]]
         return response
 
-    def _fields_from_structure(self, structure: JsonStructure) -> None:
+    def fields_from_structure(self, structure: JsonStructure) -> None:
         inner = structure["is"]
         if "body" in inner:
             self._body = inner["body"]
@@ -175,8 +175,8 @@ class Proxy(BaseResponse):
             "to": self.to.url if isinstance(self.to, furl) else self.to,
             "mode": self.mode.value,
         }
-        self._add_if_true(proxy, "injectHeaders", self.inject_headers)
-        self._add_if_true(
+        self.add_if_true(proxy, "injectHeaders", self.inject_headers)
+        self.add_if_true(
             proxy, "predicateGenerators", [pg.as_structure() for pg in self.predicate_generators]
         )
         response = {"proxy": proxy}
@@ -221,8 +221,8 @@ class PredicateGenerator(JsonSerializable):
 
     def as_structure(self) -> JsonStructure:
         matches: MutableMapping[str, str] = {}
-        self._add_if_true(matches, "path", self.path)
-        self._add_if_true(matches, "query", self.query)
+        self.add_if_true(matches, "path", self.path)
+        self.add_if_true(matches, "query", self.query)
         predicate = {"caseSensitive": self.case_sensitive, "matches": matches}
         return predicate
 
@@ -241,19 +241,13 @@ class PredicateGenerator(JsonSerializable):
         )
 
 
-class InjectionResponse(BaseResponse):
+class InjectionResponse(BaseResponse, Injecting):
     """Represents a `Mountebank injection response <http://www.mbtest.org/docs/api/injection>`_.
 
     Injection requires Mountebank version 2.0 or higher.
 
     :param inject: JavaScript function to inject .
     """
-
-    def __init__(self, inject: str) -> None:
-        self.inject = inject
-
-    def as_structure(self) -> JsonStructure:
-        return {"inject": self.inject}
 
     @staticmethod
     def from_structure(structure: JsonStructure) -> "InjectionResponse":

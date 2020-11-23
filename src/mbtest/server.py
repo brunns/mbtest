@@ -221,7 +221,7 @@ class ExecutingMountebankServer(MountebankServer):
         local_only: bool = True,
         data_dir: Union[str, None] = ".mbdb",
     ) -> None:
-        super(ExecutingMountebankServer, self).__init__(port)
+        super().__init__(port)
         with self.start_lock:
             if self.server_port in self.running:
                 raise MountebankPortInUseException(f"Already running on port {self.server_port}.")
@@ -287,16 +287,10 @@ class ExecutingMountebankServer(MountebankServer):
 class MountebankException(Exception):
     """Exception using Mountebank server."""
 
-    pass
-
 
 class MountebankPortInUseException(Exception):
     """Mountebank server failed to start - port already in use."""
 
-    pass
-
 
 class MountebankTimeoutError(MountebankException):
     """Mountebank server failed to start in time."""
-
-    pass
