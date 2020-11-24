@@ -24,6 +24,7 @@ install_dependencies = [
     "pyhamcrest~=2.0",
     "Deprecated~=1.2",
     "brunns-matchers~=2.4",
+    "pymonad~=2.0",
 ]
 test_dependencies = [
     "pytest>=3.0,<7.0",

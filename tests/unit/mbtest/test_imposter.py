@@ -97,3 +97,25 @@ def test_imposter_structure_roundtrip():
     # Then
     assert_that(actual, instance_of(Imposter))
     assert_that(actual, has_identical_properties_to(expected))
+
+
+def test_no_actual_requests_from_unattached_impostor():
+    # Given
+    impostor = ImposterBuilder().build()
+
+    # When
+    actual_requests = impostor.get_actual_requests()
+
+    # Then
+    assert actual_requests == []
+
+
+def test_no_stubs_from_unattached_impostor():
+    # Given
+    impostor = ImposterBuilder().build()
+
+    # When
+    all_stubs = impostor.query_all_stubs()
+
+    # Then
+    assert all_stubs == []

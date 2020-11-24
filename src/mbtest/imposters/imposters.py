@@ -6,6 +6,7 @@ from typing import Iterable, Mapping, NamedTuple, Optional, Sequence, Union, cas
 
 import requests
 from furl import furl
+from pymonad.maybe import Maybe, Nothing
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.responses import Proxy
@@ -85,8 +86,11 @@ class Imposter(JsonSerializable):
         return imposter
 
     def get_actual_requests(self) -> Sequence["Request"]:
-        json = requests.get(cast(str, self.configuration_url)).json()["requests"]
-        return [Request.from_json(req) for req in json]
+        if self.configuration_url.is_just():
+            json = requests.get(cast(str, self.configuration_url.join())).json()["requests"]
+            return [Request.from_json(req) for req in json]
+        else:
+            return []
 
     def attach(self, host: str, port: int, server_url: furl) -> None:
         """Attach imposter to a running MB server."""
@@ -100,16 +104,17 @@ class Imposter(JsonSerializable):
         return cast(bool, self.port and self.host and self.server_url)
 
     @property
-    def configuration_url(self) -> furl:
-        return (
-            cast(furl, self.server_url) / str(self.port) if self.attached else None
-        )  # TODO: Get rid of the `None`s - a Maybe, maybe?
+    def configuration_url(self) -> Maybe[furl]:
+        return Maybe.insert(self.server_url / str(self.port)) if self.attached else Nothing
 
-    def query_all_stubs(self):
+    def query_all_stubs(self) -> Sequence[Stub]:
         """Return all stubs running on the impostor, including those defined elsewhere."""
-        json = requests.get(cast(str, self.configuration_url)).json()["stubs"]
-        all_stubs = [Stub.from_structure(s) for s in json]
-        return all_stubs
+        if self.configuration_url.is_just():
+            json = requests.get(cast(str, self.configuration_url.join())).json()["stubs"]
+            all_stubs = [Stub.from_structure(s) for s in json]
+            return all_stubs
+        else:
+            return []
 
     def playback(self) -> Sequence[Stub]:
         all_stubs = self.query_all_stubs()

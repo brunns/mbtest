@@ -155,7 +155,8 @@ class MountebankServer:
     def delete_imposters(self) -> None:
         while self._running_imposters:
             imposter = self._running_imposters.pop()
-            requests.delete(imposter.configuration_url).raise_for_status()
+            if imposter.configuration_url.is_just():
+                requests.delete(imposter.configuration_url.join()).raise_for_status()
 
     def get_actual_requests(self) -> Iterable[Request]:
         for imposter in self._running_imposters:
