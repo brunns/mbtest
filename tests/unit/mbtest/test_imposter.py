@@ -96,4 +96,4 @@ def test_imposter_structure_roundtrip():
 
     # Then
     assert_that(actual, instance_of(Imposter))
-    assert_that(actual, has_identical_properties_to(expected))
+    assert_that(actual, has_identical_properties_to(expected, ignoring="configuration_url"))

@@ -101,9 +101,10 @@ class Imposter(JsonSerializable):
 
     @property
     def configuration_url(self) -> furl:
-        return (
-            cast(furl, self.server_url) / str(self.port) if self.attached else None
-        )  # TODO: Get rid of the `None`s - a Maybe, maybe?
+        if self.attached:
+            return cast(furl, self.server_url) / str(self.port)
+        else:
+            raise AttributeError(f"Unattached imposter {self} has no configuration URL.")
 
     def query_all_stubs(self):
         """Return all stubs running on the impostor, including those defined elsewhere."""
