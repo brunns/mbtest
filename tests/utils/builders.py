@@ -1,6 +1,6 @@
 # encoding=utf-8
 from brunns.builder import Builder, a_boolean, a_string, an_integer, one_of
-from brunns.builder.email import EmailBuilder
+from brunns.builder.email import EmailAddressBuilder
 from brunns.builder.internet import UrlBuilder
 
 from mbtest.imposters import (
@@ -235,7 +235,7 @@ class HttpRequestBuilder(Builder):
 class AddressBuilder(Builder):
     target = Address
 
-    address = EmailBuilder
+    address = EmailAddressBuilder
     name = a_string
 
 
