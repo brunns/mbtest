@@ -1,4 +1,6 @@
 # encoding=utf-8
+import http
+
 from brunns.builder import Builder, a_boolean, a_string, an_integer, one_of
 from brunns.builder.email import EmailAddressBuilder
 from brunns.builder.internet import UrlBuilder
@@ -119,68 +121,7 @@ class ResponseBuilder(Builder):
     target = Response
 
     body = a_string
-    status_code = lambda: one_of(
-        200,
-        201,
-        202,
-        203,
-        204,
-        205,
-        206,
-        207,
-        208,
-        226,
-        300,
-        301,
-        302,
-        303,
-        304,
-        305,
-        307,
-        308,
-        400,
-        401,
-        402,
-        403,
-        404,
-        405,
-        406,
-        407,
-        408,
-        409,
-        410,
-        411,
-        412,
-        413,
-        414,
-        415,
-        416,
-        417,
-        418,
-        421,
-        422,
-        423,
-        424,
-        426,
-        428,
-        429,
-        431,
-        444,
-        451,
-        499,
-        500,
-        501,
-        502,
-        503,
-        504,
-        505,
-        506,
-        507,
-        508,
-        510,
-        511,
-        599,
-    )
+    status_code = lambda: one_of(*[s.value for s in http.HTTPStatus])
     wait = lambda: one_of(an_integer(1, 500), None)
     repeat = lambda: one_of(an_integer(2, 50), None)
     headers = lambda: one_of(None, {a_string(): a_string()})
