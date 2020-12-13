@@ -13,8 +13,9 @@ from _pytest.fixtures import FixtureRequest  # type: ignore
 from furl import furl
 from requests import RequestException
 
-from mbtest.imposters import Imposter
+from mbtest.imposters import Imposter, Stub
 from mbtest.imposters.imposters import Request
+from mbtest.imposters.stubs import AddStub
 
 DEFAULT_MB_EXECUTABLE = str(
     Path("node_modules") / ".bin" / ("mb.cmd" if platform.system() == "Windows" else "mb")
@@ -123,10 +124,10 @@ class MountebankServer:
         self.host = host
         self.scheme = scheme
         self.imposters_path = imposters_path
+        self._running_imposters: MutableSequence[Imposter] = []
 
     def __call__(self, imposters: Sequence[Imposter]) -> "MountebankServer":
         self.imposters = imposters
-        self._running_imposters: MutableSequence[Imposter] = []
         return self
 
     def __enter__(self) -> "MountebankServer":
@@ -151,6 +152,26 @@ class MountebankServer:
             post.raise_for_status()
             definition.attach(self.host, post.json()["port"], self.server_url)
             self._running_imposters.append(definition)
+
+    def add_stabs(self, port: int, definition: Union[Stub, Iterable[Stub]]):
+        imposter = self.get_imposter_by_port(port)
+        if not imposter:
+            return self.add_imposters(Imposter(definition, port=port))
+        if isinstance(definition, abc.Iterable):
+            for stub in definition:
+                self.add_stabs(port, stub)
+        else:
+            json = AddStub(definition).as_structure()
+            post = requests.post(f"{self.server_url}/{port}/stubs", json=json, timeout=10)
+            post.raise_for_status()
+            imposter.stubs.append(definition)
+            self._running_imposters.append(imposter)
+
+    def get_imposter_by_port(self, port):
+        imposter = next((imp for imp in self.query_all_imposters() if imp.port == port), None)
+        if imposter:
+            imposter.attach(self.host, port, self.server_url)
+        return imposter
 
     def delete_imposters(self) -> None:
         while self._running_imposters:
@@ -242,7 +263,7 @@ class ExecutingMountebankServer(MountebankServer):
 
     @staticmethod
     def _build_options(
-        port: int, debug: bool, allow_injection: bool, local_only: bool, data_dir: Union[str, None]
+            port: int, debug: bool, allow_injection: bool, local_only: bool, data_dir: Union[str, None]
     ):
         options: List[str] = ["start", "--port", str(port)]
         if debug:

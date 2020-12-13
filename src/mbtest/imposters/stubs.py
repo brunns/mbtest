@@ -47,3 +47,39 @@ class Stub(JsonSerializable):
             [Predicate.from_structure(predicate) for predicate in structure.get("predicates", ())],
             responses,
         )
+
+
+class AddStub(JsonSerializable):
+    """Represents a `Mountebank add stub request <http://www.mbtest.org/docs/api/overview#add-stub>`.
+    To add new stab to an existing imposter.
+
+    :param index: The index in imposter stubs array.
+     If you leave off the index field, the stub will be added to the end of the existing stubs array.
+    :param stub: The stub that will be added to the existing stubs array
+    """
+
+    def __init__(
+            self,
+            stub: Stub = None,
+            index: int = None,
+    ) -> None:
+        self.index = index
+        if stub:
+            self.stub = stub
+        else:
+            self.stub = Stub()
+
+    def as_structure(self) -> JsonStructure:
+        structure = {
+            "stub": self.stub.as_structure(),
+        }
+        if self.index is not None:
+            structure["index"] = self.index
+        return structure
+
+    @staticmethod
+    def from_structure(structure: JsonStructure) -> "AddStub":
+        return AddStub(
+            index=structure.get("index"),
+            stub=structure.get("stub"),
+        )
