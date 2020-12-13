@@ -14,7 +14,7 @@ def test_not_existing_imposter_single_stub(mock_server):
     port = 4567
     with mock_server([]) as s:
         logger.debug("server: %s", s)
-        mock_server.add_stabs(port, stub)
+        mock_server.add_stabs(stub, port)
         imposter = mock_server.get_imposter_by_port(port)
         r1 = requests.get(f"{imposter.url}/test1")
     assert_that(r1, is_response().with_body("sausages"))
@@ -28,7 +28,7 @@ def test_not_existing_imposter_multiple_stubs(mock_server):
     port = 4567
     with mock_server([]) as s:
         logger.debug("server: %s", s)
-        mock_server.add_stabs(port, stubs)
+        mock_server.add_stabs(stubs, port)
         imposter = mock_server.get_imposter_by_port(port)
         r1 = requests.get(f"{imposter.url}/test1")
         r2 = requests.get(f"{imposter.url}/test2")
@@ -51,7 +51,7 @@ def test_existing_imposter_multiple_stubs(mock_server):
     ]
     with mock_server(existing_imposter) as s:
         logger.debug("server: %s", s)
-        mock_server.add_stabs(existing_imposter.port, stubs)
+        mock_server.add_stabs(stubs, existing_imposter.port)
         imposter = mock_server.get_imposter_by_port(existing_imposter.port)
         responses = [requests.get(f"{imposter.url}/test{i}") for i in range(1, 5)]
     for number, response in enumerate(responses, start=1):
