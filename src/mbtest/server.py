@@ -153,13 +153,13 @@ class MountebankServer:
             definition.attach(self.host, post.json()["port"], self.server_url)
             self._running_imposters.append(definition)
 
-    def add_stabs(self, definition: Union[Stub, Iterable[Stub]], port: int):
+    def add_stubs(self, definition: Union[Stub, Iterable[Stub]], port: int):
         imposter = self.get_imposter_by_port(port)
         if not imposter:
             return self.add_imposters(Imposter(definition, port=port))
         if isinstance(definition, abc.Iterable):
             for stub in definition:
-                self.add_stabs(stub, port)
+                self.add_stubs(stub, port)
         else:
             json = AddStub(definition).as_structure()
             post = requests.post(f"{self.server_url}/{port}/stubs", json=json, timeout=10)
@@ -263,7 +263,7 @@ class ExecutingMountebankServer(MountebankServer):
 
     @staticmethod
     def _build_options(
-            port: int, debug: bool, allow_injection: bool, local_only: bool, data_dir: Union[str, None]
+        port: int, debug: bool, allow_injection: bool, local_only: bool, data_dir: Union[str, None]
     ):
         options: List[str] = ["start", "--port", str(port)]
         if debug:

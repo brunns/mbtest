@@ -59,9 +59,9 @@ class AddStub(JsonSerializable):
     """
 
     def __init__(
-            self,
-            stub: Stub = None,
-            index: int = None,
+        self,
+        stub: Stub = None,
+        index: int = None,
     ) -> None:
         self.index = index
         if stub:
@@ -81,5 +81,5 @@ class AddStub(JsonSerializable):
     def from_structure(structure: JsonStructure) -> "AddStub":
         return AddStub(
             index=structure.get("index"),
-            stub=structure.get("stub"),
+            stub=Stub().from_structure(structure.get("stub")),
         )
