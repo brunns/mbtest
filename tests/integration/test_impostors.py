@@ -1,6 +1,8 @@
 # encoding=utf-8
 import logging
+import os
 
+import pytest
 import requests
 from brunns.matchers.response import is_response
 from hamcrest import assert_that
@@ -42,3 +44,28 @@ def test_imposter_had_request_matcher(mock_server):
 
         assert_that(response, is_response().with_status_code(200).and_body("sausages"))
         assert_that(imposter, had_request().with_path("/test").and_method("GET"))
+
+
+@pytest.mark.skipif(
+    float(os.environ.get("MBTEST_VERSION", "2.1")) < 2.1,
+    reason="AddStubs to existing imposter requires Mountebank version 2.1 or higher.",
+)
+def test_existing_imposter_multiple_stubs(mock_server):
+    existing_imposter = Imposter(
+        [
+            Stub(Predicate(path="/test1"), Response(body="response1")),
+            Stub(Predicate(path="/test2"), Response(body="response2")),
+        ],
+        port=4567,
+        name="bill",
+    )
+    stubs = [
+        Stub(Predicate(path="/test3"), Response(body="response3")),
+        Stub(Predicate(path="/test4"), Response(body="response4")),
+    ]
+    with mock_server(existing_imposter) as s:
+        logger.debug("server: %s", s)
+        existing_imposter.add_stubs(stubs)
+        responses = [requests.get(f"{existing_imposter.url}/test{i}") for i in range(1, 5)]
+    for number, response in enumerate(responses, start=1):
+        assert_that(response, is_response().with_body(f"response{number}"))
