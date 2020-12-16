@@ -9,7 +9,7 @@ from furl import furl
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.responses import Proxy
-from mbtest.imposters.stubs import Stub
+from mbtest.imposters.stubs import AddStub, Stub
 
 
 class Imposter(JsonSerializable):
@@ -115,6 +115,16 @@ class Imposter(JsonSerializable):
     def playback(self) -> Sequence[Stub]:
         all_stubs = self.query_all_stubs()
         return [s for s in all_stubs if any(not isinstance(r, Proxy) for r in s.responses)]
+
+    def add_stubs(self, definition: Union[Stub, Iterable[Stub]]):
+        if isinstance(definition, abc.Iterable):
+            for stub in definition:
+                self.add_stubs(stub)
+        else:
+            json = AddStub(definition).as_structure()
+            post = requests.post(f"{self.configuration_url}/stubs", json=json, timeout=10)
+            post.raise_for_status()
+            self.stubs.append(definition)
 
 
 class Request(metaclass=ABCMeta):
