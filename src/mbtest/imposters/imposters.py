@@ -116,12 +116,12 @@ class Imposter(JsonSerializable):
         all_stubs = self.query_all_stubs()
         return [s for s in all_stubs if any(not isinstance(r, Proxy) for r in s.responses)]
 
-    def add_stubs(self, definition: Union[Stub, Iterable[Stub]]):
+    def add_stubs(self, definition: Union[Stub, Iterable[Stub]], index=None):
         if isinstance(definition, abc.Iterable):
             for stub in definition:
                 self.add_stubs(stub)
         else:
-            json = AddStub(definition).as_structure()
+            json = AddStub(stub=definition, index=index).as_structure()
             post = requests.post(f"{self.configuration_url}/stubs", json=json, timeout=10)
             post.raise_for_status()
             self.stubs.append(definition)
