@@ -31,6 +31,7 @@ class Imposter(JsonSerializable):
         HTTPS = "https"
         SMTP = "smtp"
         TCP = "tcp"
+        GRPC = "grpc"
 
     def __init__(
         self,
@@ -39,6 +40,8 @@ class Imposter(JsonSerializable):
         protocol: Protocol = Protocol.HTTP,
         name: Optional[str] = None,
         record_requests: bool = True,
+        options: Options = None,
+        services: Services = None
     ) -> None:
         stubs = cast(Iterable[Stub], stubs if isinstance(stubs, abc.Sequence) else [stubs])
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
@@ -53,6 +56,8 @@ class Imposter(JsonSerializable):
         self.record_requests = record_requests
         self.host: Optional[str] = None
         self.server_url: Optional[furl] = None
+        self.options = options
+        self.services = services
 
     @property
     def url(self) -> furl:
@@ -66,6 +71,10 @@ class Imposter(JsonSerializable):
             structure["name"] = self.name
         if self.stubs:
             structure["stubs"] = [stub.as_structure() for stub in self.stubs]
+        if self.services:
+            structure["services"] = self.services.as_structure()
+        if self.options:
+            structure["options"] = self.options.as_structure()
         return structure
 
     @staticmethod
@@ -197,3 +206,51 @@ def smtp_imposter(name="smtp", record_requests=True) -> Imposter:
     return Imposter(
         [], 4525, protocol=Imposter.Protocol.SMTP, name=name, record_requests=record_requests
     )
+
+
+class ProtobufOptions:
+    def __init__(self, include_dirs: List[str]):
+        self.include_dirs: List[str] = include_dirs
+
+    def as_structure(self) -> JsonStructure:
+        structure = {}
+        if self.include_dirs:
+            structure["includeDirs"] = self.include_dirs
+        return structure
+
+
+class Options:
+    def __init__(self, protobufjs: ProtobufOptions = None):
+        self.protobufjs: ProtobufOptions = protobufjs
+
+    def as_structure(self) -> JsonStructure:
+        structure = {}
+        if self.protobufjs:
+            structure["protobufjs"] = self.protobufjs.as_structure()
+
+        return structure
+
+
+class Service:
+    def __init__(self, name: str, file: str):
+        self.name: str = name
+        self.file: str = file
+
+    def as_structure(self):
+        return {
+            f"{self.name}": {
+                "file": self.file
+            }
+        }
+
+
+class Services:
+    def __init__(self, services: List[Service]):
+        self.services: List[Service] = services
+
+    def as_structure(self):
+        structure = {}
+        if self.services:
+            for service in self.services:
+                structure = {**structure, **service.as_structure()}
+        return structure

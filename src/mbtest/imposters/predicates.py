@@ -82,6 +82,7 @@ class Predicate(LogicallyCombinablePredicate):
         method: Optional[Method] = None,
         query: Optional[Mapping[str, Union[str, int, bool]]] = None,
         body: Optional[str] = None,
+        value: Optional[str] = None,
         headers: Optional[Mapping[str, str]] = None,
         xpath: Optional[str] = None,
         operator: Operator = Operator.EQUALS,
@@ -97,6 +98,7 @@ class Predicate(LogicallyCombinablePredicate):
         )
         self.query = query
         self.body = body
+        self.value = value
         self.headers = headers
         self.xpath = xpath
         self.operator = (
@@ -139,10 +141,11 @@ class Predicate(LogicallyCombinablePredicate):
 
     def fields_as_structure(self):
         fields = {}
-        self.add_if_true(fields, "path", self.path)
-        self.add_if_true(fields, "query", self.query)
-        self.add_if_true(fields, "body", self.body)
-        self.add_if_true(fields, "headers", self.headers)
+        self._add_if_true(fields, "path", self.path)
+        self._add_if_true(fields, "query", self.query)
+        self._add_if_true(fields, "body", self.body)
+        self._add_if_true(fields, "value", self.value)
+        self._add_if_true(fields, "headers", self.headers)
         if self.method:
             fields["method"] = self.method.value
         return fields

@@ -49,6 +49,7 @@ class Response(BaseResponse):
     def __init__(
         self,
         body: str = "",
+        value: str = "",
         status_code: Union[int, str] = 200,
         wait: Optional[Union[int, str]] = None,
         repeat: Optional[int] = None,
@@ -60,6 +61,7 @@ class Response(BaseResponse):
         shell_transform: Optional[Union[str, Iterable[str]]] = None,
     ) -> None:
         self._body = body
+        self._value = value
         self.status_code = status_code
         self.wait = wait
         self.repeat = repeat
@@ -89,8 +91,9 @@ class Response(BaseResponse):
 
     def _is_structure(self) -> JsonStructure:
         is_structure = {"statusCode": self.status_code, "_mode": self.mode.value}
-        self.add_if_true(is_structure, "body", self.body)
-        self.add_if_true(is_structure, "headers", self.headers)
+        self._add_if_true(is_structure, "body", self.body)
+        self._add_if_true(is_structure, "value", self.value)
+        self._add_if_true(is_structure, "headers", self.headers)
         return is_structure
 
     def _behaviors_structure(self) -> JsonStructure:
