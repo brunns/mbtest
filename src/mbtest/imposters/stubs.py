@@ -35,15 +35,15 @@ class Stub(JsonSerializable):
             "responses": [response.as_structure() for response in self.responses],
         }
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "Stub":
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "Stub":
         responses: List[Union[Proxy, Response]] = []
         for response in structure.get("responses", ()):
             if "proxy" in response:
                 responses.append(Proxy.from_structure(response))
             else:
                 responses.append(Response.from_structure(response))
-        return Stub(
+        return cls(
             [Predicate.from_structure(predicate) for predicate in structure.get("predicates", ())],
             responses,
         )

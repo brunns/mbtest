@@ -19,9 +19,9 @@ class JsonSerializable(metaclass=ABCMeta):
         """
         raise NotImplementedError()
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def from_structure(structure: JsonStructure) -> "JsonSerializable":  # pragma: no cover
+    def from_structure(cls, structure: JsonStructure) -> "JsonSerializable":  # pragma: no cover
         """Converted from a JSON serializable structure.
 
         :param structure: JSON structure to be converted.

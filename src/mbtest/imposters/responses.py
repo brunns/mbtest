@@ -13,8 +13,8 @@ from mbtest.imposters.predicates import Predicate
 
 
 class BaseResponse(JsonSerializable, metaclass=ABCMeta):
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "BaseResponse":
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "BaseResponse":
         if "is" in structure and "_behaviors" in structure:
             return Response.from_structure(structure)
         elif "is" in structure and "data" in structure["is"]:
@@ -105,9 +105,9 @@ class Response(BaseResponse):
             behaviors["lookup"] = [lookup.as_structure() for lookup in self.lookup]
         return behaviors
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "Response":
-        response = Response()
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "Response":
+        response = cls()
         response.fields_from_structure(structure)
         behaviors = structure.get("_behaviors", {})
         response.set_if_in_dict(behaviors, "wait", "wait")
@@ -138,9 +138,9 @@ class TcpResponse(BaseResponse):
     def as_structure(self) -> JsonStructure:
         return {"is": {"data": self.data}}
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "TcpResponse":
-        return TcpResponse(data=structure["is"]["data"])
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "TcpResponse":
+        return cls(data=structure["is"]["data"])
 
 
 class Proxy(BaseResponse):
@@ -184,10 +184,10 @@ class Proxy(BaseResponse):
             response["_behaviors"] = {"wait": self.wait}
         return response
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "Proxy":
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "Proxy":
         proxy_structure = structure["proxy"]
-        proxy = Proxy(
+        proxy = cls(
             to=furl(proxy_structure["to"]),
             inject_headers=proxy_structure["injectHeaders"]
             if "injectHeaders" in proxy_structure
@@ -226,8 +226,8 @@ class PredicateGenerator(JsonSerializable):
         predicate = {"caseSensitive": self.case_sensitive, "matches": matches}
         return predicate
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "PredicateGenerator":
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "PredicateGenerator":
         path = structure["matches"].get("path", None)
         query = structure["matches"].get("query", None)
         operator = (
@@ -236,9 +236,7 @@ class PredicateGenerator(JsonSerializable):
             else Predicate.Operator.EQUALS
         )
         case_sensitive = structure.get("caseSensitive", False)
-        return PredicateGenerator(
-            path=path, query=query, operator=operator, case_sensitive=case_sensitive
-        )
+        return cls(path=path, query=query, operator=operator, case_sensitive=case_sensitive)
 
 
 class InjectionResponse(BaseResponse, Injecting):
@@ -249,6 +247,6 @@ class InjectionResponse(BaseResponse, Injecting):
     :param inject: JavaScript function to inject .
     """
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "InjectionResponse":
-        return InjectionResponse(inject=structure["inject"])
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "InjectionResponse":
+        return cls(inject=structure["inject"])

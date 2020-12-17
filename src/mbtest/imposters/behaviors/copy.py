@@ -22,6 +22,6 @@ class Copy(JsonSerializable):
     def as_structure(self) -> JsonStructure:
         return {"from": self.from_, "into": self.into, "using": self.using.as_structure()}
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "Copy":
-        return Copy(structure["from"], structure["into"], Using.from_structure(structure["using"]))
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "Copy":
+        return cls(structure["from"], structure["into"], Using.from_structure(structure["using"]))

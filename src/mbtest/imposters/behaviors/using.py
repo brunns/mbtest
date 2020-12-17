@@ -26,18 +26,18 @@ class Using(JsonSerializable, metaclass=abc.ABCMeta):
     def as_structure(self) -> JsonStructure:
         return {"method": self.method.value, "selector": self.selector}
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "Using":
-        method = Using.Method(structure["method"])
-        cls = cast(
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "Using":
+        method = cls.Method(structure["method"])
+        sub_cls = cast(
             Type["Using"],
             {
-                Using.Method.REGEX: UsingRegex,
-                Using.Method.XPATH: UsingXpath,
-                Using.Method.JSONPATH: UsingJsonpath,
+                cls.Method.REGEX: UsingRegex,
+                cls.Method.XPATH: UsingXpath,
+                cls.Method.JSONPATH: UsingJsonpath,
             }[method],
         )
-        return cls.from_structure(structure)
+        return sub_cls.from_structure(structure)
 
 
 class UsingRegex(Using):
@@ -59,9 +59,9 @@ class UsingRegex(Using):
         structure["options"] = {"ignoreCase": self.ignore_case, "multiline": self.multiline}
         return structure
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "UsingRegex":
-        return UsingRegex(
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "UsingRegex":
+        return cls(
             selector=structure["selector"],
             ignore_case=structure["options"]["ignoreCase"],
             multiline=structure["options"]["multiline"],
@@ -86,9 +86,9 @@ class UsingXpath(Using):
             structure["ns"] = self.ns
         return structure
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "UsingXpath":
-        using = UsingXpath(selector=structure["selector"])
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "UsingXpath":
+        using = cls(selector=structure["selector"])
         using.set_if_in_dict(structure, "ns", "ns")
         return using
 
@@ -103,6 +103,6 @@ class UsingJsonpath(Using):
     def __init__(self, selector: str) -> None:
         super().__init__(Using.Method.JSONPATH, selector)
 
-    @staticmethod
-    def from_structure(structure) -> "UsingJsonpath":
-        return UsingJsonpath(selector=structure["selector"])
+    @classmethod
+    def from_structure(cls, structure) -> "UsingJsonpath":
+        return cls(selector=structure["selector"])

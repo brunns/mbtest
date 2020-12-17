@@ -9,8 +9,8 @@ from mbtest.imposters.base import Injecting, JsonSerializable, JsonStructure
 
 
 class BasePredicate(JsonSerializable, metaclass=ABCMeta):
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "BasePredicate":
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "BasePredicate":
         if "and" in structure:
             return AndPredicate.from_structure(structure)
         elif "or" in structure:
@@ -113,17 +113,15 @@ class Predicate(LogicallyCombinablePredicate):
             predicate["xpath"] = {"selector": self.xpath}
         return predicate
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "Predicate":
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "Predicate":
         operators = tuple(filter(Predicate.Operator.has_value, structure.keys()))
         if len(operators) != 1:
             raise Predicate.InvalidPredicateOperator(
                 "Each predicate must define exactly one operator."
             )
         operator = operators[0]
-        predicate = Predicate(
-            operator=operator, case_sensitive=structure.get("caseSensitive", True)
-        )
+        predicate = cls(operator=operator, case_sensitive=structure.get("caseSensitive", True))
         predicate.fields_from_structure(structure[operator])
         if "xpath" in structure:
             predicate.xpath = structure["xpath"]["selector"]
@@ -156,9 +154,9 @@ class AndPredicate(LogicallyCombinablePredicate):
     def as_structure(self) -> JsonStructure:
         return {"and": [self.left.as_structure(), self.right.as_structure()]}
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "AndPredicate":
-        return AndPredicate(
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "AndPredicate":
+        return cls(
             BasePredicate.from_structure(structure["and"][0]),
             BasePredicate.from_structure(structure["and"][1]),
         )
@@ -172,9 +170,9 @@ class OrPredicate(LogicallyCombinablePredicate):
     def as_structure(self) -> JsonStructure:
         return {"or": [self.left.as_structure(), self.right.as_structure()]}
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "OrPredicate":
-        return OrPredicate(
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "OrPredicate":
+        return cls(
             BasePredicate.from_structure(structure["or"][0]),
             BasePredicate.from_structure(structure["or"][1]),
         )
@@ -193,9 +191,9 @@ class TcpPredicate(LogicallyCombinablePredicate):
     def as_structure(self) -> JsonStructure:
         return {"contains": {"data": self.data}}
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "TcpPredicate":
-        return TcpPredicate(structure["contains"]["data"])
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "TcpPredicate":
+        return cls(structure["contains"]["data"])
 
 
 class InjectionPredicate(BasePredicate, Injecting):
@@ -207,6 +205,6 @@ class InjectionPredicate(BasePredicate, Injecting):
     :param inject: JavaScript function to inject.
     """
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "InjectionPredicate":
-        return InjectionPredicate(inject=structure["inject"])
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "InjectionPredicate":
+        return cls(inject=structure["inject"])

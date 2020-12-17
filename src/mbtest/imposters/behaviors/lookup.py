@@ -32,9 +32,9 @@ class Lookup(JsonSerializable):
             "into": self.into,
         }
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "Lookup":
-        return Lookup(
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "Lookup":
+        return cls(
             Key.from_structure(structure["key"]),
             structure["fromDataSource"]["csv"]["path"],
             structure["fromDataSource"]["csv"]["keyColumn"],
@@ -59,6 +59,6 @@ class Key(JsonSerializable):
     def as_structure(self) -> JsonStructure:
         return {"from": self.from_, "using": self.using.as_structure(), "index": self.index}
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "Key":
-        return Key(structure["from"], Using.from_structure(structure["using"]), structure["index"])
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "Key":
+        return cls(structure["from"], Using.from_structure(structure["using"]), structure["index"])
