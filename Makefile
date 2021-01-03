@@ -61,8 +61,15 @@ precommit: precommit-test mypy lint docs ## Pre-commit targets
 	@ python -m this
 
 .PHONY: recreate
-recreate: ## Recreate tox environments
-	tox --recreate --notest -e py36,py37,py38,py39,py310,format,flake8,bandit,safety,piprot,mypy
+recreate: clean jsdeps ## Recreate tox environments
+	tox --recreate --notest
+	tox --recreate --notest -e format,check-format,flake8,pylint,bandit,safety,piprot,mypy,docs
+
+.PHONY: jsdeps
+jsdeps:
+	rm -r node_modules/ package.json package-lock.json
+	npm install mountebank@2.4 --production
+	npm audit
 
 .PHONY: clean
 clean: ## Clean generated files
