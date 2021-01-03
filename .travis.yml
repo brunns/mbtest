@@ -60,6 +60,10 @@ matrix:
         - TOX_ENV=py39
         - MBTEST_VERSION=2.2
     - python: 3.9
+      env:
+        - TOX_ENV=py39
+        - MBTEST_VERSION=2.3
+    - python: 3.9
       sudo: yes
       env:
         - TOX_ENV=py39
@@ -77,6 +81,6 @@ install:
   - pip --version
   - node --version
   - npm --version
-  - npm install mountebank@"${MBTEST_VERSION:-2.3}" --production
+  - npm install mountebank@"${MBTEST_VERSION:-2.4}" --production
 script:
   - tox -e $TOX_ENV
