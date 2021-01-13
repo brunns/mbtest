@@ -2,7 +2,7 @@
 from abc import ABCMeta
 from collections import abc
 from enum import Enum
-from typing import Iterable, Mapping, NamedTuple, Optional, Sequence, Union, cast
+from typing import Iterable, Mapping, NamedTuple, Optional, Sequence, Union, cast, List
 
 import requests
 from furl import furl
@@ -38,7 +38,7 @@ class Imposter(JsonSerializable):
         port: Optional[int] = None,
         protocol: Protocol = Protocol.HTTP,
         name: Optional[str] = None,
-        record_requests: bool = True
+        record_requests: bool = True,
     ) -> None:
         stubs = cast(Iterable[Stub], stubs if isinstance(stubs, abc.Sequence) else [stubs])
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
@@ -150,8 +150,19 @@ class GrpcImposter(Imposter):
         return structure
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> GrpcImpostor:
-        imposter = super().from_structure(structure)
+    def from_structure(cls, structure: JsonStructure) -> "GrpcImposter":
+        imposter = GrpcImposter([Stub.from_structure(stub) for stub in structure["stubs"]])
+        if "port" in structure:
+            imposter.port = structure["port"]
+        if "protocol" in structure:
+            protocol = structure["protocol"]
+            imposter.protocol = (
+                protocol if isinstance(protocol, GrpcImposter.Protocol) else GrpcImposter.Protocol(protocol)
+            )
+        if "recordRequests" in structure:
+            imposter.record_requests = structure["recordRequests"]
+        if "name" in structure:
+            imposter.name = structure["name"]
         if "services" in structure:
             imposter.services = Services.from_structure(structure["services"])
         if "options" in structure:
@@ -242,7 +253,7 @@ def smtp_imposter(name="smtp", record_requests=True) -> Imposter:
 
 
 class ProtobufOptions(JsonSerializable):
-    def __init__(self, include_dirs: List[str]):
+    def __init__(self, include_dirs: List[str] = None):
         self.include_dirs: List[str] = include_dirs
 
     def as_structure(self) -> JsonStructure:
@@ -251,8 +262,15 @@ class ProtobufOptions(JsonSerializable):
             structure["includeDirs"] = self.include_dirs
         return structure
 
+    @staticmethod
+    def from_structure(structure: JsonStructure) -> "ProtobufOptions":
+        options = ProtobufOptions()
+        if "includeDirs" in structure:
+            options.includeDirs = structure["includeDirs"]
+        return options
 
-class Options:
+
+class Options(JsonSerializable):
     def __init__(self, protobufjs: ProtobufOptions = None):
         self.protobufjs: ProtobufOptions = protobufjs
 
@@ -262,6 +280,13 @@ class Options:
             structure["protobufjs"] = self.protobufjs.as_structure()
 
         return structure
+
+    @staticmethod
+    def from_structure(structure: JsonStructure) -> "Options":
+        options = Options()
+        if "protobufjs" in structure:
+            options.protobufjs = ProtobufOptions.from_structure(structure["protobufjs"])
+        return options
 
 
 class Service(JsonSerializable):
@@ -305,4 +330,3 @@ class Services(JsonSerializable):
         if "file" in structure:
             service.file = structure["file"]
         return service
-
