@@ -31,7 +31,6 @@ class Imposter(JsonSerializable):
         HTTPS = "https"
         SMTP = "smtp"
         TCP = "tcp"
-        GRPC = "grpc"
 
     def __init__(
         self,
@@ -39,9 +38,7 @@ class Imposter(JsonSerializable):
         port: Optional[int] = None,
         protocol: Protocol = Protocol.HTTP,
         name: Optional[str] = None,
-        record_requests: bool = True,
-        options: Options = None,
-        services: Services = None
+        record_requests: bool = True
     ) -> None:
         stubs = cast(Iterable[Stub], stubs if isinstance(stubs, abc.Sequence) else [stubs])
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
@@ -56,8 +53,6 @@ class Imposter(JsonSerializable):
         self.record_requests = record_requests
         self.host: Optional[str] = None
         self.server_url: Optional[furl] = None
-        self.options = options
-        self.services = services
 
     @property
     def url(self) -> furl:
@@ -71,10 +66,6 @@ class Imposter(JsonSerializable):
             structure["name"] = self.name
         if self.stubs:
             structure["stubs"] = [stub.as_structure() for stub in self.stubs]
-        if self.services:
-            structure["services"] = self.services.as_structure()
-        if self.options:
-            structure["options"] = self.options.as_structure()
         return structure
 
     @staticmethod
@@ -124,6 +115,48 @@ class Imposter(JsonSerializable):
     def playback(self) -> Sequence[Stub]:
         all_stubs = self.query_all_stubs()
         return [s for s in all_stubs if any(not isinstance(r, Proxy) for r in s.responses)]
+
+
+class GrpcImposter(Imposter):
+    class Protocol(Enum):
+        """Imposter `Protocol <https://github.com/cbrz/mountebank-grpc>`_."""
+        GRPC = "grpc"
+
+    def __init__(self,
+                 stubs: Union[Stub, Iterable[Stub]],
+                 port: Optional[int] = None,
+                 name: Optional[str] = None,
+                 record_requests: bool = True,
+                 options: Options = None,
+                 services: Services = None
+                 ):
+        super().__init__(
+            stubs=stubs,
+            port=port,
+            name=name,
+            record_requests=record_requests
+        )
+
+        self.protocol = GrpcImposter.Protocol.GRPC
+        self.options = options
+        self.services = services
+
+    def as_structure(self) -> JsonStructure:
+        structure = super().as_structure()
+        if self.services:
+            structure["services"] = self.services.as_structure()
+        if self.options:
+            structure["options"] = self.options.as_structure()
+        return structure
+
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> GrpcImpostor:
+        imposter = super().from_structure(structure)
+        if "services" in structure:
+            imposter.services = Services.from_structure(structure["services"])
+        if "options" in structure:
+            imposter.options = Options.from_structure(structure["options"])
+        return imposter
 
 
 class Request(metaclass=ABCMeta):
@@ -208,7 +241,7 @@ def smtp_imposter(name="smtp", record_requests=True) -> Imposter:
     )
 
 
-class ProtobufOptions:
+class ProtobufOptions(JsonSerializable):
     def __init__(self, include_dirs: List[str]):
         self.include_dirs: List[str] = include_dirs
 
@@ -231,8 +264,8 @@ class Options:
         return structure
 
 
-class Service:
-    def __init__(self, name: str, file: str):
+class Service(JsonSerializable):
+    def __init__(self, name: str = "", file: str = ""):
         self.name: str = name
         self.file: str = file
 
@@ -243,9 +276,18 @@ class Service:
             }
         }
 
+    @staticmethod
+    def from_structure(structure: JsonStructure) -> "Service":
+        service = Service()
+        if "name" in structure:
+            service.name = structure["name"]
+        if "file" in structure:
+            service.file = structure["file"]
+        return service
 
-class Services:
-    def __init__(self, services: List[Service]):
+
+class Services(JsonSerializable):
+    def __init__(self, services: List[Service] = None):
         self.services: List[Service] = services
 
     def as_structure(self):
@@ -254,3 +296,13 @@ class Services:
             for service in self.services:
                 structure = {**structure, **service.as_structure()}
         return structure
+
+    @staticmethod
+    def from_structure(structure: JsonStructure) -> "Services":
+        service = Services()
+        if "service" in structure[""]:
+            service.name = structure["name"]
+        if "file" in structure:
+            service.file = structure["file"]
+        return service
+
