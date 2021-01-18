@@ -10,11 +10,13 @@ from mbtest.imposters.base import Injecting, JsonSerializable, JsonStructure
 
 class BasePredicate(JsonSerializable, metaclass=ABCMeta):
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "BasePredicate":
+    def from_structure(cls, structure: JsonStructure) -> "BasePredicate":  # noqa: C901
         if "and" in structure:
             return AndPredicate.from_structure(structure)
         elif "or" in structure:
             return OrPredicate.from_structure(structure)
+        elif "not" in structure:
+            return NotPredicate.from_structure(structure)
         elif "contains" in structure and "data" in structure["contains"]:
             return TcpPredicate.from_structure(structure)
         elif "inject" in structure:
@@ -32,6 +34,9 @@ class LogicallyCombinablePredicate(BasePredicate, metaclass=ABCMeta):
 
     def __or__(self, other: "BasePredicate") -> "OrPredicate":
         return OrPredicate(self, other)
+
+    def __invert__(self) -> "NotPredicate":
+        return NotPredicate(self)
 
 
 class Predicate(LogicallyCombinablePredicate):
@@ -176,6 +181,18 @@ class OrPredicate(LogicallyCombinablePredicate):
             BasePredicate.from_structure(structure["or"][0]),
             BasePredicate.from_structure(structure["or"][1]),
         )
+
+
+class NotPredicate(LogicallyCombinablePredicate):
+    def __init__(self, inverted: BasePredicate) -> None:
+        self.inverted = inverted
+
+    def as_structure(self) -> JsonStructure:
+        return {"not": self.inverted.as_structure()}
+
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "NotPredicate":
+        return cls(BasePredicate.from_structure(structure["not"]))
 
 
 class TcpPredicate(LogicallyCombinablePredicate):

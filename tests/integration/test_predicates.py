@@ -48,6 +48,19 @@ def test_or_predicate_and_body(mock_server):
         assert_that(r3, not_(is_response().with_status_code(200).and_body("oranges")))
 
 
+def test_not_predicate(mock_server):
+    imposter = Imposter(Stub(~Predicate(query={"foo": "bar"}), Response(body="black pudding")))
+
+    with mock_server(imposter) as s:
+        logger.debug("server: %s", s)
+
+        r1 = requests.get(f"{imposter.url}/", params={"foo": "baz"})
+        r2 = requests.get(f"{imposter.url}/", params={"foo": "bar"})
+
+        assert_that(r1, is_response().with_body("black pudding"))
+        assert_that(r2, not_(is_response().with_body("black pudding")))
+
+
 def test_query_predicate(mock_server):
     # Given
     imposter = Imposter(Stub(Predicate(query={"foo": "bar"}), Response(body="oranges")))

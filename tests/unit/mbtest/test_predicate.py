@@ -10,12 +10,14 @@ from mbtest.imposters.predicates import (
     AndPredicate,
     BasePredicate,
     InjectionPredicate,
+    NotPredicate,
     OrPredicate,
     TcpPredicate,
 )
 from tests.utils.builders import (
     AndPredicateBuilder,
     InjectionPredicateBuilder,
+    NotPredicateBuilder,
     OrPredicateBuilder,
     TcpPredicateBuilder,
 )
@@ -103,6 +105,18 @@ def test_or_predicate_structure_roundtrip():
 
     # Then
     assert_that(actual, instance_of(OrPredicate))
+    assert_that(actual, has_identical_properties_to(expected))
+
+
+def test_not_predicate_structure_roundtrip():
+    expected = NotPredicateBuilder().build()
+    structure = expected.as_structure()
+
+    # When
+    actual = BasePredicate.from_structure(structure)
+
+    # Then
+    assert_that(actual, instance_of(NotPredicate))
     assert_that(actual, has_identical_properties_to(expected))
 
 
