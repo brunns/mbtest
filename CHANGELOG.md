@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.6
+
+* Add support for PARCH HTTP verb. (Thanks to [@garry-jeromson](https://github.com/garry-jeromson).)
+* Add NotPredicate.
+
 ## 2.5
 
 * Add [dynamic predicates and responses](http://www.mbtest.org/docs/api/injection). This feature requires Mountebank 2.0 or later, but all other features should continue to work with older version.
