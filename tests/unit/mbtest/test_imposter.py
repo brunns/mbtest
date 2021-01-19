@@ -2,37 +2,19 @@
 import logging
 
 from brunns.matchers.object import has_identical_properties_to
-from hamcrest import assert_that, has_entries, instance_of
+from hamcrest import assert_that, instance_of
 
-from mbtest.imposters import Imposter, Predicate, Proxy, Response, Stub
+from mbtest.imposters import Imposter, Proxy, Response, Stub
 from tests.utils.builders import ImposterBuilder
 
 logger = logging.getLogger(__name__)
 
 
-def test_default_predicate():
-    # Given
-    predicate = Predicate()
-
-    # When
-    structure = predicate.as_structure()
-
-    # Then
-    assert_that(structure, has_entries(caseSensitive=True, equals=has_entries()))
-
-
 def test_structure_port():
-    expected_imposter = Imposter(Stub(), port=4546)
+    expected_imposter = ImposterBuilder().with_port(4546).build()
     imposter_structure = expected_imposter.as_structure()
     imposter = Imposter.from_structure(imposter_structure)
-    assert imposter.port == expected_imposter.port
-
-
-def test_structure_no_port():
-    expected_imposter = Imposter(Stub())
-    imposter_structure = expected_imposter.as_structure()
-    imposter = Imposter.from_structure(imposter_structure)
-    assert imposter.port == expected_imposter.port
+    assert imposter.port == 4546
 
 
 def test_structure_response_port():
@@ -50,32 +32,24 @@ def test_structure_proxy_port():
 
 
 def test_structure_protocol():
-    expected_imposter = Imposter(Stub(), protocol="http")
+    expected_imposter = ImposterBuilder().with_protocol("http").build()
     imposter_structure = expected_imposter.as_structure()
     imposter = Imposter.from_structure(imposter_structure)
-    assert imposter.protocol == expected_imposter.protocol
-
-
-def test_structure_no_protocol():
-    expected_imposter = Imposter(Stub())
-    imposter_structure = expected_imposter.as_structure()
-    del imposter_structure["protocol"]
-    imposter = Imposter.from_structure(imposter_structure)
-    assert imposter.protocol == expected_imposter.protocol
+    assert imposter.protocol == Imposter.Protocol.HTTP
 
 
 def test_structure_name():
-    expected_imposter = Imposter(Stub(), name="darwin")
+    expected_imposter = ImposterBuilder().with_name("darwin").build()
     imposter_structure = expected_imposter.as_structure()
     imposter = Imposter.from_structure(imposter_structure)
-    assert imposter.name == expected_imposter.name
+    assert imposter.name == "darwin"
 
 
 def test_structure_record_requests():
-    expected_imposter = Imposter(Stub(), record_requests=False)
+    expected_imposter = ImposterBuilder().with_record_requests(False).build()
     imposter_structure = expected_imposter.as_structure()
     imposter = Imposter.from_structure(imposter_structure)
-    assert imposter.record_requests == expected_imposter.record_requests
+    assert imposter.record_requests is False
 
 
 def test_structure_no_record_requests():

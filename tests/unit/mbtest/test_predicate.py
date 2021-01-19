@@ -3,7 +3,7 @@ import logging
 
 import pytest
 from brunns.matchers.object import has_identical_properties_to
-from hamcrest import assert_that, instance_of
+from hamcrest import assert_that, has_entries, instance_of
 
 from mbtest.imposters import Predicate
 from mbtest.imposters.predicates import (
@@ -23,6 +23,17 @@ from tests.utils.builders import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def test_default_predicate():
+    # Given
+    predicate = Predicate()
+
+    # When
+    structure = predicate.as_structure()
+
+    # Then
+    assert_that(structure, has_entries(caseSensitive=True, equals=has_entries()))
 
 
 def test_structure_path():
