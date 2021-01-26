@@ -9,6 +9,8 @@ jobs:
     strategy:
       matrix:
         python: [3.7, 3.8, 3.9]
+        node-version: [15.x]
+        mbtest-version: [2.4.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -16,8 +18,16 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
       - name: Install Tox and any other packages
         run: pip install tox
+      - name: Install mbtest
+        env:
+          MBTEST_VERSION: ${{ matrix.mbtest-version }}
+        run: npm install mountebank@$MBTEST_VERSION --production
       - name: Run Tox
         # Run tox using the version of Python in `PATH`
         run: tox -e py
