@@ -28,6 +28,8 @@ jobs:
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
         run: npm install mountebank@$MBTEST_VERSION --production
-      - name: Run Tox
+      - name: Run Tests
         # Run tox using the version of Python in `PATH`
         run: tox -e py
+      - name: Run Other Checks
+        run: tox -e check-format,flake8,bandit,safety,mypy,docs
