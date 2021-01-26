@@ -1,4 +1,4 @@
-name: Contunuous Integration
+name: Continuous Integration
 
 on: [push]
 
@@ -7,10 +7,11 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 2
       matrix:
         python: [3.7, 3.8, 3.9]
         node-version: [15.x]
-        mbtest-version: [2.4.x]
+        mbtest-version: [2.0.x, 2.4.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -31,5 +32,13 @@ jobs:
       - name: Run Tests
         # Run tox using the version of Python in `PATH`
         run: tox -e py
-      - name: Run Other Checks
-        run: tox -e check-format,flake8,bandit,safety,mypy,docs
+      - name: Check format
+        run: tox -e check-format
+      - name: Lint
+        run: tox -e flake8
+      - name: Security checks
+        run: tox -e bandit,safety
+      - name: Checy types
+        run: tox -e mypy
+      - name: Build docs
+        run: tox -e docs
