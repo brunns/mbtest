@@ -5,12 +5,13 @@ on: [push]
 jobs:
   test:
     name: 'Test'
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python: ['3.9']
         node-version: [15.x]
         mbtest-version: ['2.4']
+        os: ['ubuntu-latest']
 
     steps:
       - uses: actions/checkout@v2
@@ -37,12 +38,13 @@ jobs:
   test-py-versions:
     name: 'Test Python versions'
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python: ['3.8', '3.7', '3.6', 'pypy-3.6', '3.10.0-alpha - 3.10.0']
         node-version: [15.x]
         mbtest-version: ['2.4']
+        os: ['ubuntu-latest']
 
     steps:
       - uses: actions/checkout@v2
@@ -69,12 +71,13 @@ jobs:
   test-mb-versions:
     name: 'Test Mountebank versions'
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python: ['3.9']
         node-version: [15.x]
         mbtest-version: ['2.3', '2.2', '2.1', '2.0', '1.16']
+        os: ['ubuntu-latest']
 
     steps:
       - uses: actions/checkout@v2
@@ -134,12 +137,13 @@ jobs:
   coverage:
     name: 'Check coverage'
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python: ['3.9']
         node-version: [15.x]
         mbtest-version: ['2.4']
+        os: ['ubuntu-latest']
 
     steps:
       - uses: actions/checkout@v2
@@ -165,7 +169,11 @@ jobs:
   lint-etc:
     name: 'Linting etc.'
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python: [ '3.9' ]
+        os: [ 'ubuntu-latest' ]
 
     steps:
       - uses: actions/checkout@v2
