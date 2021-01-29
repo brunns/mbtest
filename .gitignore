@@ -119,3 +119,6 @@ package-lock.json
 mb*.pid
 mb.log
 .mbdb/
+
+# pydeps
+*.svg

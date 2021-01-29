@@ -75,7 +75,7 @@ jsdeps:
 clean: ## Clean generated files
 	find . -name '*.pyc' -delete
 	find . -name '*.pyo' -delete
-	rm -rf build/ build_docs/ dist/ *.egg-info/ .cache .coverage .pytest_cache/ .mbdb/ .mypy_cache/ *.log *.pid
+	rm -rf build/ build_docs/ dist/ *.egg-info/ .cache .coverage .pytest_cache/ .mbdb/ .mypy_cache/ *.log *.pid *.svg
 	find . -name "__pycache__" -type d -print | xargs -t rm -r
 	find . -name "test-output" -type d -print | xargs -t rm -r
 
