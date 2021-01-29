@@ -177,10 +177,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Python
+      - name: Setup Python ${{ matrix.python }}
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: ${{ matrix.python }}
       - name: Install Tox and any other packages
         run: pip install tox
       - name: Check format
