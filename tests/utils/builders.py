@@ -21,7 +21,13 @@ from mbtest.imposters import (
     UsingXpath,
 )
 from mbtest.imposters.imposters import Address, HttpRequest, SentEmail
-from mbtest.imposters.predicates import AndPredicate, InjectionPredicate, OrPredicate, TcpPredicate
+from mbtest.imposters.predicates import (
+    AndPredicate,
+    InjectionPredicate,
+    NotPredicate,
+    OrPredicate,
+    TcpPredicate,
+)
 
 
 class PredicateBuilder(Builder):
@@ -37,6 +43,13 @@ class PredicateBuilder(Builder):
     case_sensitive = a_boolean
 
 
+class AndPredicateBuilder(Builder):
+    target = AndPredicate
+
+    left = PredicateBuilder
+    right = PredicateBuilder
+
+
 class OrPredicateBuilder(Builder):
     target = OrPredicate
 
@@ -44,11 +57,10 @@ class OrPredicateBuilder(Builder):
     right = PredicateBuilder
 
 
-class AndPredicateBuilder(Builder):
-    target = AndPredicate
+class NotPredicateBuilder(Builder):
+    target = NotPredicate
 
-    left = PredicateBuilder
-    right = PredicateBuilder
+    inverted = PredicateBuilder
 
 
 class TcpResponseBuilder(Builder):

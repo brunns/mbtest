@@ -3,24 +3,37 @@ import logging
 
 import pytest
 from brunns.matchers.object import has_identical_properties_to
-from hamcrest import assert_that, instance_of
+from hamcrest import assert_that, has_entries, instance_of
 
 from mbtest.imposters import Predicate
 from mbtest.imposters.predicates import (
     AndPredicate,
     BasePredicate,
     InjectionPredicate,
+    NotPredicate,
     OrPredicate,
     TcpPredicate,
 )
 from tests.utils.builders import (
     AndPredicateBuilder,
     InjectionPredicateBuilder,
+    NotPredicateBuilder,
     OrPredicateBuilder,
     TcpPredicateBuilder,
 )
 
 logger = logging.getLogger(__name__)
+
+
+def test_default_predicate():
+    # Given
+    predicate = Predicate()
+
+    # When
+    structure = predicate.as_structure()
+
+    # Then
+    assert_that(structure, has_entries(caseSensitive=True, equals=has_entries()))
 
 
 def test_structure_path():
@@ -103,6 +116,18 @@ def test_or_predicate_structure_roundtrip():
 
     # Then
     assert_that(actual, instance_of(OrPredicate))
+    assert_that(actual, has_identical_properties_to(expected))
+
+
+def test_not_predicate_structure_roundtrip():
+    expected = NotPredicateBuilder().build()
+    structure = expected.as_structure()
+
+    # When
+    actual = BasePredicate.from_structure(structure)
+
+    # Then
+    assert_that(actual, instance_of(NotPredicate))
     assert_that(actual, has_identical_properties_to(expected))
 
 

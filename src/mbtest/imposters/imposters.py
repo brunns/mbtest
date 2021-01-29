@@ -73,11 +73,7 @@ class Imposter(JsonSerializable):
         imposter = cls([Stub.from_structure(stub) for stub in structure["stubs"]])
         if "port" in structure:
             imposter.port = structure["port"]
-        if "protocol" in structure:
-            protocol = structure["protocol"]
-            imposter.protocol = (
-                protocol if isinstance(protocol, cls.Protocol) else cls.Protocol(protocol)
-            )
+        imposter.protocol = cls.Protocol(structure["protocol"])
         if "recordRequests" in structure:
             imposter.record_requests = structure["recordRequests"]
         if "name" in structure:

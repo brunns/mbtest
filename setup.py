@@ -26,16 +26,14 @@ install_dependencies = [
     "brunns-matchers~=2.4",
 ]
 test_dependencies = [
-    "pytest>=3.0,<7.0",
+    "pytest~=6.0",
     "contexttimer~=0.3",
     "brunns-builder~=0.6",
 ]
-
 coverage_dependencies = [
     "pytest-cov~=2.5",
     "codacy-coverage~=1.0",
 ]
-
 docs_dependencies = [
     "sphinx>=2.4,<4.0",
     "sphinx-autodoc-typehints~=1.10",

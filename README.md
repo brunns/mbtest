@@ -5,8 +5,7 @@ Opinionated Python wrapper & utils for the [Mountebank](http://www.mbtest.org/) 
 Includes [pytest](https://pytest.org) fixture and [PyHamcrest](https://pyhamcrest.readthedocs.io) matchers.
 
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
-[![Build Status](https://travis-ci.org/brunns/mbtest.svg?branch=master&logo=travis)](https://travis-ci.org/brunns/mbtest)
-[![PyPi Version](https://img.shields.io/pypi/v/mbtest.svg?logo=pypi)](https://pypi.org/project/mbtest/#history)
+[![Continuous Integration](https://github.com/brunns/mbtest/workflows/Continuous%20Integration/badge.svg)](https://github.com/brunns/mbtest/actions)
 [![Python Versions](https://img.shields.io/pypi/pyversions/mbtest.svg?logo=python)](https://pypi.org/project/mbtest/)
 [![Licence](https://img.shields.io/github/license/brunns/mbtest.svg)](https://github.com/brunns/mbtest/blob/master/LICENSE)
 [![GitHub all releases](https://img.shields.io/github/downloads/brunns/mbtest/total.svg?logo=github)](https://github.com/brunns/mbtest/releases/)
@@ -22,6 +21,7 @@ Includes [pytest](https://pytest.org) fixture and [PyHamcrest](https://pyhamcres
 [![Codacy Coverage](https://api.codacy.com/project/badge/coverage/3b7c694664974d17a34e594c43af0c1b)](https://www.codacy.com/app/brunns/mbtest)
 [![Documentation Status](https://readthedocs.org/projects/mbtest/badge/?version=latest)](https://mbtest.readthedocs.io/en/latest/?badge=latest)
 [![Lines of Code](https://tokei.rs/b1/github/brunns/mbtest)](https://github.com/brunns/mbtest)
+
 
 ## Setup
 
@@ -81,12 +81,12 @@ See the [Dounumentation](https://mbtest.readthedocs.io/) for more.
 Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html) and [tox](https://tox.readthedocs.io). 
 [PyEnv](https://github.com/pyenv/pyenv) may also come in handy so tests can be run against various Python versions. 
 
-Currently, the `Makefile` targets use Python 3.6 and 3.8 via tox, so a quick-start setup could be:
+Currently, the `Makefile` targets use Python 3.6 and 3.9 via tox, so a quick-start setup could be:
 
 ```sh
 pip install pyenv tox tox-pyenv
-pyenv install 3.6.10 3.8.3
-pyenv local 3.6.10 3.8.3
+pyenv install 3.6.12 3.9.1
+pyenv local 3.6.12 3.9.1
 ```
 
 In order to run `make test`, you'll also need to have Mountebank installed locally:
