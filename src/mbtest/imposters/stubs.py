@@ -44,7 +44,10 @@ class Stub(JsonSerializable):
             else:
                 responses.append(Response.from_structure(response))
         return cls(
-            [Predicate.from_structure(predicate) for predicate in structure.get("predicates", ())],
+            [
+                BasePredicate.from_structure(predicate)
+                for predicate in structure.get("predicates", ())
+            ],
             responses,
         )
 

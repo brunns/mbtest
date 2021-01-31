@@ -76,7 +76,6 @@ class Predicate(LogicallyCombinablePredicate):
         ENDS_WITH = "endsWith"
         MATCHES = "matches"
         EXISTS = "exists"
-        NOT = "not"
 
         @classmethod
         def has_value(cls, name: str) -> bool:
