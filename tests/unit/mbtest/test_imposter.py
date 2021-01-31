@@ -1,11 +1,17 @@
 # encoding=utf-8
 import logging
 
+import pytest
 from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, instance_of
 
 from mbtest.imposters import Imposter, Proxy, Response, Stub
-from tests.utils.builders import ImposterBuilder
+from tests.utils.builders import (
+    AndPredicateBuilder,
+    ImposterBuilder,
+    NotPredicateBuilder,
+    OrPredicateBuilder,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +69,22 @@ def test_structure_no_record_requests():
 def test_imposter_structure_roundtrip():
     # Given
     expected = ImposterBuilder().build()
+    structure = expected.as_structure()
+
+    # When
+    actual = Imposter.from_structure(structure)
+
+    # Then
+    assert_that(actual, instance_of(Imposter))
+    assert_that(actual, has_identical_properties_to(expected, ignoring="configuration_url"))
+
+
+@pytest.mark.parametrize(
+    "predicate", [AndPredicateBuilder, OrPredicateBuilder, NotPredicateBuilder]
+)
+def test_imposter_complex_predicates(predicate):
+    # Given
+    expected = Imposter(Stub(predicate().build()))
     structure = expected.as_structure()
 
     # When
