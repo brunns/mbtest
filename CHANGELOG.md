@@ -1,8 +1,13 @@
 # Change Log
 
-## 2.5.2
+## 2.6.1
 
 * Bugfix - Stub.from_structure() decodes logically combinable predicates. (Thanks, @SShatun)
+
+## 2.6
+
+* Add support for PARCH HTTP verb. (Thanks to [@garry-jeromson](https://github.com/garry-jeromson).)
+* Add NotPredicate.
 
 ## 2.5.1
 

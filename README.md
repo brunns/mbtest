@@ -113,4 +113,6 @@ make precommit && git commit -am"Release $version" && git push --set-upstream or
 hub release create "V$version" -t"release-$version" -m"Version $version"
 python setup.py sdist bdist_wheel
 twine upload dist/*$version*
+git checkout master
+git merge "release-$version"
 ```
