@@ -52,6 +52,12 @@ format: ## Format code
 piprot: ## Check for outdated dependencies
 	tox -e piprot
 
+.PHONY: mutmut
+mutmut: clean ## Run mutation tests
+	tox -e mutmut run
+	tox -e mutmut html
+	open open html/index.html
+
 .PHONY: docs
 docs:  ## Generate documentation
 	tox -e docs
@@ -75,7 +81,7 @@ jsdeps:
 clean: ## Clean generated files
 	find . -name '*.pyc' -delete
 	find . -name '*.pyo' -delete
-	rm -rf build/ build_docs/ dist/ *.egg-info/ .cache .coverage .pytest_cache/ .mbdb/ .mypy_cache/ *.log *.pid *.svg
+	rm -rf build/ build_docs/ dist/ *.egg-info/ .cache .coverage .pytest_cache/ .mbdb/ .mypy_cache/ *.log *.pid *.svg .mutmut-cache html/
 	find . -name "__pycache__" -type d -print | xargs -t rm -r
 	find . -name "test-output" -type d -print | xargs -t rm -r
 

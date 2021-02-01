@@ -122,3 +122,7 @@ mb.log
 
 # pydeps
 *.svg
+
+# mutation tests
+.mutmut-cache
+html/
