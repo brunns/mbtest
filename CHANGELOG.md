@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.5.2
+
+* Bugfix - Stub.from_structure() decodes logically combinable predicates. (Thanks, @SShatun)
+
+## 2.5.1
+
+* Bugfix - Ensure imposter host matches server host
+
 ## 2.5
 
 * Add [dynamic predicates and responses](http://www.mbtest.org/docs/api/injection). This feature requires Mountebank 2.0 or later, but all other features should continue to work with older version.
