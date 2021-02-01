@@ -2,7 +2,7 @@
 
 ## 2.6.1
 
-* Bugfix - Stub.from_structure() decodes logically combinable predicates. (Thanks, @SShatun)
+* Bugfix - Stub.from_structure() decodes logically combinable predicates. (Thanks, [@SShatun](https://github.com/SShatun).)
 
 ## 2.6
 
