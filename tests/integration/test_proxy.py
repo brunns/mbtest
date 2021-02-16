@@ -200,7 +200,7 @@ def test_proxy_delay(mock_server):
         with Timer() as timer:
             requests.get(proxy_imposter.url / "test")
 
-            assert_that(timer.elapsed, between(0.1, 0.2))
+            assert_that(timer.elapsed, between(0.1, 0.3))
 
 
 def test_inject_headers(mock_server):
