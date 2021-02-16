@@ -1,11 +1,14 @@
 # encoding=utf-8
+import json
 import logging
 import os
+from pathlib import Path
 
 import pytest
 import requests
+from brunns.matchers.data import json_matching
 from brunns.matchers.response import is_response
-from hamcrest import assert_that, contains_exactly
+from hamcrest import assert_that, contains_exactly, has_entries
 
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 from mbtest.matchers import had_request
@@ -79,3 +82,22 @@ def test_add_stubs_to_running_impostor(mock_server):
                 is_response().with_body(""),
             ),
         )
+
+
+def test_build_imposter_from_structure_on_disk(mock_server):
+    # Given
+    structure_path = Path("tests") / "integration" / "test_data" / "impostor_structure.json"
+
+    # When
+    with structure_path.open() as f:
+        structure = json.load(f)
+    imposter = Imposter.from_structure(structure["imposters"][0])
+
+    with mock_server(imposter):
+        response = requests.get(f"{imposter.url}/tutorial")
+
+    # Then
+    assert_that(
+        response,
+        is_response().with_status_code(200).and_body(json_matching(has_entries(message="success"))),
+    )
