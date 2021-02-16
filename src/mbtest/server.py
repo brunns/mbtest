@@ -16,9 +16,9 @@ from requests import RequestException
 from mbtest.imposters import Imposter
 from mbtest.imposters.imposters import Request
 
-DEFAULT_MB_EXECUTABLE = str(
-    Path("node_modules") / ".bin" / ("mb.cmd" if platform.system() == "Windows" else "mb")
-)
+DEFAULT_MB_PATH = Path("node_modules") / ".bin"
+DEFAULT_MB_NAME = Path("mb.cmd" if platform.system() == "Windows" else "mb")  # pragma: no mutate
+DEFAULT_MB_EXECUTABLE = str(DEFAULT_MB_PATH / DEFAULT_MB_NAME)
 
 logger = logging.getLogger(__name__)
 
