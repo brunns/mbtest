@@ -69,7 +69,7 @@ precommit: precommit-test mypy lint docs ## Pre-commit targets
 .PHONY: recreate
 recreate: clean jsdeps ## Recreate tox environments
 	tox --recreate --notest
-	tox --recreate --notest -e format,check-format,flake8,pylint,bandit,safety,piprot,mypy,docs
+	tox --recreate --notest -e coverage,format,check-format,flake8,pylint,bandit,safety,piprot,mypy,docs
 
 .PHONY: jsdeps
 jsdeps:

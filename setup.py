@@ -29,6 +29,7 @@ test_dependencies = [
     "pytest~=6.0",
     "contexttimer~=0.3",
     "brunns-builder~=0.6",
+    "trustme~=0.7",
 ]
 coverage_dependencies = [
     "pytest-cov~=2.5",

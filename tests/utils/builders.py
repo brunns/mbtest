@@ -173,6 +173,9 @@ class ImposterBuilder(Builder):
     protocol = one_of(*Imposter.Protocol)
     name = lambda: one_of(None, a_string())
     record_requests = a_boolean
+    mutual_auth = a_boolean
+    key = lambda: one_of(None, a_string())
+    cert = lambda: one_of(None, a_string())
 
 
 class HttpRequestBuilder(Builder):

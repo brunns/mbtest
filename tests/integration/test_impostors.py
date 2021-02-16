@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 import requests
+import trustme
 from brunns.matchers.data import json_matching
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, contains_exactly, has_entries
@@ -101,3 +102,21 @@ def test_build_imposter_from_structure_on_disk(mock_server):
         response,
         is_response().with_status_code(200).and_body(json_matching(has_entries(message="success"))),
     )
+
+
+def test_https_impostor(mock_server):
+    ca = trustme.CA()
+    server_cert = ca.issue_cert("localhost")
+
+    imposter = Imposter(
+        Stub(Predicate(path="/test"), Response(body="sausages")),
+        protocol=Imposter.Protocol.HTTPS,
+        mutual_auth=True,
+        key=server_cert.private_key_pem.bytes().decode("utf-8"),
+        cert=server_cert.cert_chain_pems[0].bytes().decode("utf-8"),
+    )
+
+    with mock_server(imposter), ca.cert_pem.tempfile() as certfile:
+        response = requests.get(f"{imposter.url}/test", verify=certfile)
+
+    assert_that(response, is_response().with_status_code(200).and_body("sausages"))

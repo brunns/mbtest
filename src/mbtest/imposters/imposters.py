@@ -22,6 +22,9 @@ class Imposter(JsonSerializable):
     :param protocol: Protocol to run on.
     :param name: Imposter name - useful for interactive exploration of imposters on http://localhost:2525/imposters
     :param record_requests: Record requests made against this imposter, so they can be asserted against later.
+    :param mutual_auth: Server will request a client certificate.
+    :param key: SSL server certificate.
+    :param cert: SSL server certificate.
     """
 
     class Protocol(Enum):
@@ -39,6 +42,9 @@ class Imposter(JsonSerializable):
         protocol: Protocol = Protocol.HTTP,
         name: Optional[str] = None,
         record_requests: bool = True,
+        mutual_auth: bool = False,
+        key: Optional[str] = None,
+        cert: Optional[str] = None,
     ) -> None:
         stubs = cast(Iterable[Stub], stubs if isinstance(stubs, abc.Sequence) else [stubs])
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
@@ -53,6 +59,9 @@ class Imposter(JsonSerializable):
         self.record_requests = record_requests
         self.host: Optional[str] = None
         self.server_url: Optional[furl] = None
+        self.mutual_auth = mutual_auth
+        self.key = key
+        self.cert = cert
 
     @property
     def url(self) -> furl:
@@ -60,12 +69,12 @@ class Imposter(JsonSerializable):
 
     def as_structure(self) -> JsonStructure:
         structure = {"protocol": self.protocol.value, "recordRequests": self.record_requests}
-        if self.port:
-            structure["port"] = self.port
-        if self.name:
-            structure["name"] = self.name
-        if self.stubs:
-            structure["stubs"] = [stub.as_structure() for stub in self.stubs]
+        self.add_if_true(structure, "port", self.port)
+        self.add_if_true(structure, "name", self.name)
+        self.add_if_true(structure, "stubs", [stub.as_structure() for stub in self.stubs])
+        self.add_if_true(structure, "mutualAuth", self.mutual_auth)
+        self.add_if_true(structure, "key", self.key)
+        self.add_if_true(structure, "cert", self.cert)
         return structure
 
     @classmethod
@@ -74,10 +83,11 @@ class Imposter(JsonSerializable):
         if "port" in structure:
             imposter.port = structure["port"]
         imposter.protocol = cls.Protocol(structure["protocol"])
-        if "recordRequests" in structure:
-            imposter.record_requests = structure["recordRequests"]
-        if "name" in structure:
-            imposter.name = structure["name"]
+        imposter.set_if_in_dict(structure, "recordRequests", "record_requests")
+        imposter.set_if_in_dict(structure, "name", "name")
+        imposter.set_if_in_dict(structure, "mutualAuth", "mutual_auth")
+        imposter.set_if_in_dict(structure, "key", "key")
+        imposter.set_if_in_dict(structure, "cert", "cert")
         return imposter
 
     def get_actual_requests(self) -> Sequence["Request"]:
