@@ -10,6 +10,7 @@ import trustme
 from brunns.matchers.data import json_matching
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, contains_exactly, has_entries
+from requests.exceptions import SSLError
 
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 from mbtest.matchers import had_request
@@ -104,7 +105,18 @@ def test_build_imposter_from_structure_on_disk(mock_server):
     )
 
 
-def test_https_impostor(mock_server):
+def test_https_impostor_fails_if_cert_not_supplied(mock_server):
+    imposter = Imposter(
+        Stub(Predicate(path="/test"), Response(body="sausages")),
+        protocol=Imposter.Protocol.HTTPS,
+    )
+
+    with mock_server(imposter):
+        with pytest.raises(SSLError):
+            requests.get(f"{imposter.url}/test")
+
+
+def test_https_impostor_works_with_cert_supplied(mock_server):
     ca = trustme.CA()
     server_cert = ca.issue_cert("localhost")
 
