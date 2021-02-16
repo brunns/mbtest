@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.7
+
+* HTTPS support.
+
 ## 2.6.1
 
 * Bugfix - Stub.from_structure() decodes logically combinable predicates. (Thanks, [@SShatun](https://github.com/SShatun).)
