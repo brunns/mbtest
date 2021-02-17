@@ -5,8 +5,9 @@ from decimal import Decimal
 
 import pytest
 import requests
+from brunns.matchers.data import json_matching
 from brunns.matchers.response import is_response
-from hamcrest import assert_that, has_entry
+from hamcrest import assert_that, has_entries, has_entry
 
 from mbtest.imposters import Imposter, Response, Stub
 from mbtest.imposters.responses import InjectionResponse
@@ -85,3 +86,12 @@ def test_injection_response(mock_server):
         response = requests.get(imposter.url, headers={"foo": "bar"})
 
         assert_that(response, is_response().with_body("BAR"))
+
+
+def test_json_body(mock_server):
+    imposter = Imposter(Stub(responses=Response(body={"a": "b", "c": "d"})))
+
+    with mock_server(imposter):
+        response = requests.get(imposter.url)
+
+        assert_that(response, is_response().with_body(json_matching(has_entries(a="b", c="d"))))

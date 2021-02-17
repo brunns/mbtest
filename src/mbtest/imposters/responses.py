@@ -48,7 +48,7 @@ class Response(BaseResponse):
 
     def __init__(
         self,
-        body: str = "",
+        body: Union[str, JsonStructure] = "",
         status_code: Union[int, str] = 200,
         wait: Optional[Union[int, str]] = None,
         repeat: Optional[int] = None,
