@@ -13,6 +13,7 @@ from hamcrest import assert_that, contains_exactly, has_entries
 from requests.exceptions import SSLError
 
 from mbtest.imposters import Imposter, Predicate, Response, Stub
+from mbtest.imposters.responses import InnerResponse
 from mbtest.matchers import had_request
 
 logger = logging.getLogger(__name__)
@@ -132,3 +133,17 @@ def test_https_impostor_works_with_cert_supplied(mock_server):
         response = requests.get(f"{imposter.url}/test", verify=certfile)
 
     assert_that(response, is_response().with_status_code(200).and_body("sausages"))
+
+
+def test_default_response(mock_server):
+    imposter = Imposter(
+        Stub(Predicate(path="/test1"), Response("sausages")),
+        default_response=InnerResponse("chips", status_code=201),
+    )
+
+    with mock_server(imposter):
+        r1 = requests.get(f"{imposter.url}/test1")
+        r2 = requests.get(f"{imposter.url}/test2")
+
+    assert_that(r1, is_response().with_status_code(200).and_body("sausages"))
+    assert_that(r2, is_response().with_status_code(201).and_body("chips"))

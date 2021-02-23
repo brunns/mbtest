@@ -8,7 +8,7 @@ import requests
 from furl import furl
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
-from mbtest.imposters.responses import Proxy
+from mbtest.imposters.responses import InnerResponse, Proxy
 from mbtest.imposters.stubs import AddStub, Stub
 
 
@@ -21,6 +21,7 @@ class Imposter(JsonSerializable):
     :param port: Port.
     :param protocol: Protocol to run on.
     :param name: Imposter name - useful for interactive exploration of imposters on http://localhost:2525/imposters
+    :param default_response: The default response to send if no predicate matches.
     :param record_requests: Record requests made against this imposter, so they can be asserted against later.
     :param mutual_auth: Server will request a client certificate.
     :param key: SSL server certificate.
@@ -41,6 +42,7 @@ class Imposter(JsonSerializable):
         port: Optional[int] = None,
         protocol: Protocol = Protocol.HTTP,
         name: Optional[str] = None,
+        default_response: Optional[InnerResponse] = None,
         record_requests: bool = True,
         mutual_auth: bool = False,
         key: Optional[str] = None,
@@ -56,6 +58,7 @@ class Imposter(JsonSerializable):
             protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
         )
         self.name = name
+        self.default_response = default_response
         self.record_requests = record_requests
         self.host: Optional[str] = None
         self.server_url: Optional[furl] = None
@@ -71,6 +74,8 @@ class Imposter(JsonSerializable):
         structure = {"protocol": self.protocol.value, "recordRequests": self.record_requests}
         self.add_if_true(structure, "port", self.port)
         self.add_if_true(structure, "name", self.name)
+        if self.default_response:
+            structure["defaultResponse"] = self.default_response.as_structure()
         self.add_if_true(structure, "stubs", [stub.as_structure() for stub in self.stubs])
         self.add_if_true(structure, "mutualAuth", self.mutual_auth)
         self.add_if_true(structure, "key", self.key)
@@ -80,11 +85,12 @@ class Imposter(JsonSerializable):
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> "Imposter":
         imposter = cls([Stub.from_structure(stub) for stub in structure["stubs"]])
-        if "port" in structure:
-            imposter.port = structure["port"]
+        imposter.set_if_in_dict(structure, "port", "port")
         imposter.protocol = cls.Protocol(structure["protocol"])
-        imposter.set_if_in_dict(structure, "recordRequests", "record_requests")
         imposter.set_if_in_dict(structure, "name", "name")
+        if "defaultResponse" in structure:
+            imposter.default_response = InnerResponse.from_structure(structure["defaultResponse"])
+        imposter.set_if_in_dict(structure, "recordRequests", "record_requests")
         imposter.set_if_in_dict(structure, "mutualAuth", "mutual_auth")
         imposter.set_if_in_dict(structure, "key", "key")
         imposter.set_if_in_dict(structure, "cert", "cert")

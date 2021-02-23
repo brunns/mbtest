@@ -26,6 +26,62 @@ class BaseResponse(JsonSerializable, metaclass=ABCMeta):
         raise NotImplementedError()  # pragma: no cover
 
 
+class InnerResponse(JsonSerializable):  # TODO: Name TBD
+    """TODO
+
+    :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
+    :param status_code: HTTP status code
+    :param headers: Response HTTP headers
+    :param mode: Mode - text or binary
+
+    """
+
+    def __init__(
+        self,
+        body: Union[str, JsonStructure] = "",
+        status_code: Union[int, str] = 200,
+        headers: Optional[Mapping[str, str]] = None,
+        mode: Optional["Response.Mode"] = None,
+    ) -> None:
+        super().__init__()
+        self._body = body
+        self.status_code = status_code
+        self.headers = headers
+        self.mode = (
+            mode
+            if isinstance(mode, Response.Mode)
+            else Response.Mode(mode)
+            if mode
+            else Response.Mode.TEXT
+        )
+
+    @property
+    def body(self) -> str:
+        if isinstance(self._body, et.Element):
+            return et.tostring(self._body, encoding="unicode")
+        elif isinstance(self._body, bytes):
+            return self._body.decode("utf-8")
+        return self._body
+
+    def as_structure(self) -> JsonStructure:
+        is_structure = {"statusCode": self.status_code, "_mode": self.mode.value}
+        self.add_if_true(is_structure, "body", self.body)
+        self.add_if_true(is_structure, "headers", self.headers)
+        return is_structure
+
+    @classmethod
+    def from_structure(cls, inner: JsonStructure) -> "InnerResponse":
+        response = cls()
+        if "body" in inner:
+            response._body = inner["body"]
+        response.mode = Response.Mode(inner["_mode"])
+        if "headers" in inner:
+            response.headers = inner["headers"]
+        if "statusCode" in inner:
+            response.status_code = inner["statusCode"]
+        return response
+
+
 class Response(BaseResponse):
     """Represents a `Mountebank 'is' response behavior <http://www.mbtest.org/docs/api/stubs>`_.
 
@@ -58,42 +114,28 @@ class Response(BaseResponse):
         decorate: Optional[str] = None,
         lookup: Optional[Lookup] = None,
         shell_transform: Optional[Union[str, Iterable[str]]] = None,
+        inner_response: Optional[InnerResponse] = None,
     ) -> None:
-        self._body = body
-        self.status_code = status_code
+        self.inner_response = (
+            inner_response
+            if inner_response
+            else InnerResponse(body=body, status_code=status_code, headers=headers, mode=mode)
+        )
+        # TODO: Deprecate InnerResponse arguments
         self.wait = wait
         self.repeat = repeat
-        self.headers = headers
-        self.mode = (
-            mode
-            if isinstance(mode, Response.Mode)
-            else Response.Mode(mode)
-            if mode
-            else Response.Mode.TEXT
-        )
         self.copy = copy if isinstance(copy, Sequence) else [copy] if copy else None
         self.decorate = decorate
         self.lookup = lookup if isinstance(lookup, Sequence) else [lookup] if lookup else None
         self.shell_transform = shell_transform
 
-    @property
-    def body(self) -> str:
-        if isinstance(self._body, et.Element):
-            return et.tostring(self._body, encoding="unicode")
-        elif isinstance(self._body, bytes):
-            return self._body.decode("utf-8")
-        return self._body
-
     def as_structure(self) -> JsonStructure:
-        return {"is": (self._is_structure()), "_behaviors": self._behaviors_structure()}
+        return {
+            "is": (self.inner_response.as_structure()),
+            "_behaviors": self._behaviors_as_structure(),
+        }
 
-    def _is_structure(self) -> JsonStructure:
-        is_structure = {"statusCode": self.status_code, "_mode": self.mode.value}
-        self.add_if_true(is_structure, "body", self.body)
-        self.add_if_true(is_structure, "headers", self.headers)
-        return is_structure
-
-    def _behaviors_structure(self) -> JsonStructure:
+    def _behaviors_as_structure(self) -> JsonStructure:
         behaviors: JsonStructure = {}
         self.add_if_true(behaviors, "wait", self.wait)
         self.add_if_true(behaviors, "repeat", self.repeat)
@@ -108,7 +150,7 @@ class Response(BaseResponse):
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> "Response":
         response = cls()
-        response.fields_from_structure(structure)
+        response.inner_response = InnerResponse.from_structure(structure["is"])
         behaviors = structure.get("_behaviors", {})
         response.set_if_in_dict(behaviors, "wait", "wait")
         response.set_if_in_dict(behaviors, "repeat", "repeat")
@@ -120,15 +162,21 @@ class Response(BaseResponse):
             response.lookup = [Lookup.from_structure(lookup) for lookup in behaviors["lookup"]]
         return response
 
-    def fields_from_structure(self, structure: JsonStructure) -> None:
-        inner = structure["is"]
-        if "body" in inner:
-            self._body = inner["body"]
-        self.mode = Response.Mode(inner["_mode"])
-        if "headers" in inner:
-            self.headers = inner["headers"]
-        if "statusCode" in inner:
-            self.status_code = inner["statusCode"]
+    @property
+    def body(self):
+        return self.inner_response.body
+
+    @property
+    def status_code(self):
+        return self.inner_response.status_code
+
+    @property
+    def headers(self):
+        return self.inner_response.headers
+
+    @property
+    def mode(self):
+        return self.inner_response.mode
 
 
 class TcpResponse(BaseResponse):

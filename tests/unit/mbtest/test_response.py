@@ -4,10 +4,17 @@ import logging
 from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, instance_of
 
-from mbtest.imposters.responses import BaseResponse, InjectionResponse, Response, TcpResponse
+from mbtest.imposters.responses import (
+    BaseResponse,
+    InjectionResponse,
+    InnerResponse,
+    Response,
+    TcpResponse,
+)
 from tests.utils.builders import (
     CopyBuilder,
     InjectionResponseBuilder,
+    InnerResponseBuilder,
     LookupBuilder,
     ResponseBuilder,
     TcpResponseBuilder,
@@ -110,4 +117,17 @@ def test_injection_response_structure_roundtrip():
 
     # Then
     assert_that(actual, instance_of(InjectionResponse))
+    assert_that(actual, has_identical_properties_to(expected))
+
+
+def test_inner_response_roundtrip():
+    # Given
+    expected = InnerResponseBuilder().build()
+    structure = expected.as_structure()
+
+    # When
+    actual = InnerResponse.from_structure(structure)
+
+    # Then
+    assert_that(actual, instance_of(InnerResponse))
     assert_that(actual, has_identical_properties_to(expected))

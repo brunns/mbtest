@@ -76,7 +76,7 @@ def test_imposter_structure_roundtrip():
 
     # Then
     assert_that(actual, instance_of(Imposter))
-    assert_that(actual, has_identical_properties_to(expected, ignoring="configuration_url"))
+    assert_that(actual, has_identical_properties_to(expected, ignoring=["configuration_url"]))
 
 
 @pytest.mark.parametrize(
@@ -92,4 +92,4 @@ def test_imposter_complex_predicates(predicate):
 
     # Then
     assert_that(actual, instance_of(Imposter))
-    assert_that(actual, has_identical_properties_to(expected, ignoring="configuration_url"))
+    assert_that(actual, has_identical_properties_to(expected, ignoring=["configuration_url"]))

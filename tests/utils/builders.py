@@ -28,6 +28,7 @@ from mbtest.imposters.predicates import (
     OrPredicate,
     TcpPredicate,
 )
+from mbtest.imposters.responses import InnerResponse
 
 
 class PredicateBuilder(Builder):
@@ -129,19 +130,25 @@ class LookupBuilder(Builder):
     into = a_string
 
 
-class ResponseBuilder(Builder):
-    target = Response
+class InnerResponseBuilder(Builder):
+    target = InnerResponse
 
     body = a_string
     status_code = lambda: one_of(*[s.value for s in http.HTTPStatus])
-    wait = lambda: one_of(an_integer(1, 500), None)
-    repeat = lambda: one_of(an_integer(2, 50), None)
     headers = lambda: one_of(None, {a_string(): a_string()})
     mode = lambda: one_of(*Response.Mode)
+
+
+class ResponseBuilder(Builder):
+    target = Response
+
+    wait = lambda: one_of(an_integer(1, 500), None)
+    repeat = lambda: one_of(an_integer(2, 50), None)
     copy = lambda: one_of(None, CopyBuilder().build())
     decorate = lambda: one_of(None, a_string())
     lookup = lambda: one_of(None, LookupBuilder().build())
     shell_transform = lambda: one_of(None, a_string())
+    inner_response = InnerResponseBuilder
 
 
 class InjectionResponseBuilder(Builder):
@@ -172,6 +179,7 @@ class ImposterBuilder(Builder):
     port = lambda: one_of(None, an_integer(1, 5000))
     protocol = one_of(*Imposter.Protocol)
     name = lambda: one_of(None, a_string())
+    default_response = lambda: one_of(None, InnerResponseBuilder().build())
     record_requests = a_boolean
     mutual_auth = a_boolean
     key = lambda: one_of(None, a_string())
