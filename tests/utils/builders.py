@@ -28,7 +28,7 @@ from mbtest.imposters.predicates import (
     OrPredicate,
     TcpPredicate,
 )
-from mbtest.imposters.responses import InnerResponse
+from mbtest.imposters.responses import HttpResponse
 
 
 class PredicateBuilder(Builder):
@@ -130,8 +130,8 @@ class LookupBuilder(Builder):
     into = a_string
 
 
-class InnerResponseBuilder(Builder):
-    target = InnerResponse
+class HttpResponseBuilder(Builder):
+    target = HttpResponse
 
     body = a_string
     status_code = lambda: one_of(*[s.value for s in http.HTTPStatus])
@@ -148,7 +148,7 @@ class ResponseBuilder(Builder):
     decorate = lambda: one_of(None, a_string())
     lookup = lambda: one_of(None, LookupBuilder().build())
     shell_transform = lambda: one_of(None, a_string())
-    inner_response = InnerResponseBuilder
+    http_response = HttpResponseBuilder
 
 
 class InjectionResponseBuilder(Builder):
@@ -179,7 +179,7 @@ class ImposterBuilder(Builder):
     port = lambda: one_of(None, an_integer(1, 5000))
     protocol = one_of(*Imposter.Protocol)
     name = lambda: one_of(None, a_string())
-    default_response = lambda: one_of(None, InnerResponseBuilder().build())
+    default_response = lambda: one_of(None, HttpResponseBuilder().build())
     record_requests = a_boolean
     mutual_auth = a_boolean
     key = lambda: one_of(None, a_string())

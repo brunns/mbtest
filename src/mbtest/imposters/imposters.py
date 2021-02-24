@@ -8,7 +8,7 @@ import requests
 from furl import furl
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
-from mbtest.imposters.responses import InnerResponse, Proxy
+from mbtest.imposters.responses import HttpResponse, Proxy
 from mbtest.imposters.stubs import AddStub, Stub
 
 
@@ -42,7 +42,7 @@ class Imposter(JsonSerializable):
         port: Optional[int] = None,
         protocol: Protocol = Protocol.HTTP,
         name: Optional[str] = None,
-        default_response: Optional[InnerResponse] = None,
+        default_response: Optional[HttpResponse] = None,
         record_requests: bool = True,
         mutual_auth: bool = False,
         key: Optional[str] = None,
@@ -89,7 +89,7 @@ class Imposter(JsonSerializable):
         imposter.protocol = cls.Protocol(structure["protocol"])
         imposter.set_if_in_dict(structure, "name", "name")
         if "defaultResponse" in structure:
-            imposter.default_response = InnerResponse.from_structure(structure["defaultResponse"])
+            imposter.default_response = HttpResponse.from_structure(structure["defaultResponse"])
         imposter.set_if_in_dict(structure, "recordRequests", "record_requests")
         imposter.set_if_in_dict(structure, "mutualAuth", "mutual_auth")
         imposter.set_if_in_dict(structure, "key", "key")
