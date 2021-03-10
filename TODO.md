@@ -5,8 +5,14 @@
 * Proxy record/playback
 * Tutorial & guide
 * `had_request()` matcher for imposters - deprecate server version?
-* CONTRIBUTING.md
+* Write a CONTRIBUTING.md
+* AAlabaster docs theme
 
 ## CI
 * Publish coverage
 * Release process
+
+## For 3.0
+
+* Make lots of arguments keyword only.
+* Remove anything deprecated.

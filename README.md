@@ -76,7 +76,7 @@ found in the [integration tests](https://github.com/brunns/mbtest/tree/master/te
 See the [Dounumentation](https://mbtest.readthedocs.io/) for more.
 
 
-## Developing
+## Contributing
 
 Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html) and [tox](https://tox.readthedocs.io). 
 [PyEnv](https://github.com/pyenv/pyenv) may also come in handy so tests can be run against various Python versions. 
