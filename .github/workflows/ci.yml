@@ -45,6 +45,7 @@ jobs:
         node-version: [15.x]
         mbtest-version: ['2.4']
         os: ['ubuntu-latest']
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v2
@@ -78,6 +79,7 @@ jobs:
         node-version: [15.x]
         mbtest-version: ['2.3', '2.2', '2.1', '2.0', '1.16']
         os: ['ubuntu-latest']
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v2
@@ -111,6 +113,7 @@ jobs:
         node-version: [15.x]
         mbtest-version: ['2.4']
         os: ['windows-latest', 'macos-latest']
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v2
@@ -144,6 +147,7 @@ jobs:
         node-version: [15.x]
         mbtest-version: ['2.4']
         os: ['ubuntu-latest']
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v2
@@ -174,6 +178,7 @@ jobs:
       matrix:
         python: [ '3.9' ]
         os: [ 'ubuntu-latest' ]
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v2
