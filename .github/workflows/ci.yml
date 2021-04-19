@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         python: ['3.9']
-        node-version: [15.x]
+        node-version: ['15.x']
         mbtest-version: ['2.4']
         os: ['ubuntu-latest']
 
@@ -39,12 +39,20 @@ jobs:
     name: 'Test Python versions'
     needs: test
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        python: ['3.8', '3.7', '3.6', 'pypy-3.6', '3.10.0-alpha - 3.10.0']
-        node-version: [15.x]
+        python: ['3.8', '3.7', '3.6', 'pypy-3.6']
+        node-version: ['15.x']
         mbtest-version: ['2.4']
         os: ['ubuntu-latest']
+        experimental: [false]
+        include:
+          - python: '3.10.0-alpha - 3.10.0'
+            experimental: true
+            node-version: '15.x'
+            mbtest-version: '2.4'
+            os: 'ubuntu-latest'
       fail-fast: false
 
     steps:
@@ -76,7 +84,7 @@ jobs:
     strategy:
       matrix:
         python: ['3.9']
-        node-version: [15.x]
+        node-version: ['15.x']
         mbtest-version: ['2.3', '2.2', '2.1', '2.0', '1.16']
         os: ['ubuntu-latest']
       fail-fast: false
@@ -110,7 +118,7 @@ jobs:
     strategy:
       matrix:
         python: ['3.9']
-        node-version: [15.x]
+        node-version: ['15.x']
         mbtest-version: ['2.4']
         os: ['windows-latest', 'macos-latest']
       fail-fast: false
@@ -144,7 +152,7 @@ jobs:
     strategy:
       matrix:
         python: ['3.9']
-        node-version: [15.x]
+        node-version: ['15.x']
         mbtest-version: ['2.4']
         os: ['ubuntu-latest']
       fail-fast: false
