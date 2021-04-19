@@ -6,7 +6,8 @@
 * Tutorial & guide
 * `had_request()` matcher for imposters - deprecate server version?
 * Write a CONTRIBUTING.md
-* AAlabaster docs theme
+* Alabaster docs theme
+* Builders for Impostors etc.
 
 ## CI
 * Publish coverage
