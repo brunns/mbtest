@@ -8,6 +8,7 @@ from hamcrest import assert_that, instance_of
 from mbtest.imposters import Imposter, Proxy, Response, Stub
 from tests.utils.builders import (
     AndPredicateBuilder,
+    HttpResponseBuilder,
     ImposterBuilder,
     NotPredicateBuilder,
     OrPredicateBuilder,
@@ -68,7 +69,20 @@ def test_structure_no_record_requests():
 
 def test_imposter_structure_roundtrip():
     # Given
-    expected = ImposterBuilder().build()
+    expected = ImposterBuilder().with_default_response(HttpResponseBuilder().build()).build()
+    structure = expected.as_structure()
+
+    # When
+    actual = Imposter.from_structure(structure)
+
+    # Then
+    assert_that(actual, instance_of(Imposter))
+    assert_that(actual, has_identical_properties_to(expected, ignoring=["configuration_url"]))
+
+
+def test_imposter_structure_without_default_response_roundtrip():
+    # Given
+    expected = ImposterBuilder().with_default_response(None).build()
     structure = expected.as_structure()
 
     # When
