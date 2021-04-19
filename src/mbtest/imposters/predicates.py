@@ -86,7 +86,7 @@ class Predicate(LogicallyCombinablePredicate):
         path: Optional[Union[str, furl]] = None,
         method: Optional[Method] = None,
         query: Optional[Mapping[str, Union[str, int, bool]]] = None,
-        body: Optional[str] = None,
+        body: Optional[Union[str, JsonStructure]] = None,
         headers: Optional[Mapping[str, str]] = None,
         xpath: Optional[str] = None,
         operator: Operator = Operator.EQUALS,
