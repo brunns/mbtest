@@ -36,7 +36,7 @@ coverage_dependencies = [
     "codacy-coverage~=1.0",
 ]
 docs_dependencies = [
-    "sphinx>=2.4,<4.0",
+    "sphinx>=2.4,<5.0",
     "sphinx-autodoc-typehints~=1.10",
 ]
 
