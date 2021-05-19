@@ -6,7 +6,7 @@ example) you have **no need to use npm** requirements.
 
 .. code:: sh
 
-   docker run -p 2525:2525 -p IMPOSTER_PORT:IMPOSTER_PORT -d andyrbell/mountebank
+   docker run -p 2525:2525 -p IMPOSTER_PORT:IMPOSTER_PORT -d bbyars/mountebank
 
 You can do like this in your [``conftest.py``]:
 
@@ -20,7 +20,7 @@ You can do like this in your [``conftest.py``]:
        return MountebankServer(port=2525, host="localhost")
 
 Don’t forget to open docker ports for mountebank (default 2525) and for
-each it’s imposters.
+each of its imposters.
 
 .. code:: python
 
@@ -37,13 +37,13 @@ each it’s imposters.
    with mock_server(imposter) as ms:
        response = requests.get(f"{imposter.url}/test")
        # Check your request
-       print(ms.get_actual_requests())
+       assert_that(imposter, had_request().with_path("/test").and_method("GET"))
 
-If you don’t specify port for Imposter it will be done randomly.
+If you don’t specify a port for the Imposter it will be allocated randomly.
 
 Extra
 -----
 
-You can combine your Predicate with ``&``\ (and), ``|``\ (or).
+You can combine your Predicates with ``&``\ (and), ``|``\ (or).
 
-.. _Docker: https://hub.docker.com/r/andyrbell/mountebank
+.. _Docker: https://hub.docker.com/r/bbyars/mountebank
