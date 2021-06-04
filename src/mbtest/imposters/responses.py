@@ -74,7 +74,7 @@ class HttpResponse(JsonSerializable):
         response = cls()
         if "body" in inner:
             response._body = inner["body"]
-        response.mode = Response.Mode(inner.get("_mode","text"))
+        response.mode = Response.Mode(inner.get("_mode", "text"))
         if "headers" in inner:
             response.headers = inner["headers"]
         if "statusCode" in inner:
