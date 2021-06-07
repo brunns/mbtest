@@ -132,6 +132,7 @@ def test_http_response_roundtrip():
     assert_that(actual, instance_of(HttpResponse))
     assert_that(actual, has_identical_properties_to(expected))
 
+
 def test_http_response_structure_no_mode():
     expected_response = HttpResponse()
     response_structure = expected_response.as_structure()
