@@ -138,4 +138,4 @@ def test_http_response_structure_no_mode():
     response_structure = expected_response.as_structure()
     del response_structure["_mode"]
     response = HttpResponse.from_structure(response_structure)
-    assert response.mode.value == "text"
+    assert response.mode == Response.Mode.TEXT

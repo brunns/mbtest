@@ -72,13 +72,10 @@ class HttpResponse(JsonSerializable):
     @classmethod
     def from_structure(cls, inner: JsonStructure) -> "HttpResponse":
         response = cls()
-        if "body" in inner:
-            response._body = inner["body"]
+        response.set_if_in_dict(inner, "body", "_body")
         response.mode = Response.Mode(inner.get("_mode", "text"))
-        if "headers" in inner:
-            response.headers = inner["headers"]
-        if "statusCode" in inner:
-            response.status_code = inner["statusCode"]
+        response.set_if_in_dict(inner, "headers", "headers")
+        response.set_if_in_dict(inner, "statusCode", "status_code")
         return response
 
 
