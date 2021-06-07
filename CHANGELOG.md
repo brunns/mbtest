@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.8.1
+
+Fix #52, exception building HttpResponse from structure with no mode specified. (Thanks [@jbackman](https://github.com/jbackman).)
+
+## 2.8
+
+Add default_response attribute to Impostor.
+
 ## 2.7
 
 * HTTPS support.
