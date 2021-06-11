@@ -128,6 +128,10 @@ def test_add_stubs_to_running_impostor(mock_server):
         )
 
 
+@pytest.mark.skipif(
+    float(os.environ.get("MBTEST_VERSION", "2.1")) < 2.1,
+    reason="Removing stubs from existing imposter requires Mountebank version 2.1 or higher.",
+)
 def test_remove_stub_from_running_impostor(mock_server):
     impostor = Imposter(
         stubs=[
