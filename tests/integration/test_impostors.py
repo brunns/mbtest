@@ -54,10 +54,13 @@ def test_imposter_had_request_matcher(mock_server):
 
 @pytest.mark.skipif(
     float(os.environ.get("MBTEST_VERSION", "2.1")) < 2.1,
-    reason="AddStubs to existing imposter requires Mountebank version 2.1 or higher.",
+    reason="Adding stubs to existing imposter requires Mountebank version 2.1 or higher.",
 )
-def test_add_stubs_to_running_impostor(mock_server):
-    impostor = Imposter(Stub(Predicate(path="/test0"), Response(body="response0")))
+def test_add_stub_to_running_impostor(mock_server):
+    impostor = Imposter(
+        Stub(Predicate(path="/test0"), Response(body="response0")),
+        default_response=HttpResponse(body="default"),
+    )
 
     with mock_server(impostor):
 
@@ -66,8 +69,46 @@ def test_add_stubs_to_running_impostor(mock_server):
             responses,
             contains_exactly(
                 is_response().with_body("response0"),
-                is_response().with_body(""),
-                is_response().with_body(""),
+                is_response().with_body("default"),
+                is_response().with_body("default"),
+            ),
+        )
+
+        index = impostor.add_stub(
+            Stub(Predicate(path="/test1"), Response(body="response1")),
+        )
+        assert index == 1
+
+        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        assert_that(
+            responses,
+            contains_exactly(
+                is_response().with_body("response0"),
+                is_response().with_body("response1"),
+                is_response().with_body("default"),
+            ),
+        )
+
+
+@pytest.mark.skipif(
+    float(os.environ.get("MBTEST_VERSION", "2.1")) < 2.1,
+    reason="Adding stubs to existing imposter requires Mountebank version 2.1 or higher.",
+)
+def test_add_stubs_to_running_impostor(mock_server):
+    impostor = Imposter(
+        Stub(Predicate(path="/test0"), Response(body="response0")),
+        default_response=HttpResponse(body="default"),
+    )
+
+    with mock_server(impostor):
+
+        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        assert_that(
+            responses,
+            contains_exactly(
+                is_response().with_body("response0"),
+                is_response().with_body("default"),
+                is_response().with_body("default"),
             ),
         )
 
@@ -82,7 +123,42 @@ def test_add_stubs_to_running_impostor(mock_server):
             contains_exactly(
                 is_response().with_body("response0"),
                 is_response().with_body("response1"),
-                is_response().with_body(""),
+                is_response().with_body("default"),
+            ),
+        )
+
+
+def test_remove_stub_from_running_impostor(mock_server):
+    impostor = Imposter(
+        stubs=[
+            Stub(Predicate(path="/test0"), Response(body="response0")),
+            Stub(Predicate(path="/test1"), Response(body="response1")),
+            Stub(Predicate(path="/test2"), Response(body="response2")),
+        ],
+        default_response=HttpResponse(body="default"),
+    )
+
+    # When
+    with mock_server(impostor):
+        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        assert_that(
+            responses,
+            contains_exactly(
+                is_response().with_body("response0"),
+                is_response().with_body("response1"),
+                is_response().with_body("response2"),
+            ),
+        )
+
+        impostor.delete_stub(1)
+
+        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        assert_that(
+            responses,
+            contains_exactly(
+                is_response().with_body("response0"),
+                is_response().with_body("default"),
+                is_response().with_body("response2"),
             ),
         )
 

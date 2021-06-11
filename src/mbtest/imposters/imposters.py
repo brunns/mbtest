@@ -2,7 +2,7 @@
 from abc import ABCMeta
 from collections import abc
 from enum import Enum
-from typing import Iterable, Mapping, NamedTuple, Optional, Sequence, Union, cast
+from typing import Iterable, List, Mapping, NamedTuple, Optional, Sequence, Union, cast
 
 import requests
 from furl import furl
@@ -118,25 +118,39 @@ class Imposter(JsonSerializable):
         else:
             raise AttributeError(f"Unattached imposter {self} has no configuration URL.")
 
-    def query_all_stubs(self):
+    def query_all_stubs(self) -> List[Stub]:
         """Return all stubs running on the impostor, including those defined elsewhere."""
         json = requests.get(cast(str, self.configuration_url)).json()["stubs"]
         all_stubs = [Stub.from_structure(s) for s in json]
         return all_stubs
 
-    def playback(self) -> Sequence[Stub]:
+    def playback(self) -> List[Stub]:
         all_stubs = self.query_all_stubs()
         return [s for s in all_stubs if any(not isinstance(r, Proxy) for r in s.responses)]
 
-    def add_stubs(self, definition: Union[Stub, Iterable[Stub]], index=None):
+    def add_stubs(
+        self, definition: Union[Stub, Iterable[Stub]], index: Optional[int] = None
+    ) -> None:
+        """Add one or more stubs to a running impostor."""
         if isinstance(definition, abc.Iterable):
             for stub in definition:
                 self.add_stubs(stub)
         else:
-            json = AddStub(stub=definition, index=index).as_structure()
-            post = requests.post(f"{self.configuration_url}/stubs", json=json, timeout=10)
-            post.raise_for_status()
-            self.stubs.append(definition)
+            self.add_stub(definition, index)
+
+    def add_stub(self, definition: Stub, index: Optional[int] = None) -> int:
+        """Add a stub to a running impostor. Returns index of new stub."""
+        json = AddStub(stub=definition, index=index).as_structure()
+        post = requests.post(f"{self.configuration_url}/stubs", json=json, timeout=10)
+        post.raise_for_status()
+        self.stubs.append(definition)  # TODO - what if we've not added to the end?
+        return index if index else len(post.json()["stubs"]) - 1
+
+    def delete_stub(self, index: int) -> Stub:
+        """Remove a stub from a running impostor."""
+        post = requests.delete(f"{self.configuration_url}/stubs/{index}", timeout=10)
+        post.raise_for_status()
+        return self.stubs.pop(index)
 
 
 class Request(metaclass=ABCMeta):
