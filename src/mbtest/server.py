@@ -1,5 +1,6 @@
 ﻿# encoding=utf-8
 import logging
+import os
 import platform
 import subprocess  # nosec
 import time
@@ -16,11 +17,33 @@ from requests import RequestException
 from mbtest.imposters import Imposter
 from mbtest.imposters.imposters import Request
 
+from os.path import expanduser
+
 DEFAULT_MB_PATH = Path("node_modules") / ".bin"
-DEFAULT_MB_NAME = Path("mb.cmd" if platform.system() == "Windows" else "mb")  # pragma: no mutate
-DEFAULT_MB_EXECUTABLE = str(DEFAULT_MB_PATH / DEFAULT_MB_NAME)
+
 
 logger = logging.getLogger(__name__)
+
+
+def find_mountebank_install():
+    DEFAULT_MB_NAME = Path("mb.cmd" if platform.system() == "Windows" else "mb")
+    if platform.system() != "Windows":
+        # Look for file in user home directory (NPM local install)
+        user_dir = expanduser("~")
+        current_user_bin = (
+            Path(user_dir) / "node_modules" / ".bin" / DEFAULT_MB_NAME
+        )
+        if current_user_bin.is_file() or current_user_bin.is_symlink():
+            return str(current_user_bin)
+        # Try all paths in the users PATH env
+        for PATH in os.environ.get('PATH').split(":"):
+            usr_bin = Path(PATH) / DEFAULT_MB_NAME
+            if usr_bin.is_file() or usr_bin.is_symlink():
+                return str(usr_bin)
+    return str(DEFAULT_MB_PATH / DEFAULT_MB_NAME)
+
+
+DEFAULT_MB_EXECUTABLE = find_mountebank_install()
 
 
 def mock_server(
@@ -164,7 +187,10 @@ class MountebankServer:
     @property
     def server_url(self) -> furl:
         return furl().set(
-            scheme=self.scheme, host=self.host, port=self.server_port, path=self.imposters_path
+            scheme=self.scheme,
+            host=self.host,
+            port=self.server_port,
+            path=self.imposters_path,
         )
 
     def query_all_imposters(self) -> Iterator[Imposter]:
@@ -172,7 +198,9 @@ class MountebankServer:
         server_info = requests.get(self.server_url)
         imposters = server_info.json()["imposters"]
         for imposter in imposters:
-            yield Imposter.from_structure(requests.get(imposter["_links"]["self"]["href"]).json())
+            yield Imposter.from_structure(
+                requests.get(imposter["_links"]["self"]["href"]).json()
+            )
 
 
 class ExecutingMountebankServer(MountebankServer):
@@ -224,14 +252,20 @@ class ExecutingMountebankServer(MountebankServer):
         super().__init__(port)
         with self.start_lock:
             if self.server_port in self.running:
-                raise MountebankPortInUseException(f"Already running on port {self.server_port}.")
+                raise MountebankPortInUseException(
+                    f"Already running on port {self.server_port}."
+                )
             try:
-                options = self._build_options(port, debug, allow_injection, local_only, data_dir)
+                options = self._build_options(
+                    port, debug, allow_injection, local_only, data_dir
+                )
                 self.mb_process = subprocess.Popen([executable] + options)  # nosec
                 self._await_start(timeout)
                 self.running.add(port)
                 logger.info(
-                    "Spawned mb process %s on port %s.", self.mb_process.pid, self.server_port
+                    "Spawned mb process %s on port %s.",
+                    self.mb_process.pid,
+                    self.server_port,
                 )
             except OSError:
                 logger.error(
@@ -242,7 +276,11 @@ class ExecutingMountebankServer(MountebankServer):
 
     @staticmethod
     def _build_options(
-        port: int, debug: bool, allow_injection: bool, local_only: bool, data_dir: Union[str, None]
+        port: int,
+        debug: bool,
+        allow_injection: bool,
+        local_only: bool,
+        data_dir: Union[str, None],
     ):
         options: List[str] = ["start", "--port", str(port)]
         if debug:
@@ -268,7 +306,9 @@ class ExecutingMountebankServer(MountebankServer):
                 time.sleep(0.1)
 
         if not started:
-            raise MountebankTimeoutError(f"Mountebank failed to start within {timeout} seconds.")
+            raise MountebankTimeoutError(
+                f"Mountebank failed to start within {timeout} seconds."
+            )
 
         logger.debug("Server started at %s.", self.server_url)
 
