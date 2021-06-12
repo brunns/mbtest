@@ -1,5 +1,6 @@
 # encoding=utf-8
 import logging
+import os
 from unittest.mock import patch, MagicMock
 from pathlib import Path
 
@@ -15,11 +16,15 @@ logger = logging.getLogger(__name__)
 def test_find_mountebank_install(monkeypatch):
     linux_mb_name = "mb"
     windows_mb_name = "mb.cmd"
-    user_home = "/home/user"
-    user_bin = "node_modules/.bin"
+    user_home = "%shome%suser" % (os.sep, os.sep)
+    user_bin = "node_modules%s.bin" % os.sep
 
     with patch("platform.system", return_value="Windows"):
-        assert find_mountebank_install() == "%s/%s" % (user_bin, windows_mb_name)
+        assert find_mountebank_install() == "%s%s%s" % (
+            user_bin,
+            os.sep,
+            windows_mb_name,
+        )
 
     monkeypatch.setenv("HOME", user_home)
     with patch("platform.system", return_value="Linux"):
