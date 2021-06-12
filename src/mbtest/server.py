@@ -5,6 +5,7 @@ import platform
 import subprocess  # nosec
 import time
 from collections import abc
+from os.path import expanduser
 from pathlib import Path
 from threading import Lock
 from typing import Iterable, Iterator, List, MutableSequence, Sequence, Set, Union
@@ -17,8 +18,6 @@ from requests import RequestException
 from mbtest.imposters import Imposter
 from mbtest.imposters.imposters import Request
 
-from os.path import expanduser
-
 DEFAULT_MB_PATH = Path("node_modules") / ".bin"
 
 
@@ -30,13 +29,11 @@ def find_mountebank_install():
     if platform.system() != "Windows":
         # Look for file in user home directory (NPM local install)
         user_dir = expanduser("~")
-        current_user_bin = (
-            Path(user_dir) / "node_modules" / ".bin" / DEFAULT_MB_NAME
-        )
+        current_user_bin = Path(user_dir) / "node_modules" / ".bin" / DEFAULT_MB_NAME
         if current_user_bin.is_file() or current_user_bin.is_symlink():
             return str(current_user_bin)
         # Try all paths in the users PATH env
-        for PATH in os.environ.get('PATH').split(":"):
+        for PATH in os.environ.get("PATH").split(":"):
             usr_bin = Path(PATH) / DEFAULT_MB_NAME
             if usr_bin.is_file() or usr_bin.is_symlink():
                 return str(usr_bin)

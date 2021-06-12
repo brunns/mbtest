@@ -1,14 +1,13 @@
 # encoding=utf-8
 import logging
 import os
-from unittest.mock import patch, MagicMock
+import sys
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
-from mbtest.server import (
-    DEFAULT_MB_EXECUTABLE,
-    find_mountebank_install,
-    ExecutingMountebankServer,
-)
+import pytest
+
+from mbtest.server import DEFAULT_MB_EXECUTABLE, ExecutingMountebankServer, find_mountebank_install
 
 logger = logging.getLogger(__name__)
 
@@ -16,23 +15,18 @@ logger = logging.getLogger(__name__)
 def test_find_mountebank_install(monkeypatch):
     linux_mb_name = "mb"
     windows_mb_name = "mb.cmd"
-    user_home = "%shome%suser" % (os.sep, os.sep)
-    user_bin = "node_modules%s.bin" % os.sep
+    user_home = Path("home")
+    user_bin = Path("node_modules") / ".bin"
 
     with patch("platform.system", return_value="Windows"):
-        assert find_mountebank_install() == "%s%s%s" % (
-            user_bin,
-            os.sep,
-            windows_mb_name,
-        )
+        assert find_mountebank_install() == str(user_bin / windows_mb_name)
 
     monkeypatch.setenv("HOME", user_home)
+    monkeypatch.setenv("USERPROFILE", user_home)
     with patch("platform.system", return_value="Linux"):
         with patch("pathlib.Path.is_file", return_value=True):
-            assert find_mountebank_install() == "%s/%s/%s" % (
-                user_home,
-                user_bin,
-                linux_mb_name,
+            assert find_mountebank_install() == str(
+                user_home / user_bin / linux_mb_name
             )
 
 
