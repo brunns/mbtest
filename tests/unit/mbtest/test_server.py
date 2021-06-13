@@ -21,9 +21,7 @@ def test_find_mountebank_install(monkeypatch):
     monkeypatch.setenv("USERPROFILE", user_home)
     with patch("platform.system", return_value="Linux"):
         with patch("pathlib.Path.is_file", return_value=True):
-            assert find_mountebank_install() == str(
-                user_home / user_bin / linux_mb_name
-            )
+            assert find_mountebank_install() == str(user_home / user_bin / linux_mb_name)
 
 
 def test_server_default_options():
