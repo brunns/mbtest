@@ -70,7 +70,8 @@ def test_server_can_be_restarted_on_same_port():
 
 
 @pytest.mark.skipif(
-    platform.system() == "Windows", reason="Can only run one server on Windows for some reason."
+    platform.system() == "Windows",
+    reason="Can only run one server on Windows for some reason.",
 )
 def test_allow_multiple_servers_on_different_ports():
     # Given
@@ -104,11 +105,23 @@ def test_query_all_imposters(mock_server):
             contains_inanyorder(
                 has_identical_properties_to(
                     imposter1,
-                    ignoring={"host", "url", "server_url", "configuration_url", "attached"},
+                    ignoring={
+                        "host",
+                        "url",
+                        "server_url",
+                        "configuration_url",
+                        "attached",
+                    },
                 ),
                 has_identical_properties_to(
                     imposter2,
-                    ignoring={"host", "url", "server_url", "configuration_url", "attached"},
+                    ignoring={
+                        "host",
+                        "url",
+                        "server_url",
+                        "configuration_url",
+                        "attached",
+                    },
                 ),
             ),
         )

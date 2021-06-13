@@ -193,9 +193,7 @@ class MountebankServer:
         server_info = requests.get(self.server_url)
         imposters = server_info.json()["imposters"]
         for imposter in imposters:
-            yield Imposter.from_structure(
-                requests.get(imposter["_links"]["self"]["href"]).json()
-            )
+            yield Imposter.from_structure(requests.get(imposter["_links"]["self"]["href"]).json())
 
 
 class ExecutingMountebankServer(MountebankServer):
@@ -247,13 +245,9 @@ class ExecutingMountebankServer(MountebankServer):
         super().__init__(port)
         with self.start_lock:
             if self.server_port in self.running:
-                raise MountebankPortInUseException(
-                    f"Already running on port {self.server_port}."
-                )
+                raise MountebankPortInUseException(f"Already running on port {self.server_port}.")
             try:
-                options = self._build_options(
-                    port, debug, allow_injection, local_only, data_dir
-                )
+                options = self._build_options(port, debug, allow_injection, local_only, data_dir)
                 self.mb_process = subprocess.Popen([executable] + options)  # nosec
                 self._await_start(timeout)
                 self.running.add(port)
@@ -301,9 +295,7 @@ class ExecutingMountebankServer(MountebankServer):
                 time.sleep(0.1)
 
         if not started:
-            raise MountebankTimeoutError(
-                f"Mountebank failed to start within {timeout} seconds."
-            )
+            raise MountebankTimeoutError(f"Mountebank failed to start within {timeout} seconds.")
 
         logger.debug("Server started at %s.", self.server_url)
 
