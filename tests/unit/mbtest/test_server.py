@@ -1,13 +1,14 @@
 # encoding=utf-8
 import logging
-import os
-import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pytest
 
-from mbtest.server import DEFAULT_MB_EXECUTABLE, ExecutingMountebankServer, find_mountebank_install
+from mbtest.server import (
+    DEFAULT_MB_EXECUTABLE,
+    ExecutingMountebankServer,
+    find_mountebank_install,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,9 @@ def test_find_mountebank_install(monkeypatch):
     monkeypatch.setenv("USERPROFILE", user_home)
     with patch("platform.system", return_value="Linux"):
         with patch("pathlib.Path.is_file", return_value=True):
-            assert find_mountebank_install() == str(user_home / user_bin / linux_mb_name)
+            assert find_mountebank_install() == str(
+                user_home / user_bin / linux_mb_name
+            )
 
 
 def test_server_default_options():
