@@ -26,15 +26,14 @@ logger = logging.getLogger(__name__)
 
 def find_mountebank_install():
     DEFAULT_MB_NAME = Path("mb.cmd" if platform.system() == "Windows" else "mb")
-    if platform.system() != "Windows":
-        # Try all paths in the users PATH env
-        paths = [str(Path(expanduser("~")) / "node_modules" / ".bin")] + os.environ.get(
-            "PATH"
-        ).split(":")
-        for PATH in paths:
-            usr_bin = Path(PATH) / DEFAULT_MB_NAME
-            if usr_bin.is_file() or usr_bin.is_symlink():
-                return str(usr_bin)
+    HOME_PATH = str(Path(expanduser("~")) / "node_modules" / ".bin")
+
+    # Try all paths in the users PATH env
+    paths = [HOME_PATH] + os.environ.get("PATH").split(":")
+    for PATH in paths:
+        usr_bin = Path(PATH) / DEFAULT_MB_NAME
+        if usr_bin.is_file() or usr_bin.is_symlink():
+            return str(usr_bin)
     return str(DEFAULT_MB_PATH / DEFAULT_MB_NAME)
 
 
