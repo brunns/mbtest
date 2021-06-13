@@ -3,12 +3,7 @@ import logging
 from pathlib import Path
 from unittest.mock import patch
 
-
-from mbtest.server import (
-    DEFAULT_MB_EXECUTABLE,
-    ExecutingMountebankServer,
-    find_mountebank_install,
-)
+from mbtest.server import DEFAULT_MB_EXECUTABLE, ExecutingMountebankServer, find_mountebank_install
 
 logger = logging.getLogger(__name__)
 
