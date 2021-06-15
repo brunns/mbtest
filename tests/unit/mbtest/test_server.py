@@ -3,37 +3,13 @@ import logging
 from pathlib import Path
 from unittest.mock import patch
 
-from mbtest.server import DEFAULT_MB_EXECUTABLE, ExecutingMountebankServer, find_mountebank_install
+from brunns.matchers.mock import call_has_args as with_args
+from brunns.matchers.mock import has_call
+from hamcrest import assert_that, contains_exactly, contains_string
+
+from mbtest.server import ExecutingMountebankServer
 
 logger = logging.getLogger(__name__)
-
-
-def test_find_mountebank_install(monkeypatch):
-    linux_mb_name = "mb"
-    windows_mb_name = "mb.cmd"
-    user_home = Path("home")
-    user_bin = Path("node_modules") / ".bin"
-
-    with patch("platform.system", return_value="Linux"):
-        with patch("pathlib.Path.is_file", return_value=False):
-            with patch("pathlib.Path.is_symlink", return_value=False):
-                assert find_mountebank_install() == str(user_bin / linux_mb_name)
-
-    with patch("platform.system", return_value="Windows"):
-        with patch("pathlib.Path.is_file", return_value=False):
-            with patch("pathlib.Path.is_symlink", return_value=False):
-                assert find_mountebank_install() == str(user_bin / windows_mb_name)
-
-    monkeypatch.setenv("HOME", str(user_home))
-    monkeypatch.setenv("USERPROFILE", str(user_home))
-
-    with patch("platform.system", return_value="Windows"):
-        with patch("pathlib.Path.is_file", return_value=True):
-            assert find_mountebank_install() == str(user_home / user_bin / windows_mb_name)
-
-    with patch("platform.system", return_value="Linux"):
-        with patch("pathlib.Path.is_file", return_value=True):
-            assert find_mountebank_install() == str(user_home / user_bin / linux_mb_name)
 
 
 def test_server_default_options():
@@ -44,18 +20,23 @@ def test_server_default_options():
         ExecutingMountebankServer(port=1234)
 
         # Then
-        popen.assert_called_with(
-            [
-                DEFAULT_MB_EXECUTABLE,
-                "start",
-                "--port",
-                "1234",
-                "--debug",
-                "--allowInjection",
-                "--localOnly",
-                "--datadir",
-                ".mbdb",
-            ]
+        assert_that(
+            popen,
+            has_call(
+                with_args(
+                    contains_exactly(
+                        contains_string("mb"),
+                        "start",
+                        "--port",
+                        "1234",
+                        "--debug",
+                        "--allowInjection",
+                        "--localOnly",
+                        "--datadir",
+                        ".mbdb",
+                    )
+                )
+            ),
         )
 
 
@@ -65,7 +46,7 @@ def test_server_non_default_options():
 
         # When
         ExecutingMountebankServer(
-            executable="somepath/mb",
+            executable=Path("somepath/mb"),
             port=3456,
             debug=False,
             allow_injection=False,
@@ -74,4 +55,7 @@ def test_server_non_default_options():
         )
 
         # Then
-        popen.assert_called_with(["somepath/mb", "start", "--port", "3456"])
+        assert_that(
+            popen,
+            has_call(with_args(contains_exactly(contains_string("mb"), "start", "--port", "3456"))),
+        )

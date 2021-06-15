@@ -1,14 +1,11 @@
 ﻿# encoding=utf-8
 import logging
-import os
-import platform
 import subprocess  # nosec
 import time
 from collections import abc
-from os.path import expanduser
 from pathlib import Path
 from threading import Lock
-from typing import Iterable, Iterator, List, MutableSequence, Sequence, Set, Union
+from typing import Iterable, Iterator, List, MutableSequence, Optional, Sequence, Set, Union
 
 import requests
 from _pytest.fixtures import FixtureRequest  # type: ignore
@@ -17,27 +14,11 @@ from requests import RequestException
 
 from mbtest.imposters import Imposter
 from mbtest.imposters.imposters import Request
-
-DEFAULT_MB_PATH = Path("node_modules") / ".bin"
-
+from mbtest.util import find_mountebank_executable
 
 logger = logging.getLogger(__name__)
 
-
-def find_mountebank_install():
-    DEFAULT_MB_NAME = Path("mb.cmd" if platform.system() == "Windows" else "mb")
-    HOME_PATH = str(Path(expanduser("~")) / "node_modules" / ".bin")
-
-    # Try all paths in the users PATH env
-    paths = [HOME_PATH] + os.environ.get("PATH").split(":")
-    for PATH in paths:
-        usr_bin = Path(PATH) / DEFAULT_MB_NAME
-        if usr_bin.is_file() or usr_bin.is_symlink():
-            return str(usr_bin)
-    return str(DEFAULT_MB_PATH / DEFAULT_MB_NAME)
-
-
-DEFAULT_MB_EXECUTABLE = find_mountebank_install()
+DEFAULT_MB_EXECUTABLE = find_mountebank_executable()
 
 
 def mock_server(
@@ -181,10 +162,7 @@ class MountebankServer:
     @property
     def server_url(self) -> furl:
         return furl().set(
-            scheme=self.scheme,
-            host=self.host,
-            port=self.server_port,
-            path=self.imposters_path,
+            scheme=self.scheme, host=self.host, port=self.server_port, path=self.imposters_path
         )
 
     def query_all_imposters(self) -> Iterator[Imposter]:
@@ -247,13 +225,11 @@ class ExecutingMountebankServer(MountebankServer):
                 raise MountebankPortInUseException(f"Already running on port {self.server_port}.")
             try:
                 options = self._build_options(port, debug, allow_injection, local_only, data_dir)
-                self.mb_process = subprocess.Popen([executable] + options)  # nosec
+                self.mb_process = subprocess.Popen([str(executable)] + options)  # nosec
                 self._await_start(timeout)
                 self.running.add(port)
                 logger.info(
-                    "Spawned mb process %s on port %s.",
-                    self.mb_process.pid,
-                    self.server_port,
+                    "Spawned mb process %s on port %s.", self.mb_process.pid, self.server_port
                 )
             except OSError:
                 logger.error(
@@ -264,12 +240,8 @@ class ExecutingMountebankServer(MountebankServer):
 
     @staticmethod
     def _build_options(
-        port: int,
-        debug: bool,
-        allow_injection: bool,
-        local_only: bool,
-        data_dir: Union[str, None],
-    ):
+        port: int, debug: bool, allow_injection: bool, local_only: bool, data_dir: Optional[str]
+    ) -> List[str]:
         options: List[str] = ["start", "--port", str(port)]
         if debug:
             options.append("--debug")
