@@ -3,9 +3,10 @@ import logging
 import subprocess  # nosec
 import time
 from collections import abc
+from operator import attrgetter
 from pathlib import Path
 from threading import Lock
-from typing import Iterable, Iterator, List, MutableSequence, Optional, Sequence, Set, Union
+from typing import Iterable, List, MutableSequence, Optional, Sequence, Set, Union
 
 import requests
 from _pytest.fixtures import FixtureRequest  # type: ignore
@@ -138,26 +139,40 @@ class MountebankServer:
         """Add imposters to Mountebank server.
 
         :param definition: One or more Imposters.
-        :type definition: Imposter or list(Imposter)
         """
         if isinstance(definition, abc.Iterable):
             for imposter in definition:
                 self.add_imposters(imposter)
         else:
-            json = definition.as_structure()
-            post = requests.post(self.server_url, json=json, timeout=10)
-            post.raise_for_status()
-            definition.attach(self.host, post.json()["port"], self.server_url)
-            self._running_imposters.append(definition)
+            self.add_impostor(definition)
+
+    def add_impostor(self, definition):
+        """Add single imposter to Mountebank server.
+
+        :param definition: One or more Imposters."""
+        json = definition.as_structure()
+        post = requests.post(self.server_url, json=json, timeout=10)
+        post.raise_for_status()
+        definition.attach(self.host, post.json()["port"], self.server_url)
+        self._running_imposters.append(definition)
 
     def delete_imposters(self) -> None:
+        """Delete all impostors from server."""
         while self._running_imposters:
-            imposter = self._running_imposters.pop()
-            requests.delete(imposter.configuration_url).raise_for_status()
+            self.delete_impostor(self._running_imposters[0])
 
-    def get_actual_requests(self) -> Iterable[Request]:
+    def delete_impostor(self, imposter):
+        """Delete impostor from server."""
+        requests.delete(imposter.configuration_url).raise_for_status()
+        self._running_imposters = [
+            i for i in self._running_imposters if i.configuration_url != imposter.configuration_url
+        ]
+
+    def get_actual_requests(self) -> Sequence[Request]:
+        actual_requests: MutableSequence[Request] = []
         for imposter in self._running_imposters:
-            yield from imposter.get_actual_requests()
+            actual_requests += imposter.get_actual_requests()
+        return actual_requests
 
     @property
     def server_url(self) -> furl:
@@ -165,12 +180,18 @@ class MountebankServer:
             scheme=self.scheme, host=self.host, port=self.server_port, path=self.imposters_path
         )
 
-    def query_all_imposters(self) -> Iterator[Imposter]:
+    def query_all_imposters(self) -> Sequence[Imposter]:
         """Yield all imposters running on the server, including those defined elsewhere."""
         server_info = requests.get(self.server_url)
-        imposters = server_info.json()["imposters"]
-        for imposter in imposters:
-            yield Imposter.from_structure(requests.get(imposter["_links"]["self"]["href"]).json())
+        imposters_structure = server_info.json()["imposters"]
+        all_imposters: MutableSequence[Imposter] = []
+        for imposter_structure in imposters_structure:
+            impostor_url = imposter_structure["_links"]["self"]["href"]
+            imposter = Imposter.from_structure(requests.get(impostor_url).json())
+            imposter.host = self.host
+            imposter.server_url = self.server_url
+            all_imposters.append(imposter)
+        return sorted(all_imposters, key=attrgetter("port"))
 
 
 class ExecutingMountebankServer(MountebankServer):

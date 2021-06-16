@@ -98,17 +98,64 @@ def test_query_all_imposters(mock_server):
     imposter2 = Imposter(Stub(Predicate(path="/test2"), Response(body="egg")))
 
     with mock_server([imposter1, imposter2]) as server:
-        actual = list(server.query_all_imposters())
+        actual = server.query_all_imposters()
         assert_that(
             actual,
             contains_inanyorder(
-                has_identical_properties_to(
-                    imposter1,
-                    ignoring={"host", "url", "server_url", "configuration_url", "attached"},
-                ),
-                has_identical_properties_to(
-                    imposter2,
-                    ignoring={"host", "url", "server_url", "configuration_url", "attached"},
-                ),
+                has_identical_properties_to(imposter1), has_identical_properties_to(imposter2)
+            ),
+        )
+
+
+def test_removing_impostor_from_running_server(mock_server):
+    # Set up server
+    with mock_server(
+        [
+            Imposter(Stub(Predicate(path="/test"), Response(body="sausage")), name="sausage"),
+            Imposter(Stub(Predicate(path="/test"), Response(body="egg")), name="egg"),
+            Imposter(Stub(Predicate(path="/test"), Response(body="chips")), name="chips"),
+        ]
+    ) as server:
+
+        # Retrieve impostor details from running server, and check they work
+        initial = server.query_all_imposters()
+
+        responses = [requests.get(f"{initial[i].url}/test") for i in range(3)]
+        assert_that(
+            responses,
+            contains_inanyorder(
+                is_response().with_body("sausage"),
+                is_response().with_body("egg"),
+                is_response().with_body("chips"),
+            ),
+        )
+
+        # Delete one impostor, make sure it's gone, and that the rest still work
+        egg_impostor = [i for i in initial if i.name == "egg"][0]
+        other_impostors = [i for i in initial if i.name != "egg"]
+        server.delete_impostor(egg_impostor)
+
+        with pytest.raises(requests.exceptions.ConnectionError):
+            requests.get(f"{egg_impostor.url}/test")
+        responses = [requests.get(f"{i.url}/test") for i in other_impostors]
+        assert_that(
+            responses,
+            contains_inanyorder(
+                is_response().with_body("sausage"),
+                is_response().with_body("chips"),
+            ),
+        )
+
+        # Reset the server from the initial impostors, and check it's back to normal
+        server.delete_imposters()
+        server.add_imposters(initial)
+
+        responses = [requests.get(f"{initial[i].url}/test") for i in range(3)]
+        assert_that(
+            responses,
+            contains_inanyorder(
+                is_response().with_body("sausage"),
+                is_response().with_body("egg"),
+                is_response().with_body("chips"),
             ),
         )

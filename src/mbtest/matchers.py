@@ -112,7 +112,7 @@ class HadRequest(BaseMatcher):
         description.append_text(". All requests: ").append_description_of(self.all_requests)
 
     def _matches(self, actual: Union[Imposter, MountebankServer]) -> bool:
-        self.all_requests = cast(Sequence[HttpRequest], list(actual.get_actual_requests()))
+        self.all_requests = cast(Sequence[HttpRequest], actual.get_actual_requests())
         self.matching_requests = [
             request
             for request in self.all_requests
