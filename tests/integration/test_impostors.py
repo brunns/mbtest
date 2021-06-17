@@ -132,7 +132,7 @@ def test_add_stubs_to_running_impostor(mock_server):
     float(os.environ.get("MBTEST_VERSION", "2.1")) < 2.1,
     reason="Removing stubs from existing imposter requires Mountebank version 2.1 or higher.",
 )
-def test_remove_stub_from_running_impostor(mock_server):
+def test_remove_and_replace_stub_from_running_impostor(mock_server):
     impostor = Imposter(
         stubs=[
             Stub(Predicate(path="/test0"), Response(body="response0")),
@@ -142,7 +142,6 @@ def test_remove_stub_from_running_impostor(mock_server):
         default_response=HttpResponse(body="default"),
     )
 
-    # When
     with mock_server(impostor):
         responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
         assert_that(
@@ -162,6 +161,17 @@ def test_remove_stub_from_running_impostor(mock_server):
             contains_exactly(
                 is_response().with_body("response0"),
                 is_response().with_body("default"),
+                is_response().with_body("response2"),
+            ),
+        )
+
+        impostor.add_stub(Stub(Predicate(path="/test1"), Response(body="response1")))
+        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        assert_that(
+            responses,
+            contains_exactly(
+                is_response().with_body("response0"),
+                is_response().with_body("response1"),
                 is_response().with_body("response2"),
             ),
         )

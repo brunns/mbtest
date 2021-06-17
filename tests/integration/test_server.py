@@ -107,7 +107,7 @@ def test_query_all_imposters(mock_server):
         )
 
 
-def test_removing_impostor_from_running_server(mock_server):
+def test_remove_and_replace_impostor_from_running_server(mock_server):
     # Set up server
     with mock_server(
         [
