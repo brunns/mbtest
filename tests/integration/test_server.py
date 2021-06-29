@@ -2,7 +2,6 @@
 import logging
 import platform
 from pathlib import Path
-from unittest import TestCase
 
 import pytest
 import requests
