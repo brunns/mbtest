@@ -44,7 +44,6 @@ def test_structure_inject():
     )
     imposter_structure = expected_imposter.as_structure()
     imposter = Imposter.from_structure(imposter_structure)
-    print(expected_imposter)
     assert imposter.port == expected_imposter.port
 
 
