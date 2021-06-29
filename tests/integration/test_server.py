@@ -2,6 +2,7 @@
 import logging
 import platform
 from pathlib import Path
+from unittest import TestCase
 
 import pytest
 import requests
@@ -159,3 +160,18 @@ def test_remove_and_replace_impostor_from_running_server(mock_server):
                 is_response().with_body("chips"),
             ),
         )
+
+
+def test_import_impostor_from_running_server(mock_server):
+    # Set up server
+    with mock_server(
+        [
+            Imposter(Stub(Predicate(path="/test"), Response(body="sausage")), name="sausage"),
+            Imposter(Stub(Predicate(path="/test"), Response(body="egg")), name="egg"),
+            Imposter(Stub(Predicate(path="/test"), Response(body="chips")), name="chips"),
+        ]
+    ) as server:
+        initial = server.query_all_imposters()
+        server.import_running_imposters()
+        after = server.get_running_imposters()
+        assert str(initial) == str(after)
