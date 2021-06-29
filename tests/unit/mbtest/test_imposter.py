@@ -5,7 +5,7 @@ import pytest
 from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, instance_of
 
-from mbtest.imposters import Imposter, InjectionResponse, Proxy, Response, Stub
+from mbtest.imposters import Imposter, Proxy, Response, Stub
 from tests.utils.builders import (
     AndPredicateBuilder,
     HttpResponseBuilder,
@@ -33,15 +33,6 @@ def test_structure_response_port():
 
 def test_structure_proxy_port():
     expected_imposter = Imposter(Stub(responses=Proxy("http://darwin.dog")), port=4546)
-    imposter_structure = expected_imposter.as_structure()
-    imposter = Imposter.from_structure(imposter_structure)
-    assert imposter.port == expected_imposter.port
-
-
-def test_structure_inject():
-    expected_imposter = Imposter(
-        Stub(responses=InjectionResponse(inject="function (request) {\n}")), port=4546
-    )
     imposter_structure = expected_imposter.as_structure()
     imposter = Imposter.from_structure(imposter_structure)
     assert imposter.port == expected_imposter.port
