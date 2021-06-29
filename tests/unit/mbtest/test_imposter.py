@@ -5,7 +5,7 @@ import pytest
 from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, instance_of
 
-from mbtest.imposters import Imposter, Proxy, Response, Stub
+from mbtest.imposters import Imposter, InjectionResponse, Proxy, Response, Stub
 from tests.utils.builders import (
     AndPredicateBuilder,
     HttpResponseBuilder,
@@ -35,6 +35,16 @@ def test_structure_proxy_port():
     expected_imposter = Imposter(Stub(responses=Proxy("http://darwin.dog")), port=4546)
     imposter_structure = expected_imposter.as_structure()
     imposter = Imposter.from_structure(imposter_structure)
+    assert imposter.port == expected_imposter.port
+
+
+def test_structure_inject():
+    expected_imposter = Imposter(
+        Stub(responses=InjectionResponse(inject="function (request) {\n}")), port=4546
+    )
+    imposter_structure = expected_imposter.as_structure()
+    imposter = Imposter.from_structure(imposter_structure)
+    print(expected_imposter)
     assert imposter.port == expected_imposter.port
 
 
@@ -69,7 +79,9 @@ def test_structure_no_record_requests():
 
 def test_imposter_structure_roundtrip():
     # Given
-    expected = ImposterBuilder().with_default_response(HttpResponseBuilder().build()).build()
+    expected = (
+        ImposterBuilder().with_default_response(HttpResponseBuilder().build()).build()
+    )
     structure = expected.as_structure()
 
     # When
@@ -77,7 +89,9 @@ def test_imposter_structure_roundtrip():
 
     # Then
     assert_that(actual, instance_of(Imposter))
-    assert_that(actual, has_identical_properties_to(expected, ignoring=["configuration_url"]))
+    assert_that(
+        actual, has_identical_properties_to(expected, ignoring=["configuration_url"])
+    )
 
 
 def test_imposter_structure_without_default_response_roundtrip():
@@ -90,7 +104,9 @@ def test_imposter_structure_without_default_response_roundtrip():
 
     # Then
     assert_that(actual, instance_of(Imposter))
-    assert_that(actual, has_identical_properties_to(expected, ignoring=["configuration_url"]))
+    assert_that(
+        actual, has_identical_properties_to(expected, ignoring=["configuration_url"])
+    )
 
 
 @pytest.mark.parametrize(
@@ -106,4 +122,6 @@ def test_imposter_complex_predicates(predicate):
 
     # Then
     assert_that(actual, instance_of(Imposter))
-    assert_that(actual, has_identical_properties_to(expected, ignoring=["configuration_url"]))
+    assert_that(
+        actual, has_identical_properties_to(expected, ignoring=["configuration_url"])
+    )
