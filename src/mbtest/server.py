@@ -193,6 +193,16 @@ class MountebankServer:
             all_imposters.append(imposter)
         return sorted(all_imposters, key=attrgetter("port"))
 
+    def import_running_imposters(self) -> None:
+        """Replaces all running imposters with those defined on the server"""
+        self._running_imposters = []
+        for imposter in self.query_all_imposters():
+            self._running_imposters.append(imposter)
+
+    def get_running_imposters(self) -> Sequence[Imposter]:
+        """Returns all imposters that the instance is aware of"""
+        return self._running_imposters
+
 
 class ExecutingMountebankServer(MountebankServer):
     """A Mountebank mock server, running one or more imposters, one for each domain being mocked.
