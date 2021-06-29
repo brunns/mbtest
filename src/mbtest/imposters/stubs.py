@@ -4,7 +4,7 @@ from typing import Iterable, List, Optional, Union
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.predicates import BasePredicate, Predicate
-from mbtest.imposters.responses import BaseResponse, Proxy, Response
+from mbtest.imposters.responses import BaseResponse, InjectionResponse, Proxy, Response
 
 
 class Stub(JsonSerializable):
@@ -21,11 +21,15 @@ class Stub(JsonSerializable):
         responses: Optional[Union[BaseResponse, Iterable[BaseResponse]]] = None,
     ) -> None:
         if predicates:
-            self.predicates = predicates if isinstance(predicates, Sequence) else [predicates]
+            self.predicates = (
+                predicates if isinstance(predicates, Sequence) else [predicates]
+            )
         else:
             self.predicates = [Predicate()]
         if responses:
-            self.responses = responses if isinstance(responses, Sequence) else [responses]
+            self.responses = (
+                responses if isinstance(responses, Sequence) else [responses]
+            )
         else:
             self.responses = [Response()]
 
@@ -37,10 +41,12 @@ class Stub(JsonSerializable):
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> "Stub":
-        responses: List[Union[Proxy, Response]] = []
+        responses: List[Union[InjectionResponse, Proxy, Response]] = []
         for response in structure.get("responses", ()):
             if "proxy" in response:
                 responses.append(Proxy.from_structure(response))
+            elif "inject" in response:
+                responses.append(InjectionResponse.from_structure(response))
             else:
                 responses.append(Response.from_structure(response))
         return cls(
