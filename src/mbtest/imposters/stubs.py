@@ -21,15 +21,11 @@ class Stub(JsonSerializable):
         responses: Optional[Union[BaseResponse, Iterable[BaseResponse]]] = None,
     ) -> None:
         if predicates:
-            self.predicates = (
-                predicates if isinstance(predicates, Sequence) else [predicates]
-            )
+            self.predicates = predicates if isinstance(predicates, Sequence) else [predicates]
         else:
             self.predicates = [Predicate()]
         if responses:
-            self.responses = (
-                responses if isinstance(responses, Sequence) else [responses]
-            )
+            self.responses = responses if isinstance(responses, Sequence) else [responses]
         else:
             self.responses = [Response()]
 

@@ -79,9 +79,7 @@ def test_structure_no_record_requests():
 
 def test_imposter_structure_roundtrip():
     # Given
-    expected = (
-        ImposterBuilder().with_default_response(HttpResponseBuilder().build()).build()
-    )
+    expected = ImposterBuilder().with_default_response(HttpResponseBuilder().build()).build()
     structure = expected.as_structure()
 
     # When
@@ -89,9 +87,7 @@ def test_imposter_structure_roundtrip():
 
     # Then
     assert_that(actual, instance_of(Imposter))
-    assert_that(
-        actual, has_identical_properties_to(expected, ignoring=["configuration_url"])
-    )
+    assert_that(actual, has_identical_properties_to(expected, ignoring=["configuration_url"]))
 
 
 def test_imposter_structure_without_default_response_roundtrip():
@@ -104,9 +100,7 @@ def test_imposter_structure_without_default_response_roundtrip():
 
     # Then
     assert_that(actual, instance_of(Imposter))
-    assert_that(
-        actual, has_identical_properties_to(expected, ignoring=["configuration_url"])
-    )
+    assert_that(actual, has_identical_properties_to(expected, ignoring=["configuration_url"]))
 
 
 @pytest.mark.parametrize(
@@ -122,6 +116,4 @@ def test_imposter_complex_predicates(predicate):
 
     # Then
     assert_that(actual, instance_of(Imposter))
-    assert_that(
-        actual, has_identical_properties_to(expected, ignoring=["configuration_url"])
-    )
+    assert_that(actual, has_identical_properties_to(expected, ignoring=["configuration_url"]))
