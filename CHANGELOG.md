@@ -1,12 +1,18 @@
 # Change Log
 
+## 2.9.0
+
+* Enhancement #57, changes to allow modification of stubs and impostors on an already running Mountebank server. (Thanks [@jbackman](https://github.com/jbackman).)
+* Enhancement #56, improve finding of `DEFAULT_MB_EXECUTABLE`. (Thanks [@jbackman](https://github.com/jbackman).)
+* Fix #57, exception Stub.from_structure() for stubs with inject response.
+
 ## 2.8.1
 
-Fix #52, exception building HttpResponse from structure with no mode specified. (Thanks [@jbackman](https://github.com/jbackman).)
+* Fix #52, exception building HttpResponse from structure with no mode specified. (Thanks [@jbackman](https://github.com/jbackman).)
 
 ## 2.8
 
-Add default_response attribute to Impostor.
+* Add default_response attribute to Impostor.
 
 ## 2.7
 
@@ -18,7 +24,7 @@ Add default_response attribute to Impostor.
 
 ## 2.6
 
-* Add support for PARCH HTTP verb. (Thanks to [@garry-jeromson](https://github.com/garry-jeromson).)
+* Add support for PATCH HTTP verb. (Thanks to [@garry-jeromson](https://github.com/garry-jeromson).)
 * Add NotPredicate.
 
 ## 2.5.1
