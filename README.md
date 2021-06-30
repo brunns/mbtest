@@ -103,8 +103,9 @@ Running `make precommit` tells you if you're OK to commit. For more options, run
 
 ## Releasing
 
-Requires [hub](https://hub.github.com/), [setuptools](https://setuptools.readthedocs.io) and 
-[twine](https://twine.readthedocs.io). To release version `n.n.n`, first update the version number in `setup.py`, then:
+Requires [hub](https://hub.github.com/), [setuptools](https://setuptools.readthedocs.io), 
+[wheel](https://github.com/pypa/wheel) and [twine](https://twine.readthedocs.io). To release version `n.n.n`, first 
+update the version number in `setup.py`, then:
 
 ```sh
 version="n.n.n" # Needs to match new version number in setup.py.
