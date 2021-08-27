@@ -170,6 +170,7 @@ class ProxyBuilder(Builder):
     wait = lambda: one_of(None, an_integer(1, 1000))
     inject_headers = lambda: one_of(None, {a_string(): a_string()})
     mode = lambda: one_of(*Proxy.Mode)
+    decorate = lambda: one_of(None, a_string())
 
 
 class ImposterBuilder(Builder):

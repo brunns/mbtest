@@ -210,12 +210,14 @@ class Proxy(BaseResponse):
         inject_headers: Optional[Mapping[str, str]] = None,
         mode: "Proxy.Mode" = Mode.ONCE,
         predicate_generators: Optional[Iterable["PredicateGenerator"]] = None,
+        decorate: Optional[str] = None,
     ) -> None:
         self.to = to
         self.wait = wait
         self.inject_headers = inject_headers
         self.mode = mode
         self.predicate_generators = predicate_generators if predicate_generators is not None else []
+        self.decorate = decorate
 
     def as_structure(self) -> JsonStructure:
         proxy = {
@@ -226,10 +228,16 @@ class Proxy(BaseResponse):
         self.add_if_true(
             proxy, "predicateGenerators", [pg.as_structure() for pg in self.predicate_generators]
         )
-        response = {"proxy": proxy}
-        if self.wait:
-            response["_behaviors"] = {"wait": self.wait}
-        return response
+        return {
+            "proxy": proxy,
+            "_behaviors": self._behaviors_as_structure(),
+        }
+
+    def _behaviors_as_structure(self) -> JsonStructure:
+        behaviors: JsonStructure = {}
+        self.add_if_true(behaviors, "wait", self.wait)
+        self.add_if_true(behaviors, "decorate", self.decorate)
+        return behaviors
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> "Proxy":
@@ -247,9 +255,9 @@ class Proxy(BaseResponse):
             if "predicateGenerators" in proxy_structure
             else None,
         )
-        wait = structure.get("_behaviors", {}).get("wait")
-        if wait:
-            proxy.wait = wait
+        behaviors = structure.get("_behaviors", {})
+        proxy.set_if_in_dict(behaviors, "wait", "wait")
+        proxy.set_if_in_dict(behaviors, "decorate", "decorate")
         return proxy
 
 

@@ -36,3 +36,10 @@ def test_structure_mode():
     proxy_structure = expected_proxy.as_structure()
     proxy = BaseResponse.from_structure(proxy_structure)
     assert proxy.mode == expected_proxy.mode
+
+
+def test_structure_decorate():
+    expected_proxy = ProxyBuilder().with_decorate("(req, res) => {}").build()
+    proxy_structure = expected_proxy.as_structure()
+    proxy = BaseResponse.from_structure(proxy_structure)
+    assert proxy.decorate == expected_proxy.decorate
