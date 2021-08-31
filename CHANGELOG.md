@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.10.0
+
+* Enhancement #61 - Add decorate response for proxies. (Thanks [@dAnjou](https://github.com/dAnjou).)
+
 ## 2.9.0
 
 * Enhancement #57, changes to allow modification of stubs and impostors on an already running Mountebank server. (Thanks [@jbackman](https://github.com/jbackman).)
