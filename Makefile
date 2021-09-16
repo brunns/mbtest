@@ -68,20 +68,19 @@ precommit: precommit-test mypy lint docs ## Pre-commit targets
 
 .PHONY: recreate
 recreate: clean jsdeps ## Recreate tox environments
-	tox --recreate --notest
-	tox --recreate --notest -e coverage,format,check-format,flake8,pylint,bandit,safety,piprot,mypy,docs
+	tox --recreate --notest -p
+	tox --recreate --notest -e coverage,format,check-format,flake8,pylint,bandit,safety,piprot,mypy,docs -p
 
 .PHONY: jsdeps
 jsdeps:
-	rm -r node_modules/ package.json package-lock.json
-	npm install mountebank@2.4 --production
-	npm audit
+	- rm -r node_modules/ package.json package-lock.json
+	npm install mountebank@2.5 --production
 
 .PHONY: clean
 clean: ## Clean generated files
 	find . -name '*.pyc' -delete
 	find . -name '*.pyo' -delete
-	rm -rf build/ build_docs/ dist/ *.egg-info/ .cache .coverage .pytest_cache/ .mbdb/ .mypy_cache/ *.log *.pid *.svg .mutmut-cache html/
+	- rm -r build/ build_docs/ dist/ *.egg-info/ .cache .coverage .pytest_cache/ .mbdb/ .mypy_cache/ *.log *.pid *.svg .mutmut-cache html/
 	find . -name "__pycache__" -type d -print | xargs -t rm -r
 	find . -name "test-output" -type d -print | xargs -t rm -r
 
@@ -95,4 +94,4 @@ outdated: ## List outdated dependancies
 
 .PHONY: help
 help: ## Show this help
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1,$$2}'
+	@ grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1,$$2}'

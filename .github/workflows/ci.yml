@@ -10,7 +10,7 @@ jobs:
       matrix:
         python: ['3.9']
         node-version: ['15.x']
-        mbtest-version: ['2.4']
+        mbtest-version: ['2.5']
         os: ['ubuntu-latest']
 
     steps:
@@ -85,7 +85,7 @@ jobs:
       matrix:
         python: ['3.9']
         node-version: ['15.x']
-        mbtest-version: ['2.3', '2.2', '2.1', '2.0', '1.16']
+        mbtest-version: ['2.4', '2.3', '2.2', '2.1', '2.0', '1.16']
         os: ['ubuntu-latest']
       fail-fast: false
 
