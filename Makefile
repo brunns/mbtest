@@ -4,7 +4,7 @@ default: help
 
 .PHONY: test
 test: ## Run tests
-	tox -e py36,py39
+	tox -e py36,py310
 
 .PHONY: coverage
 coverage: ## Test coverage report
@@ -86,11 +86,11 @@ clean: ## Clean generated files
 
 .PHONY: repl
 repl: ## Python REPL
-	tox -e py39 -- python
+	tox -e py310 -- python
 
 .PHONY: outdated
 outdated: ## List outdated dependancies
-	tox -e py39 -- pip list -o
+	tox -e py310 -- pip list -o
 
 .PHONY: help
 help: ## Show this help

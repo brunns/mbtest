@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python: ['3.9']
+        python: ['3.10']
         node-version: ['15.x']
         mbtest-version: ['2.5']
         os: ['ubuntu-latest']
@@ -42,13 +42,13 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        python: ['3.8', '3.7', '3.6', 'pypy-3.6']
+        python: ['3.9', '3.8', '3.7', '3.6', 'pypy-3.6']
         node-version: ['15.x']
         mbtest-version: ['2.4']
         os: ['ubuntu-latest']
         experimental: [false]
         include:
-          - python: '3.10.0-alpha - 3.10.0'
+          - python: '3.11.0-alpha - 3.11.0'
             experimental: true
             node-version: '15.x'
             mbtest-version: '2.4'
@@ -83,7 +83,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python: ['3.9']
+        python: ['3.10']
         node-version: ['15.x']
         mbtest-version: ['2.4', '2.0', '1.16']
         os: ['ubuntu-latest']
@@ -117,7 +117,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python: ['3.9']
+        python: ['3.10']
         node-version: ['15.x']
         mbtest-version: ['2.4']
         os: ['windows-latest', 'macos-latest']
@@ -151,7 +151,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python: ['3.9']
+        python: ['3.10']
         node-version: ['15.x']
         mbtest-version: ['2.4']
         os: ['ubuntu-latest']
@@ -184,7 +184,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python: [ '3.9' ]
+        python: [ '3.10' ]
         os: [ 'ubuntu-latest' ]
       fail-fast: false
 
