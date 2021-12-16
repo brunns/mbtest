@@ -84,12 +84,12 @@ class Predicate(LogicallyCombinablePredicate):
     def __init__(
         self,
         path: Optional[Union[str, furl]] = None,
-        method: Optional[Method] = None,
+        method: Optional[Union[Method, str]] = None,
         query: Optional[Mapping[str, Union[str, int, bool]]] = None,
         body: Optional[Union[str, JsonStructure]] = None,
         headers: Optional[Mapping[str, str]] = None,
         xpath: Optional[str] = None,
-        operator: Operator = Operator.EQUALS,
+        operator: Union[Operator, str] = Operator.EQUALS,
         case_sensitive: bool = True,
     ) -> None:
         self.path = path
