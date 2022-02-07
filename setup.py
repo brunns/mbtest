@@ -26,7 +26,7 @@ install_dependencies = [
     "brunns-matchers~=2.4",
 ]
 test_dependencies = [
-    "pytest~=6.0",
+    "pytest>=6,<8",
     "contexttimer~=0.3",
     "brunns-builder~=0.6",
     "trustme~=0.7",
