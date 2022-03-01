@@ -19,25 +19,25 @@ except IOError:
     long_description = "See https://github.com/brunns/mbtest/"
 
 install_dependencies = [
-    "requests~=2.0",
-    "furl~=2.0",
-    "pyhamcrest~=2.0",
-    "Deprecated~=1.2",
-    "brunns-matchers~=2.4",
+    "requests>=2.0",
+    "furl>=2.0",
+    "pyhamcrest>=2.0",
+    "Deprecated>=1.2",
+    "brunns-matchers>=2.4",
 ]
 test_dependencies = [
-    "pytest~=6.0",
-    "contexttimer~=0.3",
-    "brunns-builder~=0.6",
-    "trustme~=0.7",
+    "pytest>=6.0",
+    "contexttimer>=0.3",
+    "brunns-builder>=0.6",
+    "trustme>=0.7",
 ]
 coverage_dependencies = [
     "pytest-cov>=2.5,<4.0",
-    "codacy-coverage~=1.0",
+    "codacy-coverage>=1.0",
 ]
 docs_dependencies = [
-    "sphinx>=2.4,<5.0",
-    "sphinx-autodoc-typehints~=1.10",
+    "sphinx>=3.0",
+    "sphinx-autodoc-typehints>=1.10",
 ]
 
 extras = {
