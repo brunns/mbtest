@@ -38,6 +38,7 @@ coverage_dependencies = [
 docs_dependencies = [
     "sphinx>=3.0",
     "sphinx-autodoc-typehints>=1.10",
+    "pytest>=6.0",
 ]
 
 extras = {

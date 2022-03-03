@@ -89,7 +89,7 @@ jobs:
       matrix:
         python: ['3.10']
         node-version: ['15.x']
-        mbtest-version: ['2.6', '2.0', '1.16']
+        mbtest-version: ['2.5', '2.0', '1.16']
         os: ['ubuntu-latest']
       fail-fast: false
 
@@ -183,7 +183,7 @@ jobs:
         run: tox -e coverage
 
   lint-etc:
-    name: 'Linting etc.'
+    name: 'Linting and docs'
     needs: test
     runs-on: ${{ matrix.os }}
     strategy:

@@ -2,3 +2,4 @@
 # This file is just for CI and document generation.
 sphinx>=3.0
 sphinx-autodoc-typehints>=1.10
+pytest>=6.0
