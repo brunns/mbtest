@@ -20,7 +20,7 @@ Install from `Pypi <https://pypi.org/project/mbtest/>`_ as usual, using pip , `t
 
 Also requires `Mountebank`_ to have been installed::
 
-    $ npm install mountebank@2.4 --production
+    $ npm install mountebank@2.6 --production
 
 Usage
 -----

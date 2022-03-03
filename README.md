@@ -31,7 +31,7 @@ Install with pip:
 
 (As usual, use of a [venv](https://docs.python.org/3/library/venv.html) or [virtualenv](https://virtualenv.pypa.io) is recommended.) Also requires [Mountebank](http://www.mbtest.org/) to have been installed:
 
-    npm install mountebank@2.4 --production
+    npm install mountebank@2.6 --production
 
 (Alternatively, you can attach to an instance of Mountebank running elsewhere, perhaps [in docker](https://mbtest.readthedocs.io/en/latest/guide/docker.html).)
 
@@ -92,7 +92,7 @@ pyenv local 3.10.0 3.6.15
 In order to run `make test`, you'll also need to have Mountebank installed locally:
 
 ```sh
-npm install mountebank@2.5 --production
+npm install mountebank@2.6 --production
 ```
 
 (`mbtest` is tested against Mountebank versions back as far as 1.16, but obviously only features supported by the Mountebank version you're using will work.)
