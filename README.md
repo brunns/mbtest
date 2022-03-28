@@ -59,7 +59,7 @@ def test_request_to_mock_server(mock_server):
                     imposter, had_request().with_path("/test").and_method("GET"))
 ```
 
-Needs a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily defined in [`conftest.py`](https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions):
+Needs a [pytest fixture](https://docs.pytest.org/en/latest/fixture.html), most easily defined in [`conftest.py`](https://docs.pytest.org/en/latest/how-to/fixtures.html#scope-sharing-fixtures-across-classes-modules-packages-or-session):
 
 ```python
 import pytest
