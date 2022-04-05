@@ -245,7 +245,7 @@ class Proxy(BaseResponse):
 
     def as_structure(self) -> JsonStructure:
         proxy = {
-            "to": self.to.url if isinstance(self.to, furl) else self.to,
+            "to": furl(self.to).url,
             "mode": self.mode.value,
         }
         self.add_if_true(proxy, "injectHeaders", self.inject_headers)

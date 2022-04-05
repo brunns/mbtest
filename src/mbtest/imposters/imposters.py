@@ -212,7 +212,7 @@ class SentEmail(Request):
         email: Mapping[str, Union[str, Sequence[Address]]] = {
             SentEmail._map_key(k): SentEmail._translate_value(v) for k, v in json.items()
         }
-        sent_email = SentEmail(**email)
+        sent_email = SentEmail(**email)  # type: ignore
         return sent_email
 
     @staticmethod

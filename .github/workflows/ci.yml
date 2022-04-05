@@ -207,6 +207,6 @@ jobs:
       - name: Security checks
         run: tox -e bandit,safety
       - name: Check types
-        run: tox -e mypy
+        run: tox -e pyright,mypy
       - name: Build docs
         run: tox -e docs

@@ -26,15 +26,15 @@ bandit:
 	tox -e bandit
 
 .PHONY: extra-lint
-extra-lint: pylint mypy  ## Extra, optional linting.
+extra-lint: pylint typecheck  ## Extra, optional linting.
 
 .PHONY: pylint
 pylint:
 	tox -e pylint
 
-.PHONY: mypy
-mypy:
-	tox -e mypy
+.PHONY: typecheck
+typecheck:
+	tox -e pyright,mypy
 
 .PHONY: safety
 safety:
@@ -63,13 +63,13 @@ docs:  ## Generate documentation
 	tox -e docs
 
 .PHONY: precommit
-precommit: precommit-test mypy lint docs ## Pre-commit targets
+precommit: precommit-test typecheck lint docs ## Pre-commit targets
 	@ python -m this
 
 .PHONY: recreate
 recreate: clean jsdeps ## Recreate tox environments
 	tox --recreate --notest -p
-	tox --recreate --notest -e coverage,format,check-format,flake8,pylint,bandit,safety,piprot,mypy,docs -p
+	tox --recreate --notest -e coverage,format,check-format,flake8,pylint,bandit,safety,piprot,mypy,pyright,docs -p
 
 .PHONY: jsdeps
 jsdeps:

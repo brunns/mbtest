@@ -286,6 +286,7 @@ class ExecutingMountebankServer(MountebankServer):
 
     def _await_start(self, timeout: int) -> None:
         start_time = time.time()
+        started = False
 
         while time.time() - start_time < timeout:
             try:

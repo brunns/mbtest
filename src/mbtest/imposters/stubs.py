@@ -1,6 +1,6 @@
 # encoding=utf-8
 from collections.abc import Sequence
-from typing import Iterable, List, Optional, Union
+from typing import Iterable, List, Optional, Union, cast
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.predicates import BasePredicate, Predicate
@@ -21,11 +21,17 @@ class Stub(JsonSerializable):
         responses: Optional[Union[BaseResponse, Iterable[BaseResponse]]] = None,
     ) -> None:
         if predicates:
-            self.predicates = predicates if isinstance(predicates, Sequence) else [predicates]
+            self.predicates = cast(
+                Iterable[BasePredicate],
+                predicates if isinstance(predicates, Sequence) else [predicates],
+            )
         else:
             self.predicates = [Predicate()]
         if responses:
-            self.responses = responses if isinstance(responses, Sequence) else [responses]
+            self.responses = cast(
+                Iterable[BaseResponse],
+                responses if isinstance(responses, Sequence) else [responses],
+            )
         else:
             self.responses = [Response()]
 
@@ -65,8 +71,8 @@ class AddStub(JsonSerializable):
 
     def __init__(
         self,
-        stub: Stub = None,
-        index: int = None,
+        stub: Optional[Stub] = None,
+        index: Optional[int] = None,
     ) -> None:
         self.index = index
         if stub:

@@ -1,7 +1,7 @@
 # encoding=utf-8
 import abc
 from enum import Enum
-from typing import Mapping, Type, cast
+from typing import Mapping, Optional, Type, cast
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 
@@ -76,7 +76,7 @@ class UsingXpath(Using):
     :param ns: The ns object maps namespace aliases to URLs
     """
 
-    def __init__(self, selector: str, ns: Mapping[str, str] = None) -> None:
+    def __init__(self, selector: str, ns: Optional[Mapping[str, str]] = None) -> None:
         super().__init__(Using.Method.XPATH, selector)
         self.ns = ns
 
