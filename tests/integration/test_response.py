@@ -10,7 +10,7 @@ from brunns.matchers.response import is_response
 from hamcrest import assert_that, has_entries, has_entry
 
 from mbtest.imposters import Imposter, Response, Stub
-from mbtest.imposters.responses import InjectionResponse
+from mbtest.imposters.responses import FaultResponse, InjectionResponse
 
 logger = logging.getLogger(__name__)
 
@@ -86,6 +86,30 @@ def test_injection_response(mock_server):
         response = requests.get(imposter.url, headers={"foo": "bar"})
 
         assert_that(response, is_response().with_body("BAR"))
+
+
+@pytest.mark.skipif(
+    Decimal(os.environ.get("MBTEST_VERSION", "2.6")) < Decimal("2.6"),
+    reason="Fault responses require Mountebank version 2.6 or higher.",
+)
+def test_connection_reset_by_peer_response(mock_server):
+    imposter = Imposter(Stub(responses=FaultResponse(FaultResponse.Fault.CONNECTION_RESET_BY_PEER)))
+
+    with mock_server(imposter):
+        with pytest.raises(requests.exceptions.ConnectionError):
+            requests.get(imposter.url)
+
+
+@pytest.mark.skipif(
+    Decimal(os.environ.get("MBTEST_VERSION", "2.6")) < Decimal("2.6"),
+    reason="Fault responses require Mountebank version 2.6 or higher.",
+)
+def test_random_data_then_close_response(mock_server):
+    imposter = Imposter(Stub(responses=FaultResponse(FaultResponse.Fault.RANDOM_DATA_THEN_CLOSE)))
+
+    with mock_server(imposter):
+        with pytest.raises(requests.exceptions.ConnectionError):
+            requests.get(imposter.url)
 
 
 def test_json_body(mock_server):

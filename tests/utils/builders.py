@@ -28,7 +28,7 @@ from mbtest.imposters.predicates import (
     OrPredicate,
     TcpPredicate,
 )
-from mbtest.imposters.responses import HttpResponse
+from mbtest.imposters.responses import FaultResponse, HttpResponse
 
 
 class PredicateBuilder(Builder):
@@ -137,6 +137,12 @@ class HttpResponseBuilder(Builder):
     status_code = lambda: one_of(*[s.value for s in http.HTTPStatus])
     headers = lambda: one_of(None, {a_string(): a_string()})
     mode = lambda: one_of(*Response.Mode)
+
+
+class FaultResponseBuilder(Builder):
+    target = FaultResponse
+
+    fault = lambda: one_of(*FaultResponse.Fault)
 
 
 class ResponseBuilder(Builder):

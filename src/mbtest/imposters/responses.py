@@ -14,7 +14,7 @@ from mbtest.imposters.predicates import Predicate
 
 class BaseResponse(JsonSerializable, metaclass=ABCMeta):
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "BaseResponse":
+    def from_structure(cls, structure: JsonStructure) -> "BaseResponse":  # noqa: C901
         if "is" in structure and "_behaviors" in structure:
             return Response.from_structure(structure)
         elif "is" in structure and "data" in structure["is"]:
@@ -23,6 +23,8 @@ class BaseResponse(JsonSerializable, metaclass=ABCMeta):
             return Proxy.from_structure(structure)
         elif "inject" in structure:
             return InjectionResponse.from_structure(structure)
+        elif "fault" in structure:
+            return FaultResponse.from_structure(structure)
         raise NotImplementedError()  # pragma: no cover
 
 
@@ -188,6 +190,28 @@ class TcpResponse(BaseResponse):
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> "TcpResponse":
         return cls(data=structure["is"]["data"])
+
+
+class FaultResponse(BaseResponse):
+    """Represents a `Mountebank fault response <https://www.mbtest.org/docs/api/faults>`_.
+
+    :param fault: The fault to simulate.
+    """
+
+    class Fault(Enum):
+        CONNECTION_RESET_BY_PEER = "CONNECTION_RESET_BY_PEER"
+        RANDOM_DATA_THEN_CLOSE = "RANDOM_DATA_THEN_CLOSE"
+
+    def __init__(self, fault: Fault) -> None:
+        self.fault = fault
+
+    def as_structure(self) -> JsonStructure:
+        return {"fault": self.fault.name}
+
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "FaultResponse":
+        fault = cls.Fault(structure["fault"])
+        return cls(fault=fault)
 
 
 class Proxy(BaseResponse):

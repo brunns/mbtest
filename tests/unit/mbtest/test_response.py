@@ -6,6 +6,7 @@ from hamcrest import assert_that, instance_of
 
 from mbtest.imposters.responses import (
     BaseResponse,
+    FaultResponse,
     HttpResponse,
     InjectionResponse,
     Response,
@@ -13,6 +14,7 @@ from mbtest.imposters.responses import (
 )
 from tests.utils.builders import (
     CopyBuilder,
+    FaultResponseBuilder,
     HttpResponseBuilder,
     InjectionResponseBuilder,
     LookupBuilder,
@@ -130,6 +132,19 @@ def test_http_response_roundtrip():
 
     # Then
     assert_that(actual, instance_of(HttpResponse))
+    assert_that(actual, has_identical_properties_to(expected))
+
+
+def test_fault_response_roundtrip():
+    # Given
+    expected = FaultResponseBuilder().build()
+    structure = expected.as_structure()
+
+    # When
+    actual = BaseResponse.from_structure(structure)
+
+    # Then
+    assert_that(actual, instance_of(FaultResponse))
     assert_that(actual, has_identical_properties_to(expected))
 
 
