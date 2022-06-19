@@ -1,6 +1,6 @@
 # mbtest
 
-Opinionated Python wrapper & utils for the [Mountebank](http://www.mbtest.org/) over the wire test double tool.
+Opinionated Python wrapper & utils for the [Mountebank](https://www.mbtest.org/) over the wire test double tool.
 
 Includes [pytest](https://pytest.org) fixture and [PyHamcrest](https://pyhamcrest.readthedocs.io) matchers.
 
