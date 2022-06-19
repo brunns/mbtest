@@ -85,8 +85,8 @@ Currently, the `Makefile` targets use Python 3.6 and 3.10 via tox, so a quick-st
 
 ```sh
 pip install pyenv tox tox-pyenv
-pyenv install 3.6.15 && pyenv install 3.10.0
-pyenv local 3.10.0 3.6.15
+pyenv install 3.6.15 && pyenv install 3.10.4
+pyenv local 3.10.4 3.6.15
 ```
 
 In order to run `make test`, you'll also need to have Mountebank installed locally:
