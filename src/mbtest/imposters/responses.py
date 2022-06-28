@@ -286,12 +286,21 @@ class Proxy(BaseResponse):
 
 
 class PredicateGenerator(JsonSerializable):
+    """Represents a `Mountebank predicate generator <https://www.mbtest.org/docs/api/proxies#proxy-predicate-generators>`_.
+
+    :param path: Include the path in the generated predicate.
+    """
+
     def __init__(
         self,
         path: bool = False,
         query: Union[bool, Mapping[str, str]] = False,
+        # method: bool = False,
+        # body: bool = False,
+        # headers: Union[bool, Mapping[str, str]] = False,
         operator: Predicate.Operator = Predicate.Operator.EQUALS,
         case_sensitive: bool = True,
+        # ignore_query: bool = False,
     ):
         self.path = path
         self.query = query

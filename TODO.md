@@ -1,6 +1,6 @@
 # To Do
 
-* [Mountebank 2.6](https://www.mbtest.org/releases/v2.6.0) `PredicateGenerator` ignore feature. `PredicateGenerator` needs some love in general.
+* [Mountebank 2.6](https://www.mbtest.org/releases/v2.6.0) `PredicateGenerator` [ignore feature](https://www.mbtest.org/docs/api/proxies#proxy-predicate-generators). `PredicateGenerator` needs some love in general.
 * What if Mountebank is installed elsewhere? We should emit better messages if starting the mb server fails.
 * Does the [TCP](http://www.mbtest.org/docs/protocols/tcp) protocol stuff work? I need to add `endOfRequestResolver` I think, at least.
 * Proxy record/playback
@@ -10,8 +10,9 @@
 * Builders for Impostors etc.
 
 ## CI
+
 * Publish coverage
-* Release process
+* Automate Release process
 
 ## For 3.0
 

@@ -1,4 +1,8 @@
-# Change Log
+,,# Change Log
+
+## 2.11.0
+
+* Enhancement - add fault behavior to responses.
 
 ## 2.10.0
 
