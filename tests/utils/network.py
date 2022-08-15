@@ -16,5 +16,5 @@ def internet_connection(host="8.8.8.8", port=53, timeout=1):
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         return True
     except OSError as ex:
-        logger.info(ex)
+        logger.warning(exc_info=ex)
         return False
