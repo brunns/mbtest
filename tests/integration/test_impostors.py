@@ -177,6 +177,45 @@ def test_remove_and_replace_stub_from_running_impostor(mock_server):
         )
 
 
+@pytest.mark.skipif(
+    float(os.environ.get("MBTEST_VERSION", "2.1")) < 2.1,
+    reason="Changing stubs from existing imposter requires Mountebank version 2.1 or higher.",
+)
+def test_change_stub_at_running_impostor(mock_server):
+    impostor = Imposter(
+        stubs=[
+            Stub(Predicate(path="/test0"), Response(body="response0")),
+            Stub(Predicate(path="/test1"), Response(body="response1")),
+            Stub(Predicate(path="/test2"), Response(body="response2")),
+        ],
+        default_response=HttpResponse(body="default"),
+    )
+
+    with mock_server(impostor):
+        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        assert_that(
+            responses,
+            contains_exactly(
+                is_response().with_body("response0"),
+                is_response().with_body("response1"),
+                is_response().with_body("response2"),
+            ),
+        )
+
+        impostor.change_stub(1, Stub(Predicate(path="/test3"), Response(body="response3")))
+
+        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(4)]
+        assert_that(
+            responses,
+            contains_exactly(
+                is_response().with_body("response0"),
+                is_response().with_body("default"),
+                is_response().with_body("response2"),
+                is_response().with_body("response3"),
+            ),
+        )
+
+
 def test_build_imposter_from_structure_on_disk(mock_server):
     # Given
     structure_path = Path("tests") / "integration" / "test_data" / "impostor_structure.json"

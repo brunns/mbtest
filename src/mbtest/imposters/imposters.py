@@ -152,6 +152,13 @@ class Imposter(JsonSerializable):
         post.raise_for_status()
         return self.stubs.pop(index)
 
+    def change_stub(self, index: int, definition: Stub) -> int:
+        """Change a stub in an existing imposter. Returns index of changed stub."""
+        json = definition.as_structure()
+        put = requests.put(f"{self.configuration_url}/stubs/{index}", json=json, timeout=10)
+        put.raise_for_status()
+        return index
+
 
 class Request(metaclass=ABCMeta):
     @staticmethod
