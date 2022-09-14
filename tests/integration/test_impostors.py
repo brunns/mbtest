@@ -181,7 +181,7 @@ def test_remove_and_replace_stub_from_running_impostor(mock_server):
     float(os.environ.get("MBTEST_VERSION", "2.1")) < 2.1,
     reason="Changing stubs from existing imposter requires Mountebank version 2.1 or higher.",
 )
-def test_change_stub_at_running_impostor(mock_server):
+def test_update_stub_at_running_impostor(mock_server):
     impostor = Imposter(
         stubs=[
             Stub(Predicate(path="/test0"), Response(body="response0")),
@@ -202,7 +202,7 @@ def test_change_stub_at_running_impostor(mock_server):
             ),
         )
 
-        impostor.change_stub(1, Stub(Predicate(path="/test3"), Response(body="response3")))
+        impostor.update_stub(1, Stub(Predicate(path="/test3"), Response(body="response3")))
 
         responses = [requests.get(f"{impostor.url}/test{i}") for i in range(4)]
         assert_that(
