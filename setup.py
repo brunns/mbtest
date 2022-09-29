@@ -32,7 +32,7 @@ test_dependencies = [
     "trustme>=0.7",
 ]
 coverage_dependencies = [
-    "pytest-cov>=2.5,<4.0",
+    "pytest-cov>=2.5,<5.0",
     "codacy-coverage>=1.0",
 ]
 docs_dependencies = [
