@@ -26,10 +26,10 @@ install_dependencies = [
     "brunns-matchers>=2.4",
 ]
 test_dependencies = [
-    "pytest>=6.0",
+    "pytest>=7.0",
     "contexttimer>=0.3",
     "brunns-builder>=0.6",
-    "trustme>=0.7",
+    "trustme>=0.9",
 ]
 coverage_dependencies = [
     "pytest-cov>=2.5,<5.0",
@@ -38,7 +38,7 @@ coverage_dependencies = [
 docs_dependencies = [
     "sphinx>=3.0",
     "sphinx-autodoc-typehints>=1.10",
-    "pytest>=6.0",
+    "pytest>=7.0",
     "furo",
 ]
 
