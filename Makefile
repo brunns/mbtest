@@ -4,7 +4,7 @@ default: help
 
 .PHONY: test
 test: ## Run tests
-	tox -e py36,py310
+	tox -e py37,py310
 
 .PHONY: coverage
 coverage: ## Test coverage report
@@ -12,7 +12,7 @@ coverage: ## Test coverage report
 
 .PHONY: precommit-test
 precommit-test:
-	tox -e py36,coverage
+	tox -e py37,coverage
 
 .PHONY: lint
 lint: check-format flake8 bandit safety ## Lint code
@@ -68,13 +68,13 @@ precommit: precommit-test typecheck lint docs ## Pre-commit targets
 
 .PHONY: recreate
 recreate: clean jsdeps ## Recreate tox environments
-	tox --recreate --notest -p
+	tox --recreate --notest -p -s
 	tox --recreate --notest -e coverage,format,check-format,flake8,pylint,bandit,safety,piprot,mypy,pyright,docs -p
 
 .PHONY: jsdeps
 jsdeps:
 	- rm -r node_modules/ package.json package-lock.json
-	npm install mountebank@2.6 --production
+	npm install mountebank@2.7 --omit=dev
 
 .PHONY: clean
 clean: ## Clean generated files

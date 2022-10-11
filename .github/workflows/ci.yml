@@ -14,7 +14,7 @@ jobs:
       matrix:
         python: ['3.10']
         node-version: ['15.x']
-        mbtest-version: ['2.6']
+        mbtest-version: ['2.7']
         os: ['ubuntu-latest']
 
     steps:
@@ -46,9 +46,9 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        python: ['3.9', '3.8', '3.7', '3.6', 'pypy-3.6']
+        python: ['3.9', '3.8', '3.7', 'pypy-3.7']
         node-version: ['15.x']
-        mbtest-version: ['2.6']
+        mbtest-version: ['2.7']
         os: ['ubuntu-latest']
         experimental: [false]
         include:
@@ -89,7 +89,7 @@ jobs:
       matrix:
         python: ['3.10']
         node-version: ['15.x']
-        mbtest-version: ['2.7', '2.5', '2.0', '1.16']
+        mbtest-version: ['2.6', '2.0', '1.16']
         os: ['ubuntu-latest']
       fail-fast: false
 
@@ -123,7 +123,7 @@ jobs:
       matrix:
         python: ['3.10']
         node-version: ['15.x']
-        mbtest-version: ['2.6']
+        mbtest-version: ['2.7']
         os: ['windows-latest', 'macos-latest']
       fail-fast: false
 
@@ -157,7 +157,7 @@ jobs:
       matrix:
         python: ['3.10']
         node-version: ['15.x']
-        mbtest-version: ['2.6']
+        mbtest-version: ['2.7']
         os: ['ubuntu-latest']
       fail-fast: false
 

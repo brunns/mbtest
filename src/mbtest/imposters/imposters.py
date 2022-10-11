@@ -238,5 +238,5 @@ class SentEmail(Request):
 def smtp_imposter(name="smtp", record_requests=True) -> Imposter:
     """Canned SMTP server imposter."""
     return Imposter(
-        [], 4525, protocol=Imposter.Protocol.SMTP, name=name, record_requests=record_requests
+        [], 5525, protocol=Imposter.Protocol.SMTP, name=name, record_requests=record_requests
     )
