@@ -203,7 +203,7 @@ jobs:
       - name: Check format
         run: tox -e check-format
       - name: Lint
-        run: tox -e flake8
+        run: tox -e flake8 refurb
       - name: Security checks
         run: tox -e bandit,safety
       - name: Check types
