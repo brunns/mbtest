@@ -31,7 +31,7 @@ Install with pip:
 
 (As usual, use of a [venv](https://docs.python.org/3/library/venv.html) or [virtualenv](https://virtualenv.pypa.io) is recommended.) Also requires [Mountebank](http://www.mbtest.org/) to have been installed:
 
-    npm install mountebank@2.7 --omit=dev
+    npm install mountebank@2.8 --omit=dev
 
 (Alternatively, you can attach to an instance of Mountebank running elsewhere, perhaps [in docker](https://mbtest.readthedocs.io/en/latest/guide/docker.html).)
 
@@ -85,8 +85,8 @@ Currently, the `Makefile` targets use Python 3.6 and 3.10 via tox, so a quick-st
 
 ```sh
 pip install pyenv tox tox-pyenv
-pyenv install 3.6.15 && pyenv install 3.10.4
-pyenv local 3.10.4 3.6.15
+pyenv install 3.7.14 && pyenv install 3.10.4
+pyenv local 3.10.4 3.7.14
 ```
 
 In order to run `make test`, you'll also need to have Mountebank installed locally:

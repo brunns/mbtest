@@ -74,7 +74,7 @@ recreate: clean jsdeps ## Recreate tox environments
 .PHONY: jsdeps
 jsdeps:
 	- rm -r node_modules/ package.json package-lock.json
-	npm install mountebank@2.7 --omit=dev
+	npm install mountebank@2.8 --omit=dev
 
 .PHONY: clean
 clean: ## Clean generated files

@@ -14,7 +14,7 @@ jobs:
       matrix:
         python: ['3.10']
         node-version: ['15.x']
-        mbtest-version: ['2.7']
+        mbtest-version: ['2.8']
         os: ['ubuntu-latest']
 
     steps:
@@ -48,7 +48,7 @@ jobs:
       matrix:
         python: ['3.9', '3.8', '3.7', 'pypy-3.7']
         node-version: ['15.x']
-        mbtest-version: ['2.7']
+        mbtest-version: ['2.8']
         os: ['ubuntu-latest']
         experimental: [false]
         include:
@@ -89,7 +89,7 @@ jobs:
       matrix:
         python: ['3.10']
         node-version: ['15.x']
-        mbtest-version: ['2.6', '2.0', '1.16']
+        mbtest-version: ['2.7', '2.6', '2.0', '1.16']
         os: ['ubuntu-latest']
       fail-fast: false
 
@@ -123,7 +123,7 @@ jobs:
       matrix:
         python: ['3.10']
         node-version: ['15.x']
-        mbtest-version: ['2.7']
+        mbtest-version: ['2.8']
         os: ['windows-latest', 'macos-latest']
       fail-fast: false
 
@@ -157,7 +157,7 @@ jobs:
       matrix:
         python: ['3.10']
         node-version: ['15.x']
-        mbtest-version: ['2.7']
+        mbtest-version: ['2.8']
         os: ['ubuntu-latest']
       fail-fast: false
 
