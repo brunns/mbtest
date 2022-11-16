@@ -81,12 +81,14 @@ See the [Documentation](https://mbtest.readthedocs.io/) for more.
 Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html) and [tox](https://tox.readthedocs.io). 
 [PyEnv](https://github.com/pyenv/pyenv) may also come in handy so tests can be run against various Python versions. 
 
-Currently, the `Makefile` targets use Python 3.6 and 3.10 via tox, so a quick-start setup could be:
+Currently, the `Makefile` targets use Python 3.7 and 3.11 via tox, so a quick-start setup could be:
 
 ```sh
-pip install pyenv tox tox-pyenv
-pyenv install 3.7.14 && pyenv install 3.10.4
-pyenv local 3.10.4 3.7.14
+brew install pyenv
+versions=(3.7 3.11)
+for v in "${versions[@]}"; do pyenv install $v -s; done
+pyenv local 3.11 3.7
+pip install tox tox-pyenv
 ```
 
 In order to run `make test`, you'll also need to have Mountebank installed locally:
