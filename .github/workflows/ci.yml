@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python: ['3.10']
+        python: ['3.11']
         node-version: ['15.x']
         mbtest-version: ['2.8']
         os: ['ubuntu-latest']
@@ -46,16 +46,16 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        python: ['3.9', '3.8', '3.7', 'pypy-3.7']
+        python: ['3.10', '3.9', '3.8', '3.7', 'pypy-3.7']
         node-version: ['15.x']
         mbtest-version: ['2.8']
         os: ['ubuntu-latest']
         experimental: [false]
         include:
-          - python: '3.11.0-alpha - 3.11.0'
+          - python: '3.12.0-alpha - 3.12.0'
             experimental: true
             node-version: '15.x'
-            mbtest-version: '2.4'
+            mbtest-version: '2.8'
             os: 'ubuntu-latest'
       fail-fast: false
 
