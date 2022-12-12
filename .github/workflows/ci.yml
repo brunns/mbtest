@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install Tox and any other packages
-        run: pip install tox
+        run: pip install tox~=3.0
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -70,7 +70,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install Tox and any other packages
-        run: pip install tox
+        run: pip install tox~=3.0
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -104,7 +104,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install Tox and any other packages
-        run: pip install tox
+        run: pip install tox~=3.0
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -138,7 +138,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install Tox and any other packages
-        run: pip install tox
+        run: pip install tox~=3.0
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -172,7 +172,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install Tox and any other packages
-        run: pip install tox
+        run: pip install tox~=3.0
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -199,7 +199,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - name: Install Tox and any other packages
-        run: pip install tox
+        run: pip install tox~=3.0
       - name: Check format
         run: tox -e check-format
       - name: Lint
