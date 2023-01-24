@@ -88,7 +88,7 @@ jobs:
     strategy:
       matrix:
         python: ['3.11']
-        node-version: ['18.x']
+        node-version: ['16.x']
         mbtest-version: ['2.7', '2.6', '2.0', '1.16']
         os: ['ubuntu-latest']
       fail-fast: false
