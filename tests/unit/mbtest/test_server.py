@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 def test_server_default_options():
     # Given
     with patch("subprocess.Popen") as popen, patch("requests.get"):
-
         # When
         ExecutingMountebankServer(port=1234)
 
@@ -43,7 +42,6 @@ def test_server_default_options():
 def test_server_non_default_options():
     # Given
     with patch("subprocess.Popen") as popen, patch("requests.get"):
-
         # When
         ExecutingMountebankServer(
             executable=Path("somepath/mb"),

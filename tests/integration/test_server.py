@@ -81,7 +81,6 @@ def test_allow_multiple_servers_on_different_ports():
         imposter2 = Imposter(Stub(Predicate(path="/test"), Response(body="bacon")))
 
         with server1(imposter1), server2(imposter2):
-
             response1 = requests.get(f"{imposter1.url}/test")
             response2 = requests.get(f"{imposter2.url}/test")
 
@@ -116,7 +115,6 @@ def test_remove_and_replace_impostor_from_running_server(mock_server):
             Imposter(Stub(Predicate(path="/test"), Response(body="chips")), name="chips"),
         ]
     ) as server:
-
         # Retrieve impostor details from running server, and check they work
         initial = server.query_all_imposters()
 

@@ -63,7 +63,6 @@ def test_add_stub_to_running_impostor(mock_server):
     )
 
     with mock_server(impostor):
-
         responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
         assert_that(
             responses,
@@ -101,7 +100,6 @@ def test_add_stubs_to_running_impostor(mock_server):
     )
 
     with mock_server(impostor):
-
         responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
         assert_that(
             responses,
