@@ -49,6 +49,7 @@ class Predicate(LogicallyCombinablePredicate):
     :param body: Body text. Can be a string, or a JSON serialisable data structure.
     :param headers: Headers, keys and values.
     :param xpath: xpath query
+    :param jsonpath: jsonpath query
     :param operator:
     :param case_sensitive:
     """
@@ -89,6 +90,7 @@ class Predicate(LogicallyCombinablePredicate):
         body: Optional[Union[str, JsonStructure]] = None,
         headers: Optional[Mapping[str, str]] = None,
         xpath: Optional[str] = None,
+        jsonpath: Optional[str] = None,
         operator: Union[Operator, str] = Operator.EQUALS,
         case_sensitive: bool = True,
     ) -> None:
@@ -104,6 +106,7 @@ class Predicate(LogicallyCombinablePredicate):
         self.body = body
         self.headers = headers
         self.xpath = xpath
+        self.jsonpath = jsonpath
         self.operator = (
             operator if isinstance(operator, Predicate.Operator) else Predicate.Operator(operator)
         )
@@ -116,6 +119,8 @@ class Predicate(LogicallyCombinablePredicate):
         }
         if self.xpath:
             predicate["xpath"] = {"selector": self.xpath}
+        if self.jsonpath:
+            predicate["jsonpath"] = {"selector": self.jsonpath}
         return predicate
 
     @classmethod
@@ -130,6 +135,8 @@ class Predicate(LogicallyCombinablePredicate):
         predicate.fields_from_structure(structure[operator])
         if "xpath" in structure:
             predicate.xpath = structure["xpath"]["selector"]
+        if "jsonpath" in structure:
+            predicate.jsonpath = structure["jsonpath"]["selector"]
         return predicate
 
     def fields_from_structure(self, inner):
