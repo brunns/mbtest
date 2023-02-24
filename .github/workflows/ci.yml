@@ -46,7 +46,7 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        python: ['3.10', '3.9', '3.8', '3.7', 'pypy-3.7']
+        python: ['3.10', '3.9', '3.8', 'pypy-3.8']
         node-version: ['18.x']
         mbtest-version: ['2.8']
         os: ['ubuntu-latest']
@@ -139,6 +139,14 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install Tox and any other packages
         run: pip install tox~=3.0
+      - name: Install and Start Colima
+        run: |
+          if [[ "${{ matrix.os }}" == *"macos"* ]]
+          then
+            brew install docker docker-compose
+            colima start
+          fi
+        shell: bash
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
