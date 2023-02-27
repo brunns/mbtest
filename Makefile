@@ -4,7 +4,7 @@ default: help
 
 .PHONY: test
 test: ## Run tests
-	tox -e py37,py311
+	tox -e py38,py311
 
 .PHONY: coverage
 coverage: ## Test coverage report
@@ -12,7 +12,7 @@ coverage: ## Test coverage report
 
 .PHONY: precommit-test
 precommit-test:
-	tox -e py37,coverage
+	tox -e py38,coverage
 
 .PHONY: lint
 lint: check-format flake8 bandit safety refurb  ## Lint code

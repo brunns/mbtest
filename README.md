@@ -81,14 +81,17 @@ See the [Documentation](https://mbtest.readthedocs.io/) for more.
 Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html) and [tox](https://tox.readthedocs.io). 
 [PyEnv](https://github.com/pyenv/pyenv) may also come in handy so tests can be run against various Python versions. 
 
-Currently, the `Makefile` targets use Python 3.7 and 3.11 via tox, so a quick-start setup could be:
+Integration tests run against an instance of Mountebank running in Docker.
+
+Currently, the `Makefile` targets use Python 3.8 and 3.11 via tox, so a quick-start setup could be:
 
 ```sh
-brew install pyenv
+brew install pyenv colima docker
 versions=(3.7 3.11)
 for v in "${versions[@]}"; do pyenv install $v -s; done
 pyenv local 3.11 3.7
 pip install tox tox-pyenv
+colima start
 ```
 
 In order to run `make test`, you'll also need to have Mountebank installed locally:
@@ -120,4 +123,5 @@ python setup.py sdist bdist_wheel
 twine upload dist/*$version*
 git checkout master
 git merge "release-$version"
+git push
 ```
