@@ -4,7 +4,7 @@ default: help
 
 .PHONY: test
 test: ## Run tests
-	tox -e py36,py310
+	tox -e py38,py311
 
 .PHONY: coverage
 coverage: ## Test coverage report
@@ -12,10 +12,10 @@ coverage: ## Test coverage report
 
 .PHONY: precommit-test
 precommit-test:
-	tox -e py36,coverage
+	tox -e py38,coverage
 
 .PHONY: lint
-lint: check-format flake8 bandit safety ## Lint code
+lint: check-format flake8 bandit safety refurb  ## Lint code
 
 .PHONY: flake8
 flake8:
@@ -31,6 +31,10 @@ extra-lint: pylint typecheck  ## Extra, optional linting.
 .PHONY: pylint
 pylint:
 	tox -e pylint
+
+.PHONY: refurb
+refurb:
+	tox -e refurb
 
 .PHONY: typecheck
 typecheck:
@@ -68,13 +72,13 @@ precommit: precommit-test typecheck lint docs ## Pre-commit targets
 
 .PHONY: recreate
 recreate: clean jsdeps ## Recreate tox environments
-	tox --recreate --notest -p
-	tox --recreate --notest -e coverage,format,check-format,flake8,pylint,bandit,safety,piprot,mypy,pyright,docs -p
+	tox --recreate --notest -p -s
+	tox --recreate --notest -e coverage,format,check-format,flake8,pylint,bandit,safety,piprot,mypy,pyright,docs,refurb -p
 
 .PHONY: jsdeps
 jsdeps:
 	- rm -r node_modules/ package.json package-lock.json
-	npm install mountebank@2.6 --production
+	npm install mountebank@2.8 --omit=dev
 
 .PHONY: clean
 clean: ## Clean generated files
@@ -86,11 +90,11 @@ clean: ## Clean generated files
 
 .PHONY: repl
 repl: ## Python REPL
-	tox -e py310 -- python
+	tox -e py311 -- python
 
 .PHONY: outdated
 outdated: ## List outdated dependancies
-	tox -e py310 -- pip list -o
+	tox -e py311 -- pip list -o
 
 .PHONY: help
 help: ## Show this help

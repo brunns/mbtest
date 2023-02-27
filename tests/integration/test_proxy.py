@@ -1,7 +1,6 @@
 # encoding=utf-8
 import logging
 
-import pytest
 import requests
 from brunns.matchers.data import json_matching
 from brunns.matchers.html import has_title
@@ -20,22 +19,20 @@ logger = logging.getLogger(__name__)
 INTERNET_CONNECTED = internet_connection()
 
 
-@pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
-def test_proxy(mock_server):
-    imposter = Imposter(Stub(responses=Proxy(to="http://example.com")))
+def test_proxy(mock_server, httpbin):
+    imposter = Imposter(Stub(responses=Proxy(to=httpbin)))
 
     with mock_server(imposter):
         response = requests.get(imposter.url)
 
         assert_that(
-            response, is_response().with_status_code(200).and_body(has_title("Example Domain"))
+            response, is_response().with_status_code(200).and_body(has_title("httpbin.org"))
         )
         assert_that(imposter, had_request().with_path("/").and_method("GET"))
 
 
-@pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
-def test_proxy_playback(mock_server):
-    proxy_imposter = Imposter(Stub(responses=Proxy(to="https://httpbin.org", mode=Proxy.Mode.ONCE)))
+def test_proxy_playback(mock_server, httpbin):
+    proxy_imposter = Imposter(Stub(responses=Proxy(to=httpbin, mode=Proxy.Mode.ONCE)))
 
     with mock_server(proxy_imposter):
         response = requests.get(proxy_imposter.url / "status/418")
@@ -57,12 +54,11 @@ def test_proxy_playback(mock_server):
         )
 
 
-@pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
-def test_proxy_uses_path_predicate_generator(mock_server):
+def test_proxy_uses_path_predicate_generator(mock_server, httpbin):
     proxy_imposter = Imposter(
         Stub(
             responses=Proxy(
-                to="https://httpbin.org",
+                to=httpbin,
                 mode=Proxy.Mode.ONCE,
                 predicate_generators=[PredicateGenerator(path=True)],
             )
@@ -89,12 +85,11 @@ def test_proxy_uses_path_predicate_generator(mock_server):
         assert_that(response, is_response().with_status_code(200))
 
 
-@pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
-def test_proxy_uses_query_predicate_generator(mock_server):
+def test_proxy_uses_query_predicate_generator(mock_server, httpbin):
     proxy_imposter = Imposter(
         Stub(
             responses=Proxy(
-                to="https://httpbin.org",
+                to=httpbin,
                 mode=Proxy.Mode.ONCE,
                 predicate_generators=[PredicateGenerator(query=True)],
             )
@@ -129,12 +124,11 @@ def test_proxy_uses_query_predicate_generator(mock_server):
         )
 
 
-@pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
-def test_proxy_uses_query_predicate_generator_with_key(mock_server):
+def test_proxy_uses_query_predicate_generator_with_key(mock_server, httpbin):
     proxy_imposter = Imposter(
         Stub(
             responses=Proxy(
-                to="https://httpbin.org",
+                to=httpbin,
                 mode=Proxy.Mode.ONCE,
                 predicate_generators=[PredicateGenerator(query={"foo": "whatever"})],
             )
@@ -179,15 +173,14 @@ def test_proxy_uses_query_predicate_generator_with_key(mock_server):
         )
 
 
-@pytest.mark.skipif(not INTERNET_CONNECTED, reason="No internet connection.")
-def test_proxy_without_stub(mock_server):
-    imposter = Imposter(Proxy(to="http://example.com"))
+def test_proxy_without_stub(mock_server, httpbin):
+    imposter = Imposter(Proxy(to=httpbin))
 
     with mock_server(imposter):
         response = requests.get(imposter.url)
 
         assert_that(
-            response, is_response().with_status_code(200).and_body(has_title("Example Domain"))
+            response, is_response().with_status_code(200).and_body(has_title("httpbin.org"))
         )
 
 

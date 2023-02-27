@@ -117,10 +117,8 @@ class Response(BaseResponse):
         *,
         http_response: Optional[HttpResponse] = None,
     ) -> None:
-        self.http_response = (
-            http_response
-            if http_response
-            else HttpResponse(body=body, status_code=status_code, headers=headers, mode=mode)
+        self.http_response = http_response or HttpResponse(
+            body=body, status_code=status_code, headers=headers, mode=mode
         )
         # TODO: Deprecate HttpResponse arguments
         self.wait = wait

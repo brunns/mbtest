@@ -144,7 +144,7 @@ class Imposter(JsonSerializable):
         post = requests.post(f"{self.configuration_url}/stubs", json=json, timeout=10)
         post.raise_for_status()
         self.stubs.append(definition)  # TODO - what if we've not added to the end?
-        return index if index else len(post.json()["stubs"]) - 1
+        return index or len(post.json()["stubs"]) - 1
 
     def delete_stub(self, index: int) -> Stub:
         """Remove a stub from a running impostor."""
@@ -238,5 +238,5 @@ class SentEmail(Request):
 def smtp_imposter(name="smtp", record_requests=True) -> Imposter:
     """Canned SMTP server imposter."""
     return Imposter(
-        [], 4525, protocol=Imposter.Protocol.SMTP, name=name, record_requests=record_requests
+        [], 5525, protocol=Imposter.Protocol.SMTP, name=name, record_requests=record_requests
     )

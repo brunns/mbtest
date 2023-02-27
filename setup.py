@@ -24,12 +24,13 @@ install_dependencies = [
     "pyhamcrest>=2.0",
     "Deprecated>=1.2",
     "brunns-matchers>=2.4",
+    "imurl>=0.2",
 ]
 test_dependencies = [
     "pytest>=6.0",
     "contexttimer>=0.3",
     "brunns-builder>=0.6",
-    "trustme>=0.7",
+    "trustme>=0.9",
 ]
 coverage_dependencies = [
     "pytest-cov>=2.5,<5.0",
@@ -52,7 +53,7 @@ extras = {
 setup(
     name="mbtest",
     zip_safe=False,
-    version="2.10.0",
+    version="2.11.0",
     description="Python wrapper & utils for the Mountebank over the wire test double tool.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -70,15 +71,15 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Testing",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     install_requires=install_dependencies,
     tests_require=test_dependencies,
     extras_require=extras,

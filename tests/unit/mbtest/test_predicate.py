@@ -86,6 +86,13 @@ def test_structure_xpath():
     assert predicate.xpath == expected_predicate.xpath
 
 
+def test_structure_jsonpath():
+    expected_predicate = Predicate(jsonpath="$.darwin")
+    predicate_structure = expected_predicate.as_structure()
+    predicate = BasePredicate.from_structure(predicate_structure)
+    assert predicate.jsonpath == expected_predicate.jsonpath
+
+
 def test_invalid_operator():
     expected_predicate = Predicate(operator="deepEquals")
     predicate_structure = expected_predicate.as_structure()
