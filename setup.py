@@ -53,7 +53,7 @@ extras = {
 setup(
     name="mbtest",
     zip_safe=False,
-    version="2.10.0",
+    version="2.11.0",
     description="Python wrapper & utils for the Mountebank over the wire test double tool.",
     long_description=long_description,
     long_description_content_type="text/markdown",

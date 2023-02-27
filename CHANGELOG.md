@@ -2,6 +2,8 @@
 
 ## 2.11.0
 
+* Enhancement - add jsonpath to Predicate. (Thanks [@yevhen-m](https://github.com/yevhen-m).)
+* Enhancement - add PredicateGenerator.
 * Enhancement - add fault behavior to responses.
 
 ## 2.10.0
