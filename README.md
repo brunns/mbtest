@@ -119,9 +119,7 @@ version="n.n.n" # Needs to match new version number in setup.py.
 git checkout -b "release-$version"
 make precommit && git commit -am"Release $version" && git push --set-upstream origin "release-$version" # If not already all pushed, which it should be.
 hub release create "V$version" -t"release-$version" -m"Version $version"
-python setup.py sdist bdist_wheel
-twine upload dist/*$version*
-git checkout master
-git merge "release-$version"
+python setup.py sdist bdist_wheel && twine upload dist/*$version*
+git checkout master && git merge "release-$version"
 git push
 ```
