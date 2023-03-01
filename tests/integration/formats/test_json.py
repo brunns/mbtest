@@ -35,3 +35,22 @@ def test_json_response(mock_server):
 
         # Then
         assert_that(r, is_response().with_body(json_matching({"foo": ["bar", "baz"]})))
+
+
+def test_jsonpath_predicate(mock_server):
+    # Given
+    imposter = Imposter(
+        Stub(
+            Predicate(jsonpath="$.foo", body="bar", operator=Predicate.Operator.EQUALS),
+            Response(body="sausages"),
+        )
+    )
+
+    with mock_server(imposter):
+        # When
+        r1 = requests.get(imposter.url, json={"foo": "bar"})
+        r2 = requests.get(imposter.url, json={"foo": "baz"})
+
+        # Then
+        assert_that(r1, is_response().with_body("sausages"))
+        assert_that(r2, is_response().with_body(not_("sausages")))
