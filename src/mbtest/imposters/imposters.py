@@ -97,7 +97,7 @@ class Imposter(JsonSerializable):
         return imposter
 
     def get_actual_requests(self) -> Sequence["Request"]:
-        json = requests.get(cast(str, self.configuration_url)).json()["requests"]
+        json = requests.get(cast(str, self.configuration_url), timeout=30).json()["requests"]
         return [Request.from_json(req) for req in json]
 
     def attach(self, host: str, port: int, server_url: furl) -> None:
@@ -120,7 +120,7 @@ class Imposter(JsonSerializable):
 
     def query_all_stubs(self) -> List[Stub]:
         """Return all stubs running on the impostor, including those defined elsewhere."""
-        json = requests.get(cast(str, self.configuration_url)).json()["stubs"]
+        json = requests.get(cast(str, self.configuration_url), timeout=30).json()["stubs"]
         all_stubs = [Stub.from_structure(s) for s in json]
         return all_stubs
 

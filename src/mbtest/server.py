@@ -163,7 +163,7 @@ class MountebankServer:
 
     def delete_impostor(self, imposter):
         """Delete impostor from server."""
-        requests.delete(imposter.configuration_url).raise_for_status()
+        requests.delete(imposter.configuration_url, timeout=30).raise_for_status()
         self._running_imposters = [
             i for i in self._running_imposters if i.configuration_url != imposter.configuration_url
         ]
@@ -182,12 +182,12 @@ class MountebankServer:
 
     def query_all_imposters(self) -> Sequence[Imposter]:
         """Yield all imposters running on the server, including those defined elsewhere."""
-        server_info = requests.get(self.server_url)
+        server_info = requests.get(self.server_url, timeout=30)
         imposters_structure = server_info.json()["imposters"]
         all_imposters: MutableSequence[Imposter] = []
         for imposter_structure in imposters_structure:
             impostor_url = imposter_structure["_links"]["self"]["href"]
-            imposter = Imposter.from_structure(requests.get(impostor_url).json())
+            imposter = Imposter.from_structure(requests.get(impostor_url, timeout=30).json())
             imposter.host = self.host
             imposter.server_url = self.server_url
             all_imposters.append(imposter)
