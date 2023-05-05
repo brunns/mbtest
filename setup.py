@@ -19,7 +19,7 @@ except IOError:
     long_description = "See https://github.com/brunns/mbtest/"
 
 install_dependencies = [
-    "requests>=2.0",
+    "requests>=2.0,<2.30",
     "furl>=2.0",
     "pyhamcrest>=2.0",
     "Deprecated>=1.2",
