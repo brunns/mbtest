@@ -31,7 +31,7 @@ def mock_server(
     allow_injection: bool = True,
     local_only: bool = True,
     data_dir: Union[str, None] = ".mbdb",
-) -> "ExecutingMountebankServer":
+) -> "MountebankServer":
     """`Pytest fixture <https://docs.pytest.org/en/latest/fixture.html>`_, making available a mock server, running one
     or more imposters, one for each domain being mocked.
 
