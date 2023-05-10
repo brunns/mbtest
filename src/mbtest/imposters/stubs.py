@@ -92,5 +92,5 @@ class AddStub(JsonSerializable):
     def from_structure(structure: JsonStructure) -> "AddStub":
         return AddStub(
             index=structure.get("index"),
-            stub=Stub().from_structure(structure.get("stub")),
+            stub=Stub.from_structure(structure.get("stub")),
         )
