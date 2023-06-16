@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: CI
 
 on:
   push:
@@ -27,8 +27,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install Tox and any other packages
-        run: pip install tox~=3.0
+      - name: Install build tools
+        run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -69,8 +69,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install Tox and any other packages
-        run: pip install tox~=3.0
+      - name: Install build tools
+        run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -103,8 +103,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install Tox and any other packages
-        run: pip install tox~=3.0
+      - name: Install build tools
+        run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -137,8 +137,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install Tox and any other packages
-        run: pip install tox~=3.0
+      - name: Install build tools
+        run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
       - name: Install and Start Colima
         run: |
           if [[ "${{ matrix.os }}" == *"macos"* ]]
@@ -179,8 +179,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install Tox and any other packages
-        run: pip install tox~=3.0
+      - name: Install build tools
+        run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -206,8 +206,8 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
-      - name: Install Tox and any other packages
-        run: pip install tox~=3.0
+      - name: Install build tools
+        run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
       - name: Check format
         run: tox -e check-format
       - name: Lint
