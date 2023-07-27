@@ -8,6 +8,7 @@
 * `had_request()` matcher for imposters - deprecate server version?
 * Write a CONTRIBUTING.md
 * Builders for Impostors etc.
+* [flake8](https://github.com/pycqa/flake8) -> [ruff](https://github.com/astral-sh/ruff)
 
 ## CI
 
