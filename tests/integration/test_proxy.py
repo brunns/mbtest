@@ -12,7 +12,7 @@ from contexttimer import Timer
 from hamcrest import assert_that, contains_string, has_entries, has_entry
 
 from mbtest.imposters import Imposter, Predicate, Proxy, Stub
-from mbtest.imposters.responses import PredicateGenerator
+from mbtest.imposters.responses import PredicateGenerator, Response
 from mbtest.matchers import had_request
 from tests.utils.network import internet_connection
 
@@ -28,6 +28,26 @@ def test_proxy(mock_server, httpbin):
     with mock_server(imposter):
         response = requests.get(imposter.url)
 
+        assert_that(
+            response, is_response().with_status_code(200).and_body(has_title("httpbin.org"))
+        )
+        assert_that(imposter, had_request().with_path("/").and_method("GET"))
+
+
+@pytest.mark.xfail(platform.system() == "Windows", reason="Public httpbin horribly flaky.")
+def test_stub_with_proxy_fallback(mock_server, httpbin):
+    imposter = Imposter(
+        stubs=[
+            Stub(Predicate(path="/test"), Response(body="sausages")),
+            Stub(responses=Proxy(to=httpbin, mode=Proxy.Mode.TRANSPARENT)),
+        ]
+    )
+
+    with mock_server(imposter):
+        response = requests.get(imposter.url / "test")
+        assert_that(response, is_response().with_status_code(200).and_body("sausages"))
+
+        response = requests.get(imposter.url)
         assert_that(
             response, is_response().with_status_code(200).and_body(has_title("httpbin.org"))
         )

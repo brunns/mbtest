@@ -6,6 +6,7 @@ from typing import Iterable, Mapping, MutableMapping, Optional, Union
 from xml.etree import ElementTree as et  # nosec - We are creating, not parsing XML.
 
 from furl import furl
+from imurl.url import URL
 
 from mbtest.imposters.base import Injecting, JsonSerializable, JsonStructure
 from mbtest.imposters.behaviors import Copy, Lookup
@@ -227,7 +228,7 @@ class Proxy(BaseResponse):
 
     def __init__(
         self,
-        to: Union[furl, str],
+        to: Union[furl, URL, str],
         wait: Optional[int] = None,
         inject_headers: Optional[Mapping[str, str]] = None,
         mode: "Proxy.Mode" = Mode.ONCE,

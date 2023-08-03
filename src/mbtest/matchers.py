@@ -9,6 +9,7 @@ from hamcrest.core.core.isanything import IsAnything
 from hamcrest.core.description import Description
 from hamcrest.core.helpers.wrap_matcher import wrap_matcher
 from hamcrest.core.matcher import Matcher
+from imurl.url import URL
 
 from mbtest.imposters.imposters import HttpRequest, Imposter, SentEmail
 from mbtest.server import MountebankServer
@@ -18,7 +19,7 @@ ANYTHING = anything()
 
 def had_request(
     method: Union[str, Matcher[str]] = ANYTHING,
-    path: Union[furl, str, Matcher[Union[furl, str]]] = ANYTHING,
+    path: Union[furl, str, Matcher[Union[furl, URL, str]]] = ANYTHING,
     query: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
     headers: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
     body: Union[str, Matcher[str]] = ANYTHING,
@@ -58,7 +59,7 @@ class HadRequest(BaseMatcher):
     def __init__(
         self,
         method: Union[str, Matcher[str]] = ANYTHING,
-        path: Union[furl, str, Matcher[Union[furl, str]]] = ANYTHING,
+        path: Union[furl, str, Matcher[Union[furl, URL, str]]] = ANYTHING,
         query: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
         headers: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
         body: Union[str, Matcher[str]] = ANYTHING,
@@ -74,7 +75,7 @@ class HadRequest(BaseMatcher):
         ):  # pragma: no cover
             warnings.warn("Use builder-style with_X and and_X methods, rather than arguments.")
         self.method: Matcher[str] = wrap_matcher(method)
-        self.path: Matcher[Union[furl, str]] = wrap_matcher(path)
+        self.path: Matcher[Union[furl, URL, str]] = wrap_matcher(path)
         self.query: Matcher[Mapping[str, str]] = wrap_matcher(query)
         self.headers: Matcher[Mapping[str, str]] = wrap_matcher(headers)
         self.body: Matcher[str] = wrap_matcher(body)
@@ -135,11 +136,11 @@ class HadRequest(BaseMatcher):
     def and_method(self, method: Union[str, Matcher[str]]):
         return self.with_method(method)
 
-    def with_path(self, path: Union[furl, str, Matcher[Union[furl, str]]]):
+    def with_path(self, path: Union[furl, str, Matcher[Union[furl, URL, str]]]):
         self.path = wrap_matcher(path)
         return self
 
-    def and_path(self, path: Union[furl, str, Matcher[Union[furl, str]]]):
+    def and_path(self, path: Union[furl, str, Matcher[Union[furl, URL, str]]]):
         return self.with_path(path)
 
     def with_query(self, query: Union[Mapping[str, str], Matcher[Mapping[str, str]]]):

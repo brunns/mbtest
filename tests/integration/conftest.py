@@ -2,7 +2,7 @@
 import sys
 
 import pytest
-from imurl import URL
+from imurl.url import URL
 
 from mbtest import server
 
@@ -16,9 +16,8 @@ def mock_server(request):
 
 @pytest.fixture(scope="session")
 def httpbin(docker_ip, docker_services) -> URL:
-    if (
-        WINDOWS
-    ):  # We can't run docker inside a Windows VM in GitHub Actions, so run tests against the public instance.
+    if WINDOWS:
+        # We can't run docker inside a Windows VM in GitHub Actions, so run tests against the public instance.
         return URL("https://httpbin.org")
     else:
         docker_services.start("httpbin")
