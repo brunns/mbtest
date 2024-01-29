@@ -53,9 +53,7 @@ class HttpResponse(JsonSerializable):
         self.mode = (
             mode
             if isinstance(mode, Response.Mode)
-            else Response.Mode(mode)
-            if mode
-            else Response.Mode.TEXT
+            else Response.Mode(mode) if mode else Response.Mode.TEXT
         )
 
     @property
@@ -267,16 +265,18 @@ class Proxy(BaseResponse):
         proxy_structure = structure["proxy"]
         proxy = cls(
             to=furl(proxy_structure["to"]),
-            inject_headers=proxy_structure["injectHeaders"]
-            if "injectHeaders" in proxy_structure
-            else None,
+            inject_headers=(
+                proxy_structure["injectHeaders"] if "injectHeaders" in proxy_structure else None
+            ),
             mode=Proxy.Mode(proxy_structure["mode"]),
-            predicate_generators=[
-                PredicateGenerator.from_structure(pg)
-                for pg in proxy_structure["predicateGenerators"]
-            ]
-            if "predicateGenerators" in proxy_structure
-            else None,
+            predicate_generators=(
+                [
+                    PredicateGenerator.from_structure(pg)
+                    for pg in proxy_structure["predicateGenerators"]
+                ]
+                if "predicateGenerators" in proxy_structure
+                else None
+            ),
         )
         behaviors = structure.get("_behaviors", {})
         proxy.set_if_in_dict(behaviors, "wait", "wait")

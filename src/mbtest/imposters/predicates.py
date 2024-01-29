@@ -98,9 +98,7 @@ class Predicate(LogicallyCombinablePredicate):
         self.method = (
             method
             if isinstance(method, Predicate.Method)
-            else Predicate.Method(method)
-            if method
-            else None
+            else Predicate.Method(method) if method else None
         )
         self.query = query
         self.body = body
