@@ -4,7 +4,7 @@ default: help
 
 .PHONY: test
 test: ## Run tests
-	tox -e py38,py311
+	tox -e py38,py312,pypy3.10
 
 .PHONY: coverage
 coverage: ## Test coverage report
