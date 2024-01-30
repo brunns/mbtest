@@ -1,12 +1,12 @@
 # encoding=utf-8
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from typing import Any, Mapping, MutableMapping
 
 # JsonStructure = Union[MutableMapping[str, "JsonStructure"], Iterable["JsonStructure"], str, int, bool, None]
 JsonStructure = Any  # TODO Pending a better solution to https://github.com/python/typing/issues/182
 
 
-class JsonSerializable(metaclass=ABCMeta):
+class JsonSerializable(ABC):
     """Object capable of being converted to a JSON serializable structure (using :py:meth:`as_structure`)
     or from such a structure ((using :py:meth:`from_structure`).
     """
@@ -44,7 +44,7 @@ class JsonSerializable(metaclass=ABCMeta):
         return f"{self.__class__.__module__:s}.{self.__class__.__name__:s}({', '.join(state):s})"
 
 
-class Injecting(JsonSerializable, metaclass=ABCMeta):
+class Injecting(JsonSerializable, ABC):
     def __init__(self, inject: str) -> None:
         self.inject = inject
 

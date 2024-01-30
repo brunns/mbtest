@@ -1,5 +1,5 @@
 # encoding=utf-8
-from abc import ABCMeta
+from abc import ABC
 from enum import Enum
 from typing import Mapping, Optional, Union
 
@@ -8,7 +8,7 @@ from furl import furl
 from mbtest.imposters.base import Injecting, JsonSerializable, JsonStructure
 
 
-class BasePredicate(JsonSerializable, metaclass=ABCMeta):
+class BasePredicate(JsonSerializable, ABC):
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> "BasePredicate":  # noqa: C901
         if "and" in structure:
@@ -28,7 +28,7 @@ class BasePredicate(JsonSerializable, metaclass=ABCMeta):
         raise NotImplementedError()  # pragma: no cover
 
 
-class LogicallyCombinablePredicate(BasePredicate, metaclass=ABCMeta):
+class LogicallyCombinablePredicate(BasePredicate, ABC):
     def __and__(self, other: "BasePredicate") -> "AndPredicate":
         return AndPredicate(self, other)
 

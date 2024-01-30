@@ -1,5 +1,5 @@
 # encoding=utf-8
-from abc import ABCMeta
+from abc import ABC
 from collections import abc
 from enum import Enum
 from typing import Iterable, List, Mapping, NamedTuple, Optional, Sequence, Union, cast
@@ -160,7 +160,7 @@ class Imposter(JsonSerializable):
         return index
 
 
-class Request(metaclass=ABCMeta):
+class Request(ABC):
     @staticmethod
     def from_json(json: JsonStructure) -> "Request":
         if "envelopeFrom" in json:

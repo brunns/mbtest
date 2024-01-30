@@ -6,7 +6,7 @@ from typing import Mapping, Optional, Type, cast
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 
 
-class Using(JsonSerializable, metaclass=abc.ABCMeta):
+class Using(JsonSerializable, abc.ABC):
     """
     How to select values from the response.
 
@@ -29,15 +29,14 @@ class Using(JsonSerializable, metaclass=abc.ABCMeta):
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> "Using":
         method = cls.Method(structure["method"])
-        sub_cls = cast(
+        return cast(
             Type["Using"],
             {
                 cls.Method.REGEX: UsingRegex,
                 cls.Method.XPATH: UsingXpath,
                 cls.Method.JSONPATH: UsingJsonpath,
             }[method],
-        )
-        return sub_cls.from_structure(structure)
+        ).from_structure(structure)
 
 
 class UsingRegex(Using):

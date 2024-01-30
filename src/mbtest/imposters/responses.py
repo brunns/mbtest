@@ -1,5 +1,5 @@
 # encoding=utf-8
-from abc import ABCMeta
+from abc import ABC
 from collections.abc import Sequence
 from enum import Enum
 from typing import Iterable, Mapping, MutableMapping, Optional, Union
@@ -13,7 +13,7 @@ from mbtest.imposters.behaviors import Copy, Lookup
 from mbtest.imposters.predicates import Predicate
 
 
-class BaseResponse(JsonSerializable, metaclass=ABCMeta):
+class BaseResponse(JsonSerializable, ABC):
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> "BaseResponse":  # noqa: C901
         if "is" in structure and "_behaviors" in structure:
