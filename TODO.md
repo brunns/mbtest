@@ -8,7 +8,7 @@
 * `had_request()` matcher for imposters - deprecate server version?
 * Write a CONTRIBUTING.md
 * Builders for Impostors etc.
-* [flake8](https://github.com/pycqa/flake8) -> [ruff](https://github.com/astral-sh/ruff)
+* [flake8](https://github.com/pycqa/flake8), [black](https://github.com/psf/black) & [isort](https://pycqa.github.io/isort/) -> [ruff](https://github.com/astral-sh/ruff)
 * Use [http.HTTPStatus](https://docs.python.org/3/library/http.html#http.HTTPStatus) and [http.HTTPMethod](https://docs.python.org/3/library/http.html#http.HTTPMethod) when we get to 3.11.
 
 ## CI
