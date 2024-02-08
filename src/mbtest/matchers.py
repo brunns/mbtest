@@ -11,6 +11,7 @@ from hamcrest.core.helpers.wrap_matcher import wrap_matcher
 from hamcrest.core.matcher import Matcher
 from imurl.url import URL
 
+from mbtest.imposters.base import JsonStructure
 from mbtest.imposters.imposters import HttpRequest, Imposter, SentEmail
 from mbtest.server import MountebankServer
 
@@ -79,6 +80,7 @@ class HadRequest(BaseMatcher):
         self.query: Matcher[Mapping[str, str]] = wrap_matcher(query)
         self.headers: Matcher[Mapping[str, str]] = wrap_matcher(headers)
         self.body: Matcher[str] = wrap_matcher(body)
+        self.json: Matcher[JsonStructure] = ANYTHING
         self.times: Matcher[int] = wrap_matcher(times)
 
     def describe_to(self, description: Description) -> None:
@@ -95,6 +97,7 @@ class HadRequest(BaseMatcher):
         self.append_matcher_description(self.query, "query parameters", description)
         self.append_matcher_description(self.headers, "headers", description)
         self.append_matcher_description(self.body, "body", description)
+        self.append_matcher_description(self.json, "json", description)
 
     @staticmethod
     def append_matcher_description(
@@ -122,6 +125,7 @@ class HadRequest(BaseMatcher):
             and self.query.matches(request.query)
             and self.headers.matches(request.headers)
             and self.body.matches(request.body)
+            and self.json.matches(request.json)
         ]
 
         if isinstance(self.times, IsAnything):
@@ -163,6 +167,13 @@ class HadRequest(BaseMatcher):
 
     def and_body(self, body: Union[str, Matcher[str]]):
         return self.with_body(body)
+
+    def with_json(self, json: Union[JsonStructure, Matcher[JsonStructure]]):
+        self.json = wrap_matcher(json)
+        return self
+
+    def and_json(self, json: Union[JsonStructure, JsonStructure]):
+        return self.with_json(json)
 
     def with_times(self, times: Union[int, Matcher[int]]):
         self.times = wrap_matcher(times)

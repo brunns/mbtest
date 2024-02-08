@@ -1,4 +1,5 @@
 # encoding=utf-8
+import json
 from unittest.mock import MagicMock
 
 from brunns.matchers.matcher import mismatches_with
@@ -43,6 +44,31 @@ def test_request_matcher():
             ),
         ),
     )
+
+
+def test_request_matcher_with_json():
+    # Given
+    server = MagicMock()
+    request1 = (
+        HttpRequestBuilder()
+        .with_path("/test")
+        .and_method("GET")
+        .and_body(json.dumps({"a": "b", "c": "d"}))
+        .build()
+    )
+    request2 = (
+        HttpRequestBuilder()
+        .with_path("/test")
+        .and_method("GET")
+        .and_body(json.dumps({"e": "f", "g": "j"}))
+        .build()
+    )
+    server.get_actual_requests.return_value = [request1, request2]
+
+    # When
+
+    # Then
+    assert_that(server, had_request().with_times(1).and_json(has_entries(a="b")).and_method("GET"))
 
 
 def test_email_sent():

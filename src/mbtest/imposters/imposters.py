@@ -2,6 +2,7 @@
 from abc import ABC
 from collections import abc
 from enum import Enum
+from json import JSONDecodeError, loads
 from typing import Iterable, List, Mapping, NamedTuple, Optional, Sequence, Union, cast
 
 import requests
@@ -191,6 +192,13 @@ class HttpRequest(Request):
     @staticmethod
     def from_json(json: JsonStructure) -> "HttpRequest":
         return HttpRequest(**json)
+
+    @property
+    def json(self):
+        try:
+            return loads(self.body) if self.body else None
+        except JSONDecodeError:
+            return None
 
 
 Address = NamedTuple("Address", [("address", str), ("name", str)])

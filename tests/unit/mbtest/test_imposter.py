@@ -1,13 +1,15 @@
 # encoding=utf-8
+import json
 import logging
 
 import pytest
 from brunns.matchers.object import has_identical_properties_to
-from hamcrest import assert_that, instance_of
+from hamcrest import assert_that, has_entries, instance_of
 
 from mbtest.imposters import Imposter, Proxy, Response, Stub
 from tests.utils.builders import (
     AndPredicateBuilder,
+    HttpRequestBuilder,
     HttpResponseBuilder,
     ImposterBuilder,
     NotPredicateBuilder,
@@ -107,3 +109,12 @@ def test_imposter_complex_predicates(predicate):
     # Then
     assert_that(actual, instance_of(Imposter))
     assert_that(actual, has_identical_properties_to(expected, ignoring=["configuration_url"]))
+
+
+def test_http_request_roundtrip():
+    # Given
+    assert HttpRequestBuilder().with_body("bananas").build().json is None
+    assert HttpRequestBuilder().with_body(None).build().json is None
+    assert_that(
+        HttpRequestBuilder().with_body(json.dumps({"a": "b"})).build().json, has_entries(a="b")
+    )
