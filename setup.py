@@ -33,7 +33,7 @@ test_dependencies = [
     "trustme>=0.9",
 ]
 coverage_dependencies = [
-    "pytest-cov>=2.5,<5.0",
+    "pytest-cov>=2.5",
     "codacy-coverage>=1.0",
 ]
 docs_dependencies = [
@@ -53,12 +53,12 @@ extras = {
 setup(
     name="mbtest",
     zip_safe=False,
-    version="2.11.0",
+    version="2.12.0",
     description="Python wrapper & utils for the Mountebank over the wire test double tool.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Simon Brunning",
-    author_email="simon@brunningonline.net",
+    author_email="simon@brunn.ing",
     url="https://github.com/brunns/mbtest/",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
@@ -79,7 +79,7 @@ setup(
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Testing",
     ],
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     install_requires=install_dependencies,
     tests_require=test_dependencies,
     extras_require=extras,

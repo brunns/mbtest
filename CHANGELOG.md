@@ -1,4 +1,8 @@
-,,# Change Log
+# Change Log
+
+## 2.12.0
+
+* Enhancement - add `with_json` to `had_request` matcher.
 
 ## 2.11.0
 
