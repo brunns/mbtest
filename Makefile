@@ -2,16 +2,20 @@ SHELL = /bin/bash
 
 default: help
 
+.PHONY: colima
+colima:
+	colima status || colima start
+
 .PHONY: test
-test: ## Run tests
+test: colima ## Run tests
 	tox -e py38,py312,pypy3.10
 
 .PHONY: coverage
-coverage: ## Test coverage report
+coverage: colima ## Test coverage report
 	tox -e coverage
 
 .PHONY: precommit-test
-precommit-test:
+precommit-test: colima
 	tox -e py38,coverage
 
 .PHONY: lint
