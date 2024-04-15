@@ -31,7 +31,7 @@ Install with pip:
 
 (As usual, use of a [venv](https://docs.python.org/3/library/venv.html) or [virtualenv](https://virtualenv.pypa.io) is recommended.) Also requires [Mountebank](http://www.mbtest.org/) to have been installed:
 
-    npm install mountebank@2.8 --omit=dev
+    npm install mountebank@2.9 --omit=dev
 
 (Alternatively, you can attach to an instance of Mountebank running elsewhere, perhaps [in docker](https://mbtest.readthedocs.io/en/latest/guide/docker.html).)
 
