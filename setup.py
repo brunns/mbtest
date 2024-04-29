@@ -24,7 +24,7 @@ install_dependencies = [
     "pyhamcrest>=2.0",
     "Deprecated>=1.2",
     "brunns-matchers>=2.4",
-    "imurl>=0.2",
+    "yarl>=1.9",
 ]
 test_dependencies = [
     "pytest>=6.0",

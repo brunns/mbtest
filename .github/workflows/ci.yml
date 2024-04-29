@@ -139,14 +139,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install build tools
         run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
-      - name: Install and Start Colima
-        run: |
-          if [[ "${{ matrix.os }}" == *"macos"* ]]
-          then
-            brew install docker docker-compose
-            colima start
-          fi
-        shell: bash
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
