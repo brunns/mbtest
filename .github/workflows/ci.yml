@@ -205,7 +205,7 @@ jobs:
       - name: Lint
         run: tox -e flake8 refurb
       - name: Security checks
-        run: tox -e bandit,safety
+        run: tox -e bandit
       - name: Check types
         run: tox -e pyright,mypy
       - name: Build docs

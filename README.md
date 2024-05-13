@@ -87,9 +87,9 @@ Currently, the `Makefile` targets use Python 3.8 and 3.11 via tox, so a quick-st
 
 ```sh
 brew install pyenv colima docker
-versions=(3.7 3.11)
+versions=(3.8 3.12)
 for v in "${versions[@]}"; do pyenv install $v -s; done
-pyenv local 3.11 3.7
+pyenv local 3.8 3.12
 pip install tox tox-pyenv
 colima start
 ```
@@ -97,7 +97,7 @@ colima start
 In order to run `make test`, you'll also need to have Mountebank installed locally:
 
 ```sh
-npm install mountebank@2.6 --production
+npm install mountebank@2.9 --production
 ```
 
 (`mbtest` is tested against Mountebank versions back as far as 1.16, but obviously only features supported by the Mountebank version you're using will work.)
