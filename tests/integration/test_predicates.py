@@ -106,6 +106,7 @@ def test_methods(mock_server):
             Stub(Predicate(method=Predicate.Method.POST), Response(body="post")),
             Stub(Predicate(method=Predicate.Method.DELETE), Response(body="delete")),
             Stub(Predicate(method=Predicate.Method.PATCH), Response(body="patch")),
+            Stub(Predicate(method=Predicate.Method.OPTIONS), Response(body="options")),
             Stub(Predicate(method=Predicate.Method.HEAD), Response(status_code=789)),
         ]
     )
@@ -119,6 +120,7 @@ def test_methods(mock_server):
         put = requests.put(imposter.url)
         patch = requests.patch(imposter.url)
         get = requests.get(imposter.url)
+        options = requests.options(imposter.url)
         head = requests.head(imposter.url)
 
         # Then
@@ -127,6 +129,7 @@ def test_methods(mock_server):
         assert_that(put, is_response().with_body("put"))
         assert_that(patch, is_response().with_body("patch"))
         assert_that(get, is_response().with_body("get"))
+        assert_that(options, is_response().with_body("options"))
         assert_that(head, is_response().with_status_code(789))
 
 

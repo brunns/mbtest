@@ -66,6 +66,7 @@ class Predicate(LogicallyCombinablePredicate):
         POST = "POST"
         PUT = "PUT"
         PATCH = "PATCH"
+        OPTIONS = "OPTIONS"
 
     class Operator(Enum):
         """`Predicate operator <http://www.mbtest.org/docs/api/predicates>`_."""
