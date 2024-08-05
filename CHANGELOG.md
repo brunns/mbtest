@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.13.1
+
+* Re-release
+
+## 2.13.0
+
+* Enhancement - add support for OPTIONS HTTP verb in predicates. (Thanks [@melmoth-der-wanderer(https://github.com/melmoth-der-wanderer).)
+
 ## 2.12.0
 
 * Enhancement - add `with_json` to `had_request` matcher.
