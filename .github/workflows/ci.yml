@@ -40,7 +40,6 @@ jobs:
           npm --version
           docker --version
           docker compose version
-          docker-compose --version
       - name: Run Tests
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
