@@ -21,6 +21,7 @@ except IOError:
 install_dependencies = [
     "requests>=2.0",
     "furl>=2.0",
+    "imurl>=0.2",
     "pyhamcrest>=2.0",
     "Deprecated>=1.2",
     "brunns-matchers>=2.4",
