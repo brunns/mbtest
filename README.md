@@ -87,9 +87,8 @@ Currently, the `Makefile` targets use Python 3.8 and 3.11 via tox, so a quick-st
 
 ```sh
 brew install pyenv colima docker
-versions=(3.8 3.12)
-for v in "${versions[@]}"; do pyenv install $v -s; done
-pyenv local 3.8 3.12
+pyenv install -s 3.{9..13}
+pyenv local 3.9 3.13
 pip install tox tox-pyenv
 colima start
 ```

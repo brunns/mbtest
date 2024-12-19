@@ -8,7 +8,7 @@ colima:
 
 .PHONY: test
 test: colima ## Run tests
-	tox -e py38,py312,pypy3.10
+	tox -e py39,py313,pypy3.10
 
 .PHONY: coverage
 coverage: colima ## Test coverage report
@@ -16,7 +16,7 @@ coverage: colima ## Test coverage report
 
 .PHONY: precommit-test
 precommit-test: colima
-	tox -e py38,coverage
+	tox -e py39,coverage
 
 .PHONY: lint
 lint: check-format flake8 bandit refurb  ## Lint code
@@ -90,11 +90,11 @@ clean: ## Clean generated files
 
 .PHONY: repl
 repl: ## Python REPL
-	tox -e py311 -- python
+	tox -e py313 -- python
 
 .PHONY: outdated
 outdated: ## List outdated dependancies
-	tox -e py311 -- pip list -o
+	tox -e py313 -- pip list -o
 
 .PHONY: help
 help: ## Show this help
