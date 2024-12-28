@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.13.2
+
+* Enhancement - add form to Predicate.
+* Fix - added the `imurl` package to dependencies
+
 ## 2.13.1
 
 * Re-release
@@ -58,7 +63,7 @@
 * Add [dynamic predicates and responses](http://www.mbtest.org/docs/api/injection). This feature requires Mountebank 2.0 or later, but all other features should continue to work with older version.
 * Add MountebankServer.query_all_imposters() method to retrieve all imposters from a running MB server, including those not created locally.
 
-## 2.4 
+## 2.4
 
 * Allow MountebankServer to attach to an already running MB instance on another host.
 * Make has_request() a builder style matcher, and use builder matcher construction wherever possible.
