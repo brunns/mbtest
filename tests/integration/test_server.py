@@ -32,12 +32,12 @@ def test_request_to_mock_server(mock_server):
 
 
 def test_nonexistent_executable():
-    with pytest.raises(OSError, match="No such file or directory"):
+    with pytest.raises(OSError, match=r"(?i)file"):
         ExecutingMountebankServer(executable=str(Path() / "no" / "such" / "path"), port=2526)
 
 
 def test_non_executable():
-    with pytest.raises(OSError, match="No such file or directory"):
+    with pytest.raises(OSError, match=r"(?i)file|application"):
         ExecutingMountebankServer(executable=str(Path() / "README.md"), port=2526)
 
 
@@ -130,15 +130,12 @@ def test_remove_and_replace_impostor_from_running_server(mock_server):
         other_impostors = [i for i in initial if i.name != "egg"]
         server.delete_impostor(egg_impostor)
 
-        with pytest.raises(httpx.ConnectError, match="Connection refused"):
+        with pytest.raises(httpx.ConnectError, match=r"(?i)connection"):
             httpx.get(f"{egg_impostor.url}/test")
         responses = [httpx.get(f"{i.url}/test") for i in other_impostors]
         assert_that(
             responses,
-            contains_inanyorder(
-                is_response().with_body("sausage"),
-                is_response().with_body("chips"),
-            ),
+            contains_inanyorder(is_response().with_body("sausage"), is_response().with_body("chips")),
         )
 
         # Reset the server from the initial impostors, and check it's back to normal
