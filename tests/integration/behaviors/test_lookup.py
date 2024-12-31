@@ -1,8 +1,7 @@
-# encoding=utf-8
 import logging
 from pathlib import Path
 
-import requests
+import httpx
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, has_entry
 
@@ -20,21 +19,24 @@ def test_lookup(mock_server):
                 body="Hello ${row}['Name'], have you done your ${row}['jobs'] today?",
                 headers={"X-Tree": "${row}['tree']"},
                 lookup=Lookup(
-                    Key("path", UsingRegex("/(.*)$"), 1), datasource_path, "Name", "${row}"
+                    Key("path", UsingRegex("/(.*)$"), 1),
+                    datasource_path,
+                    "Name",
+                    "${row}",
                 ),
             )
         )
     )
 
     with mock_server(imposter):
-        response = requests.get(imposter.url / "liquid")
+        response = httpx.get(str(imposter.url / "liquid"))
 
         assert_that(
             response,
             is_response()
             .with_status_code(400)
             .with_body("Hello liquid, have you done your farmer today?")
-            .with_headers(has_entry("X-Tree", "mango")),
+            .with_headers(has_entry("x-tree", "mango")),
         )
 
 
@@ -47,19 +49,22 @@ def test_lookup_with_Path_type(mock_server):
                 body="Hello ${row}['Name'], have you done your ${row}['jobs'] today?",
                 headers={"X-Tree": "${row}['tree']"},
                 lookup=Lookup(
-                    Key("path", UsingRegex("/(.*)$"), 1), datasource_path, "Name", "${row}"
+                    Key("path", UsingRegex("/(.*)$"), 1),
+                    datasource_path,
+                    "Name",
+                    "${row}",
                 ),
             )
         )
     )
 
     with mock_server(imposter):
-        response = requests.get(imposter.url / "liquid")
+        response = httpx.get(str(imposter.url / "liquid"))
 
         assert_that(
             response,
             is_response()
             .with_status_code(400)
             .with_body("Hello liquid, have you done your farmer today?")
-            .with_headers(has_entry("X-Tree", "mango")),
+            .with_headers(has_entry("x-tree", "mango")),
         )

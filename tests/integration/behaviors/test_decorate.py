@@ -1,7 +1,6 @@
-# encoding=utf-8
 import logging
 
-import requests
+import httpx
 from brunns.matchers.response import is_response
 from hamcrest import assert_that
 
@@ -29,7 +28,7 @@ def test_decorate_response(mock_server):
     imposter = Imposter(Stub(responses=Response(body="Hello ${NAME}.", decorate=JS)))
 
     with mock_server(imposter):
-        response = requests.get(imposter.url)
+        response = httpx.get(str(imposter.url))
 
         assert_that(response, is_response().with_body("Hello World."))
 
@@ -41,7 +40,7 @@ def test_decorate_proxy(mock_server):
     imposter = Imposter(Stub(responses=Proxy(to=proxy_target.url, decorate=JS)))
 
     with mock_server(imposter):
-        response = requests.get(imposter.url)
+        response = httpx.get(str(imposter.url))
 
         assert_that(response, is_response().with_body("Hello World."))
 
@@ -50,7 +49,8 @@ def test_decorate_proxy_binary(mock_server):
     proxy_target = Imposter(
         Stub(
             responses=Response(
-                headers={"Content-Type": "application/octet-stream"}, body="Hello ${NAME}."
+                headers={"Content-Type": "application/octet-stream"},
+                body="Hello ${NAME}.",
             )
         )
     )
@@ -59,6 +59,6 @@ def test_decorate_proxy_binary(mock_server):
     imposter = Imposter(Stub(responses=Proxy(to=proxy_target.url, decorate=JS_FOR_BINARY)))
 
     with mock_server(imposter):
-        response = requests.get(imposter.url)
+        response = httpx.get(str(imposter.url))
 
         assert_that(response, is_response().with_body("Hello World."))

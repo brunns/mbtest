@@ -1,5 +1,5 @@
-# encoding=utf-8
-from typing import Mapping, Union
+from collections.abc import Mapping
+from typing import Union
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.behaviors.using import Using

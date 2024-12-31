@@ -1,10 +1,9 @@
-# encoding=utf-8
 import logging
 import os
 import platform
 
+import httpx
 import pytest
-import requests
 from brunns.matchers.data import json_matching
 from brunns.matchers.html import has_title
 from brunns.matchers.object import between
@@ -30,11 +29,9 @@ def test_proxy(mock_server, httpbin):
     imposter = Imposter(Stub(responses=Proxy(to=httpbin)))
 
     with mock_server(imposter):
-        response = requests.get(imposter.url)
+        response = httpx.get(str(imposter.url))
 
-        assert_that(
-            response, is_response().with_status_code(200).and_body(has_title("httpbin.org"))
-        )
+        assert_that(response, is_response().with_status_code(200).and_body(has_title("httpbin.org")))
         assert_that(imposter, had_request().with_path("/").and_method("GET"))
 
 
@@ -48,13 +45,11 @@ def test_stub_with_proxy_fallback(mock_server, httpbin):
     )
 
     with mock_server(imposter):
-        response = requests.get(imposter.url / "test")
+        response = httpx.get(str(imposter.url / "test"))
         assert_that(response, is_response().with_status_code(200).and_body("sausages"))
 
-        response = requests.get(imposter.url)
-        assert_that(
-            response, is_response().with_status_code(200).and_body(has_title("httpbin.org"))
-        )
+        response = httpx.get(str(imposter.url))
+        assert_that(response, is_response().with_status_code(200).and_body(has_title("httpbin.org")))
         assert_that(imposter, had_request().with_path("/").and_method("GET"))
 
 
@@ -63,23 +58,17 @@ def test_proxy_playback(mock_server, httpbin):
     proxy_imposter = Imposter(Stub(responses=Proxy(to=httpbin, mode=Proxy.Mode.ONCE)))
 
     with mock_server(proxy_imposter):
-        response = requests.get(proxy_imposter.url / "status/418")
-        assert_that(
-            response, is_response().with_status_code(418).and_body(contains_string("teapot"))
-        )
-        response = requests.get(proxy_imposter.url / "status/200")
-        assert_that(
-            response, is_response().with_status_code(418).and_body(contains_string("teapot"))
-        )
+        response = httpx.get(str(proxy_imposter.url / "status/418"))
+        assert_that(response, is_response().with_status_code(418).and_body(contains_string("teapot")))
+        response = httpx.get(str(proxy_imposter.url / "status/200"))
+        assert_that(response, is_response().with_status_code(418).and_body(contains_string("teapot")))
 
         recorded_stubs = proxy_imposter.playback()
 
     playback_impostor = Imposter(recorded_stubs)
     with mock_server(playback_impostor):
-        response = requests.get(playback_impostor.url)
-        assert_that(
-            response, is_response().with_status_code(418).and_body(contains_string("teapot"))
-        )
+        response = httpx.get(str(playback_impostor.url))
+        assert_that(response, is_response().with_status_code(418).and_body(contains_string("teapot")))
 
 
 @pytest.mark.xfail(not HTTPBIN_CONTAINERISED, reason="Public httpbin horribly flaky.")
@@ -95,22 +84,18 @@ def test_proxy_uses_path_predicate_generator(mock_server, httpbin):
     )
 
     with mock_server(proxy_imposter):
-        response = requests.get(proxy_imposter.url / "status/418")
-        assert_that(
-            response, is_response().with_status_code(418).and_body(contains_string("teapot"))
-        )
-        response = requests.get(proxy_imposter.url / "status/200")
+        response = httpx.get(str(proxy_imposter.url / "status/418"))
+        assert_that(response, is_response().with_status_code(418).and_body(contains_string("teapot")))
+        response = httpx.get(str(proxy_imposter.url / "status/200"))
         assert_that(response, is_response().with_status_code(200))
 
         recorded_stubs = proxy_imposter.playback()
 
     playback_impostor = Imposter(recorded_stubs)
     with mock_server(playback_impostor):
-        response = requests.get(playback_impostor.url / "status/418")
-        assert_that(
-            response, is_response().with_status_code(418).and_body(contains_string("teapot"))
-        )
-        response = requests.get(playback_impostor.url / "status/200")
+        response = httpx.get(str(playback_impostor.url / "status/418"))
+        assert_that(response, is_response().with_status_code(418).and_body(contains_string("teapot")))
+        response = httpx.get(str(playback_impostor.url / "status/200"))
         assert_that(response, is_response().with_status_code(200))
 
 
@@ -127,31 +112,19 @@ def test_proxy_uses_query_predicate_generator(mock_server, httpbin):
     )
 
     with mock_server(proxy_imposter):
-        response = requests.get(proxy_imposter.url / "get", params={"foo": "bar"})
-        assert_that(
-            response,
-            is_response().with_body(json_matching(has_entries(args=has_entries(foo="bar")))),
-        )
-        response = requests.get(proxy_imposter.url / "get", params={"foo": "baz"})
-        assert_that(
-            response,
-            is_response().with_body(json_matching(has_entries(args=has_entries(foo="baz")))),
-        )
+        response = httpx.get(str(proxy_imposter.url / "get"), params={"foo": "bar"})
+        assert_that(response, is_response().with_body(json_matching(has_entries(args=has_entries(foo="bar")))))
+        response = httpx.get(str(proxy_imposter.url / "get"), params={"foo": "baz"})
+        assert_that(response, is_response().with_body(json_matching(has_entries(args=has_entries(foo="baz")))))
 
         recorded_stubs = proxy_imposter.playback()
 
     playback_impostor = Imposter(recorded_stubs)
     with mock_server(playback_impostor):
-        response = requests.get(playback_impostor.url / "get", params={"foo": "bar"})
-        assert_that(
-            response,
-            is_response().with_body(json_matching(has_entries(args=has_entries(foo="bar")))),
-        )
-        response = requests.get(playback_impostor.url / "get", params={"foo": "baz"})
-        assert_that(
-            response,
-            is_response().with_body(json_matching(has_entries(args=has_entries(foo="baz")))),
-        )
+        response = httpx.get(str(playback_impostor.url / "get"), params={"foo": "bar"})
+        assert_that(response, is_response().with_body(json_matching(has_entries(args=has_entries(foo="bar")))))
+        response = httpx.get(str(playback_impostor.url / "get"), params={"foo": "baz"})
+        assert_that(response, is_response().with_body(json_matching(has_entries(args=has_entries(foo="baz")))))
 
 
 @pytest.mark.xfail(not HTTPBIN_CONTAINERISED, reason="Public httpbin horribly flaky.")
@@ -167,40 +140,24 @@ def test_proxy_uses_query_predicate_generator_with_key(mock_server, httpbin):
     )
 
     with mock_server(proxy_imposter):
-        response = requests.get(proxy_imposter.url / "get", params={"foo": "bar", "quxx": "buzz"})
+        response = httpx.get(str(proxy_imposter.url / "get"), params={"foo": "bar", "quxx": "buzz"})
         assert_that(
-            response,
-            is_response().with_body(
-                json_matching(has_entries(args=has_entries(foo="bar", quxx="buzz")))
-            ),
+            response, is_response().with_body(json_matching(has_entries(args=has_entries(foo="bar", quxx="buzz"))))
         )
-        response = requests.get(proxy_imposter.url / "get", params={"foo": "baz", "quxx": "buxx"})
-        assert_that(
-            response,
-            is_response().with_body(json_matching(has_entries(args=has_entries(foo="baz")))),
-        )
+        response = httpx.get(str(proxy_imposter.url / "get"), params={"foo": "baz", "quxx": "buxx"})
+        assert_that(response, is_response().with_body(json_matching(has_entries(args=has_entries(foo="baz")))))
 
         recorded_stubs = proxy_imposter.playback()
 
     playback_impostor = Imposter(recorded_stubs)
     with mock_server(playback_impostor):
-        response = requests.get(
-            playback_impostor.url / "get", params={"foo": "bar", "quxx": "whatever"}
-        )
+        response = httpx.get(str(playback_impostor.url / "get"), params={"foo": "bar", "quxx": "whatever"})
         assert_that(
-            response,
-            is_response().with_body(
-                json_matching(has_entries(args=has_entries(foo="bar", quxx="buzz")))
-            ),
+            response, is_response().with_body(json_matching(has_entries(args=has_entries(foo="bar", quxx="buzz"))))
         )
-        response = requests.get(
-            playback_impostor.url / "get", params={"foo": "baz", "quxx": "anything"}
-        )
+        response = httpx.get(str(playback_impostor.url / "get"), params={"foo": "baz", "quxx": "anything"})
         assert_that(
-            response,
-            is_response().with_body(
-                json_matching(has_entries(args=has_entries(foo="baz", quxx="buxx")))
-            ),
+            response, is_response().with_body(json_matching(has_entries(args=has_entries(foo="baz", quxx="buxx"))))
         )
 
 
@@ -209,11 +166,9 @@ def test_proxy_without_stub(mock_server, httpbin):
     imposter = Imposter(Stub(responses=Proxy(to=httpbin)))
 
     with mock_server(imposter):
-        response = requests.get(imposter.url)
+        response = httpx.get(str(imposter.url))
 
-        assert_that(
-            response, is_response().with_status_code(200).and_body(has_title("httpbin.org"))
-        )
+        assert_that(response, is_response().with_status_code(200).and_body(has_title("httpbin.org")))
 
 
 @pytest.mark.xfail(not HTTPBIN_CONTAINERISED, reason="Public httpbin horribly flaky.")
@@ -224,7 +179,7 @@ def test_proxy_delay(mock_server):
         server.add_imposters(proxy_imposter)
 
         with Timer() as timer:
-            requests.get(proxy_imposter.url / "test")
+            httpx.get(str(proxy_imposter.url / "test"))
 
             assert_that(timer.elapsed, between(0.1, 0.5))
 
@@ -243,10 +198,8 @@ def test_inject_headers(mock_server):
         )
         server.add_imposters(proxy_imposter)
 
-        requests.get(proxy_imposter.url / "test")
+        httpx.get(str(proxy_imposter.url / "test"))
         assert_that(
             target_imposter,
-            had_request()
-            .with_path("/test")
-            .and_headers(has_entry("X-Clacks-Overhead", "GNU Terry Pratchett")),
+            had_request().with_path("/test").and_headers(has_entry("X-Clacks-Overhead", "GNU Terry Pratchett")),
         )

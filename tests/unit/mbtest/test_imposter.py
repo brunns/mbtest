@@ -1,4 +1,3 @@
-# encoding=utf-8
 import json
 import logging
 
@@ -55,7 +54,7 @@ def test_structure_name():
 
 
 def test_structure_record_requests():
-    expected_imposter = ImposterBuilder().with_record_requests(False).build()
+    expected_imposter = ImposterBuilder().with_record_requests(False).build()  # noqa: FBT003
     imposter_structure = expected_imposter.as_structure()
     imposter = Imposter.from_structure(imposter_structure)
     assert imposter.record_requests is False
@@ -71,7 +70,7 @@ def test_structure_no_record_requests():
 
 def test_imposter_structure_roundtrip():
     # Given
-    expected = ImposterBuilder().with_default_response(HttpResponseBuilder().build()).build()
+    expected = ImposterBuilder().with_default_response(HttpResponseBuilder().build()).and_port(None).build()
     structure = expected.as_structure()
 
     # When
@@ -95,9 +94,7 @@ def test_imposter_structure_without_default_response_roundtrip():
     assert_that(actual, has_identical_properties_to(expected, ignoring=["configuration_url"]))
 
 
-@pytest.mark.parametrize(
-    "predicate", [AndPredicateBuilder, OrPredicateBuilder, NotPredicateBuilder]
-)
+@pytest.mark.parametrize("predicate", [AndPredicateBuilder, OrPredicateBuilder, NotPredicateBuilder])
 def test_imposter_complex_predicates(predicate):
     # Given
     expected = Imposter(Stub(predicate().build()))
@@ -116,5 +113,6 @@ def test_http_request_roundtrip():
     assert HttpRequestBuilder().with_body("bananas").build().json is None
     assert HttpRequestBuilder().with_body(None).build().json is None
     assert_that(
-        HttpRequestBuilder().with_body(json.dumps({"a": "b"})).build().json, has_entries(a="b")
+        HttpRequestBuilder().with_body(json.dumps({"a": "b"})).build().json,
+        has_entries(a="b"),
     )

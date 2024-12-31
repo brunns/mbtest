@@ -1,4 +1,3 @@
-# encoding=utf-8
 import logging
 import smtplib
 
@@ -20,14 +19,7 @@ def test_email(mock_server):
     to_email = EmailAddressBuilder().build()
     body_text = a_string()
 
-    message = (
-        EmailMessageBuilder()
-        .with_to(to_email)
-        .and_from(from_email)
-        .and_body_text(body_text)
-        .build()
-        .as_string()
-    )
+    message = EmailMessageBuilder().with_to(to_email).and_from(from_email).and_body_text(body_text).build().as_string()
 
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)

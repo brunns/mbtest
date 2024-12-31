@@ -1,12 +1,11 @@
-# encoding=utf-8
 from abc import ABC
-from collections.abc import Sequence
+from collections.abc import Iterable, Mapping, MutableMapping, Sequence
 from enum import Enum
-from typing import Iterable, Mapping, MutableMapping, Optional, Union
-from xml.etree import ElementTree as et  # nosec - We are creating, not parsing XML.
+from typing import Optional, Union
+from xml.etree import ElementTree as ET  # nosec - We are creating, not parsing XML.
 
 from furl import furl
-from imurl.url import URL
+from yarl import URL
 
 from mbtest.imposters.base import Injecting, JsonSerializable, JsonStructure
 from mbtest.imposters.behaviors import Copy, Lookup
@@ -18,15 +17,15 @@ class BaseResponse(JsonSerializable, ABC):
     def from_structure(cls, structure: JsonStructure) -> "BaseResponse":  # noqa: C901
         if "is" in structure and "_behaviors" in structure:
             return Response.from_structure(structure)
-        elif "is" in structure and "data" in structure["is"]:
+        if "is" in structure and "data" in structure["is"]:
             return TcpResponse.from_structure(structure)
-        elif "proxy" in structure:
+        if "proxy" in structure:
             return Proxy.from_structure(structure)
-        elif "inject" in structure:
+        if "inject" in structure:
             return InjectionResponse.from_structure(structure)
-        elif "fault" in structure:
+        if "fault" in structure:
             return FaultResponse.from_structure(structure)
-        raise NotImplementedError()  # pragma: no cover
+        raise NotImplementedError  # pragma: no cover
 
 
 class HttpResponse(JsonSerializable):
@@ -50,17 +49,13 @@ class HttpResponse(JsonSerializable):
         self._body = body
         self.status_code = status_code
         self.headers = headers
-        self.mode = (
-            mode
-            if isinstance(mode, Response.Mode)
-            else Response.Mode(mode) if mode else Response.Mode.TEXT
-        )
+        self.mode = mode if isinstance(mode, Response.Mode) else Response.Mode(mode) if mode else Response.Mode.TEXT
 
     @property
     def body(self) -> str:
-        if isinstance(self._body, et.Element):
-            return et.tostring(self._body, encoding="unicode")
-        elif isinstance(self._body, bytes):
+        if isinstance(self._body, ET.Element):
+            return ET.tostring(self._body, encoding="unicode")
+        if isinstance(self._body, bytes):
             return self._body.decode("utf-8")
         return self._body
 
@@ -71,12 +66,12 @@ class HttpResponse(JsonSerializable):
         return is_structure
 
     @classmethod
-    def from_structure(cls, inner: JsonStructure) -> "HttpResponse":
+    def from_structure(cls, structure: JsonStructure) -> "HttpResponse":
         response = cls()
-        response.set_if_in_dict(inner, "body", "_body")
-        response.mode = Response.Mode(inner.get("_mode", "text"))
-        response.set_if_in_dict(inner, "headers", "headers")
-        response.set_if_in_dict(inner, "statusCode", "status_code")
+        response.set_if_in_dict(structure, "body", "_body")
+        response.mode = Response.Mode(structure.get("_mode", "text"))
+        response.set_if_in_dict(structure, "headers", "headers")
+        response.set_if_in_dict(structure, "statusCode", "status_code")
         return response
 
 
@@ -94,7 +89,8 @@ class Response(BaseResponse):
     :param decorate: `Decorate behavior <http://www.mbtest.org/docs/api/behaviors#behavior-decorate>`_.
     :param lookup: Lookup behavior
     :param shell_transform: shellTransform behavior
-    :param http_response: HTTP Response Fields - use this **or** the body, status_code, headers and mode fields, not both.
+    :param http_response: HTTP Response Fields - use this **or** the body, status_code, headers and mode fields,
+        not both.
     """
 
     class Mode(Enum):
@@ -241,14 +237,9 @@ class Proxy(BaseResponse):
         self.decorate = decorate
 
     def as_structure(self) -> JsonStructure:
-        proxy = {
-            "to": furl(self.to).url,
-            "mode": self.mode.value,
-        }
+        proxy = {"to": str(self.to), "mode": self.mode.value}
         self.add_if_true(proxy, "injectHeaders", self.inject_headers)
-        self.add_if_true(
-            proxy, "predicateGenerators", [pg.as_structure() for pg in self.predicate_generators]
-        )
+        self.add_if_true(proxy, "predicateGenerators", [pg.as_structure() for pg in self.predicate_generators])
         return {
             "proxy": proxy,
             "_behaviors": self._behaviors_as_structure(),
@@ -264,16 +255,11 @@ class Proxy(BaseResponse):
     def from_structure(cls, structure: JsonStructure) -> "Proxy":
         proxy_structure = structure["proxy"]
         proxy = cls(
-            to=furl(proxy_structure["to"]),
-            inject_headers=(
-                proxy_structure["injectHeaders"] if "injectHeaders" in proxy_structure else None
-            ),
+            to=URL(proxy_structure["to"]),
+            inject_headers=proxy_structure.get("injectHeaders", None),
             mode=Proxy.Mode(proxy_structure["mode"]),
             predicate_generators=(
-                [
-                    PredicateGenerator.from_structure(pg)
-                    for pg in proxy_structure["predicateGenerators"]
-                ]
+                [PredicateGenerator.from_structure(pg) for pg in proxy_structure["predicateGenerators"]]
                 if "predicateGenerators" in proxy_structure
                 else None
             ),
@@ -292,14 +278,10 @@ class PredicateGenerator(JsonSerializable):
 
     def __init__(
         self,
-        path: bool = False,
-        query: Union[bool, Mapping[str, str]] = False,
-        # method: bool = False,
-        # body: bool = False,
-        # headers: Union[bool, Mapping[str, str]] = False,
+        path: bool = False,  # noqa: FBT001,FBT002
+        query: Union[bool, Mapping[str, str]] = False,  # noqa: FBT002
         operator: Predicate.Operator = Predicate.Operator.EQUALS,
-        case_sensitive: bool = True,
-        # ignore_query: bool = False,
+        case_sensitive: bool = True,  # noqa: FBT001,FBT002
     ):
         self.path = path
         self.query = query
@@ -310,18 +292,13 @@ class PredicateGenerator(JsonSerializable):
         matches: MutableMapping[str, str] = {}
         self.add_if_true(matches, "path", self.path)
         self.add_if_true(matches, "query", self.query)
-        predicate = {"caseSensitive": self.case_sensitive, "matches": matches}
-        return predicate
+        return {"caseSensitive": self.case_sensitive, "matches": matches}
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> "PredicateGenerator":
         path = structure["matches"].get("path", None)
         query = structure["matches"].get("query", None)
-        operator = (
-            Predicate.Operator[structure["operator"]]
-            if "operator" in structure
-            else Predicate.Operator.EQUALS
-        )
+        operator = Predicate.Operator[structure["operator"]] if "operator" in structure else Predicate.Operator.EQUALS
         case_sensitive = structure.get("caseSensitive", False)
         return cls(path=path, query=query, operator=operator, case_sensitive=case_sensitive)
 

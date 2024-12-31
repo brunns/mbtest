@@ -1,4 +1,3 @@
-# encoding=utf-8
 from pathlib import Path
 from typing import Union
 
@@ -15,9 +14,7 @@ class Lookup(JsonSerializable):
     :param into: The token to replace in the response with the selected request value.
     """
 
-    def __init__(
-        self, key: "Key", datasource_path: Union[str, Path], datasource_key_column: str, into: str
-    ):
+    def __init__(self, key: "Key", datasource_path: Union[str, Path], datasource_key_column: str, into: str):
         self.key = key
         self.datasource_path = datasource_path
         self.datasource_key_column = datasource_key_column
@@ -26,9 +23,7 @@ class Lookup(JsonSerializable):
     def as_structure(self) -> JsonStructure:
         return {
             "key": self.key.as_structure(),
-            "fromDataSource": {
-                "csv": {"path": str(self.datasource_path), "keyColumn": self.datasource_key_column}
-            },
+            "fromDataSource": {"csv": {"path": str(self.datasource_path), "keyColumn": self.datasource_key_column}},
             "into": self.into,
         }
 

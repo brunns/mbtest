@@ -1,9 +1,7 @@
-# encoding=utf-8
 from abc import ABC
+from collections.abc import Mapping
 from enum import Enum
-from typing import Mapping, Optional, Union
-
-from furl import furl
+from typing import Optional, Union
 
 from mbtest.imposters.base import Injecting, JsonSerializable, JsonStructure
 
@@ -13,19 +11,17 @@ class BasePredicate(JsonSerializable, ABC):
     def from_structure(cls, structure: JsonStructure) -> "BasePredicate":  # noqa: C901
         if "and" in structure:
             return AndPredicate.from_structure(structure)
-        elif "or" in structure:
+        if "or" in structure:
             return OrPredicate.from_structure(structure)
-        elif "not" in structure:
+        if "not" in structure:
             return NotPredicate.from_structure(structure)
-        elif "contains" in structure and "data" in structure["contains"]:
+        if "contains" in structure and "data" in structure["contains"]:
             return TcpPredicate.from_structure(structure)
-        elif "inject" in structure:
+        if "inject" in structure:
             return InjectionPredicate.from_structure(structure)
-        elif set(structure.keys()).intersection(
-            {o.value for o in Predicate.Operator}
-        ):  # pragma: no cover
+        if set(structure.keys()).intersection({o.value for o in Predicate.Operator}):  # pragma: no cover
             return Predicate.from_structure(structure)
-        raise NotImplementedError()  # pragma: no cover
+        raise NotImplementedError  # pragma: no cover
 
 
 class LogicallyCombinablePredicate(BasePredicate, ABC):
@@ -86,7 +82,7 @@ class Predicate(LogicallyCombinablePredicate):
 
     def __init__(
         self,
-        path: Optional[Union[str, furl]] = None,
+        path: Optional[str] = None,
         method: Optional[Union[Method, str]] = None,
         query: Optional[Mapping[str, Union[str, int, bool]]] = None,
         body: Optional[Union[str, JsonStructure]] = None,
@@ -95,23 +91,17 @@ class Predicate(LogicallyCombinablePredicate):
         jsonpath: Optional[str] = None,
         form: Optional[Mapping[str, str]] = None,
         operator: Union[Operator, str] = Operator.EQUALS,
-        case_sensitive: bool = True,
+        case_sensitive: bool = True,  # noqa: FBT001,FBT002
     ) -> None:
         self.path = path
-        self.method = (
-            method
-            if isinstance(method, Predicate.Method)
-            else Predicate.Method(method) if method else None
-        )
+        self.method = method if isinstance(method, Predicate.Method) else Predicate.Method(method) if method else None
         self.query = query
         self.body = body
         self.headers = headers
         self.xpath = xpath
         self.jsonpath = jsonpath
         self.form = form
-        self.operator = (
-            operator if isinstance(operator, Predicate.Operator) else Predicate.Operator(operator)
-        )
+        self.operator = operator if isinstance(operator, Predicate.Operator) else Predicate.Operator(operator)
         self.case_sensitive = case_sensitive
 
     def as_structure(self) -> JsonStructure:
@@ -129,9 +119,8 @@ class Predicate(LogicallyCombinablePredicate):
     def from_structure(cls, structure: JsonStructure) -> "Predicate":
         operators = tuple(filter(Predicate.Operator.has_value, structure.keys()))
         if len(operators) != 1:
-            raise Predicate.InvalidPredicateOperator(
-                "Each predicate must define exactly one operator."
-            )
+            msg = "Each predicate must define exactly one operator."
+            raise Predicate.InvalidPredicateOperator(msg)
         operator = operators[0]
         predicate = cls(operator=operator, case_sensitive=structure.get("caseSensitive", True))
         predicate.fields_from_structure(structure[operator])

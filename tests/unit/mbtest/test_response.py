@@ -1,4 +1,3 @@
-# encoding=utf-8
 import logging
 
 from brunns.matchers.object import has_identical_properties_to
@@ -84,7 +83,9 @@ def test_response_structure_roundtrip():
 def test_response_with_copy_and_lookup_structure_roundtrip():
     # Given
     expected = ResponseBuilder(
-        mode=Response.Mode.TEXT, copy=CopyBuilder().build(), lookup=LookupBuilder().build()
+        mode=Response.Mode.TEXT,
+        copy=CopyBuilder().build(),
+        lookup=LookupBuilder().build(),
     ).build()
     structure = expected.as_structure()
 

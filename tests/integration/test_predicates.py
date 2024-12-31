@@ -1,10 +1,9 @@
-# encoding=utf-8
 import logging
 import os
 from decimal import Decimal
 
+import httpx
 import pytest
-import requests
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, not_
 
@@ -24,24 +23,22 @@ def test_and_predicate_and_query_strings(mock_server):
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
 
-        r1 = requests.get(f"{imposter.url}/", params={"dinner": "chips", "foo": "bar"})
-        r2 = requests.get(f"{imposter.url}/", params={"dinner": "chips"})
+        r1 = httpx.get(f"{imposter.url}/", params={"dinner": "chips", "foo": "bar"})
+        r2 = httpx.get(f"{imposter.url}/", params={"dinner": "chips"})
 
         assert_that(r1, is_response().with_status_code(200).and_body("black pudding"))
         assert_that(r2, not_(is_response().with_status_code(200).and_body("black pudding")))
 
 
 def test_or_predicate_and_body(mock_server):
-    imposter = Imposter(
-        Stub(Predicate(body="foo") | Predicate(body="bar"), Response(body="oranges"))
-    )
+    imposter = Imposter(Stub(Predicate(body="foo") | Predicate(body="bar"), Response(body="oranges")))
 
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
 
-        r1 = requests.get(imposter.url, data="foo")
-        r2 = requests.get(imposter.url, data="bar")
-        r3 = requests.get(imposter.url, data="baz")
+        r1 = httpx.request(method="GET", url=str(imposter.url), data="foo")
+        r2 = httpx.request(method="GET", url=str(imposter.url), data="bar")
+        r3 = httpx.request(method="GET", url=str(imposter.url), data="baz")
 
         assert_that(r1, is_response().with_status_code(200).and_body("oranges"))
         assert_that(r2, is_response().with_status_code(200).and_body("oranges"))
@@ -54,8 +51,8 @@ def test_not_predicate(mock_server):
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
 
-        r1 = requests.get(f"{imposter.url}/", params={"foo": "baz"})
-        r2 = requests.get(f"{imposter.url}/", params={"foo": "bar"})
+        r1 = httpx.get(f"{imposter.url}/", params={"foo": "baz"})
+        r2 = httpx.get(f"{imposter.url}/", params={"foo": "bar"})
 
         assert_that(r1, is_response().with_body("black pudding"))
         assert_that(r2, not_(is_response().with_body("black pudding")))
@@ -69,9 +66,9 @@ def test_query_predicate(mock_server):
         logger.debug("server: %s", s)
 
         # When
-        r1 = requests.get(imposter.url, params={"foo": "bar"})
-        r2 = requests.get(imposter.url, params={"foo": "baz"})
-        r3 = requests.get(imposter.url)
+        r1 = httpx.get(str(imposter.url), params={"foo": "bar"})
+        r2 = httpx.get(str(imposter.url), params={"foo": "baz"})
+        r3 = httpx.get(str(imposter.url))
 
         # Then
         assert_that(r1, is_response().with_body("oranges"))
@@ -87,9 +84,9 @@ def test_headers_predicate(mock_server):
         logger.debug("server: %s", s)
 
         # When
-        r1 = requests.get(imposter.url, headers={"foo": "bar"})
-        r2 = requests.get(imposter.url, headers={"foo": "baz"})
-        r3 = requests.get(imposter.url)
+        r1 = httpx.get(str(imposter.url), headers={"foo": "bar"})
+        r2 = httpx.get(str(imposter.url), headers={"foo": "baz"})
+        r3 = httpx.get(str(imposter.url))
 
         # Then
         assert_that(r1, is_response().with_body("oranges"))
@@ -115,13 +112,13 @@ def test_methods(mock_server):
         logger.debug("server: %s", s)
 
         # When
-        delete = requests.delete(imposter.url)
-        post = requests.post(imposter.url)
-        put = requests.put(imposter.url)
-        patch = requests.patch(imposter.url)
-        get = requests.get(imposter.url)
-        options = requests.options(imposter.url)
-        head = requests.head(imposter.url)
+        delete = httpx.delete(str(imposter.url))
+        post = httpx.post(str(imposter.url))
+        put = httpx.put(str(imposter.url))
+        patch = httpx.patch(str(imposter.url))
+        get = httpx.get(str(imposter.url))
+        options = httpx.options(str(imposter.url))
+        head = httpx.head(str(imposter.url))
 
         # Then
         assert_that(delete, is_response().with_body("delete"))
@@ -141,9 +138,7 @@ def test_injection_predicate(mock_server):
     # Given
     imposter = Imposter(
         Stub(
-            InjectionPredicate(
-                inject="function (config) {return config.request.headers['foo'] === 'bar'}"
-            ),
+            InjectionPredicate(inject="function (config) {return config.request.headers['foo'] === 'bar'}"),
             Response(body="matched"),
         )
     )
@@ -152,8 +147,8 @@ def test_injection_predicate(mock_server):
         logger.debug("server: %s", s)
 
         # When
-        r1 = requests.get(imposter.url, headers={"foo": "bar"})
-        r2 = requests.get(imposter.url, headers={"foo": "baz"})
+        r1 = httpx.get(str(imposter.url), headers={"foo": "bar"})
+        r2 = httpx.get(str(imposter.url), headers={"foo": "baz"})
 
         # Then
         assert_that(r1, is_response().with_body("matched"))
