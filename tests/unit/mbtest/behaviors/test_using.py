@@ -1,8 +1,11 @@
-# encoding=utf-8
 import logging
 
 from mbtest.imposters.behaviors.using import Using
-from tests.utils.builders import UsingJsonpathBuilder, UsingRegexBuilder, UsingXpathBuilder
+from tests.utils.builders import (
+    UsingJsonpathBuilder,
+    UsingRegexBuilder,
+    UsingXpathBuilder,
+)
 
 logger = logging.getLogger(__name__)
 

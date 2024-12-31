@@ -1,49 +1,47 @@
-# encoding=utf-8
 from collections.abc import Mapping, Sequence
 from functools import singledispatch
-from xml.etree import ElementTree as et
+from xml.etree import ElementTree as ET
 
 
-def data2xml(data, default_namespace=None) -> et.Element:
+def data2xml(data, default_namespace=None) -> ET.Element:
     """Convert data structure to XML
     :param data: data to convert to XML
     :param default_namespace: Namespace
     :returns: Element
     """
     root, body = data.popitem()
-    root = et.Element(root)
+    root = ET.Element(root)
     if default_namespace:
         root.set(f"xmlns:{default_namespace[0]}", default_namespace[1])
     return buildxml(body, root)
 
 
-def et2string(element):
-    return et.tostring(element, encoding="unicode")
+def et2string(element: ET.Element) -> str:
+    return ET.tostring(element, encoding="unicode")
 
 
 @singledispatch
-def buildxml(data, root):
+def buildxml(data, root) -> ET.Element:
     root.text = str(data)
     return root
 
 
 @buildxml.register(Mapping)
-def buildxml_mapping(data, root):
+def buildxml_mapping(data, root) -> ET.Element:
     for key, value in data.items():
-        s = et.SubElement(root, key)
+        s = ET.SubElement(root, key)
         buildxml(value, s)
     return root
 
 
 @buildxml.register(Sequence)
-def buildxml_sequence(data, root):
+def buildxml_sequence(data: Sequence, root: ET.Element) -> ET.Element:
     for value in data:
         buildxml(value, root)
-        # root.extend(sub)
     return root
 
 
 @buildxml.register(str)
-def buildxml_basestring(data, root):
+def buildxml_basestring(data: str, root) -> ET.Element:
     root.text = data
     return root

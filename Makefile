@@ -19,26 +19,14 @@ precommit-test: colima
 	tox -e py39,coverage
 
 .PHONY: lint
-lint: check-format flake8 bandit refurb  ## Lint code
-
-.PHONY: flake8
-flake8:
-	tox -e flake8
-
-.PHONY: bandit
-bandit:
-	tox -e bandit
+lint: check-format  ## Lint code
 
 .PHONY: extra-lint
-extra-lint: pylint typecheck  ## Extra, optional linting.
+extra-lint: typecheck  ## Extra, optional linting.
 
 .PHONY: pylint
 pylint:
 	tox -e pylint
-
-.PHONY: refurb
-refurb:
-	tox -e refurb
 
 .PHONY: typecheck
 typecheck:
@@ -73,7 +61,7 @@ precommit: precommit-test typecheck lint docs ## Pre-commit targets
 .PHONY: recreate
 recreate: clean jsdeps ## Recreate tox environments
 	tox --recreate --notest -p -s
-	tox --recreate --notest -e coverage,format,check-format,flake8,pylint,bandit,piprot,mypy,pyright,docs,refurb -p
+	tox --recreate --notest -e coverage,format,check-format,mypy,pyright,docs -p
 
 .PHONY: jsdeps
 jsdeps:

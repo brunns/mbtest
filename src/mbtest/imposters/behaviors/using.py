@@ -1,7 +1,7 @@
-# encoding=utf-8
 import abc
+from collections.abc import Mapping
 from enum import Enum
-from typing import Mapping, Optional, Type, cast
+from typing import Optional, cast
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 
@@ -30,7 +30,7 @@ class Using(JsonSerializable, abc.ABC):
     def from_structure(cls, structure: JsonStructure) -> "Using":
         method = cls.Method(structure["method"])
         return cast(
-            Type["Using"],
+            type["Using"],
             {
                 cls.Method.REGEX: UsingRegex,
                 cls.Method.XPATH: UsingXpath,
@@ -48,14 +48,17 @@ class UsingRegex(Using):
     :param multiline: Uses a multiline regular expression
     """
 
-    def __init__(self, selector: str, ignore_case: bool = False, multiline: bool = False) -> None:
+    def __init__(self, selector: str, *, ignore_case: bool = False, multiline: bool = False) -> None:
         super().__init__(Using.Method.REGEX, selector)
         self.ignore_case = ignore_case
         self.multiline = multiline
 
     def as_structure(self) -> JsonStructure:
         structure = super().as_structure()
-        structure["options"] = {"ignoreCase": self.ignore_case, "multiline": self.multiline}
+        structure["options"] = {
+            "ignoreCase": self.ignore_case,
+            "multiline": self.multiline,
+        }
         return structure
 
     @classmethod

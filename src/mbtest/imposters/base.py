@@ -1,6 +1,6 @@
-# encoding=utf-8
 from abc import ABC, abstractmethod
-from typing import Any, Mapping, MutableMapping
+from collections.abc import Mapping, MutableMapping
+from typing import Any
 
 # JsonStructure = Union[MutableMapping[str, "JsonStructure"], Iterable["JsonStructure"], str, int, bool, None]
 JsonStructure = Any  # TODO Pending a better solution to https://github.com/python/typing/issues/182
@@ -17,7 +17,7 @@ class JsonSerializable(ABC):
 
         :returns: Structure suitable for JSON serialisation.
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @classmethod
     @abstractmethod
@@ -28,7 +28,7 @@ class JsonSerializable(ABC):
 
         :returns: Converted object.
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @staticmethod
     def add_if_true(dictionary: MutableMapping[str, Any], key: str, value: Any) -> None:

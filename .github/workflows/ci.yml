@@ -209,10 +209,6 @@ jobs:
         run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
       - name: Check format
         run: tox -e check-format
-      - name: Lint
-        run: tox -e flake8 refurb
-      - name: Security checks
-        run: tox -e bandit
       - name: Check types
         run: tox -e pyright,mypy
       - name: Build docs

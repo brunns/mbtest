@@ -1,4 +1,3 @@
-# encoding=utf-8
 import logging
 
 import pytest
@@ -98,7 +97,7 @@ def test_invalid_operator():
     predicate_structure = expected_predicate.as_structure()
     # Adds another operator
     predicate_structure["equals"] = {}
-    with pytest.raises(Predicate.InvalidPredicateOperator):
+    with pytest.raises(Predicate.InvalidPredicateOperator, match="Each predicate must define exactly one operator"):
         Predicate.from_structure(predicate_structure)
 
 

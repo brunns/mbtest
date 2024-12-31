@@ -13,25 +13,24 @@ here = os.path.abspath(here)
 
 try:
     readme = os.path.join(here, "README.md")
-    long_description = open(readme, "r").read()
-except IOError:
+    long_description = open(readme).read()
+except OSError:
     logger.warning("README file not found or unreadable.")
     long_description = "See https://github.com/brunns/mbtest/"
 
 install_dependencies = [
-    "requests>=2.0",
-    "furl>=2.0",
-    "imurl>=0.2",
     "pyhamcrest>=2.0",
     "Deprecated>=1.2",
-    "brunns-matchers>=2.4",
+    "brunns-matchers>=2.9",
     "yarl>=1.9",
+    "httpx>=0.28",
 ]
 test_dependencies = [
     "pytest>=6.0",
     "contexttimer>=0.3",
-    "brunns-builder>=0.6",
+    "brunns-builder>=1.1",
     "trustme>=0.9",
+    "furl>=2.0",
 ]
 coverage_dependencies = [
     "pytest-cov>=2.5",
@@ -72,11 +71,11 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Testing",
     ],

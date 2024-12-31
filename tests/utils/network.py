@@ -1,11 +1,10 @@
-# encoding=utf-8
 import logging
 import socket
 
 logger = logging.getLogger(__name__)
 
 
-def internet_connection(host="8.8.8.8", port=53, timeout=1):
+def internet_connection(host="8.8.8.8", port: int = 53, timeout: float = 1):
     """Check for internet connection.
     Host: 8.8.8.8 (google-public-dns-a.google.com)
     OpenPort: 53/tcp
@@ -14,7 +13,8 @@ def internet_connection(host="8.8.8.8", port=53, timeout=1):
     try:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-        return True
     except OSError as ex:
-        logger.warning(exc_info=ex)
+        logger.warning("Unexpected", exc_info=ex)
         return False
+    else:
+        return True

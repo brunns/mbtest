@@ -1,7 +1,6 @@
-# encoding=utf-8
 import logging
 
-import requests
+import httpx
 from brunns.matchers.response import is_response
 from hamcrest import assert_that
 
@@ -22,8 +21,8 @@ def test_multiple_stubs(mock_server):
 
     with mock_server(imposter) as s:
         logger.debug("server: %s", s)
-        r1 = requests.get(f"{imposter.url}/test1")
-        r2 = requests.get(f"{imposter.url}/test2")
+        r1 = httpx.get(f"{imposter.url}/test1")
+        r2 = httpx.get(f"{imposter.url}/test2")
 
     assert_that(r1, is_response().with_body("sausages"))
     assert_that(r2, is_response().with_body("chips"))

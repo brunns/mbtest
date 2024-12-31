@@ -1,0 +1,15 @@
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["ANN", "D", "N813", "TD", "FIX002", "FA100", "PLR0913", "COM812", "ISC001", "E731", "N818", "PERF203", "TRY003"]
+exclude = ["setup.py", "docs/*"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 5
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "N802", "PLR2004"]
+"src/mbtest/imposters/base.py" = ["ERA001"]

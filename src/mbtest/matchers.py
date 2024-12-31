@@ -1,26 +1,28 @@
-# encoding=utf-8
 import warnings
-from typing import Any, Mapping, Sequence, Union, cast
+from collections.abc import Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Union, cast
 
-from furl import furl
 from hamcrest import anything
 from hamcrest.core.base_matcher import BaseMatcher
 from hamcrest.core.core.isanything import IsAnything
 from hamcrest.core.description import Description
 from hamcrest.core.helpers.wrap_matcher import wrap_matcher
 from hamcrest.core.matcher import Matcher
-from imurl.url import URL
 
 from mbtest.imposters.base import JsonStructure
 from mbtest.imposters.imposters import HttpRequest, Imposter, SentEmail
 from mbtest.server import MountebankServer
+
+if TYPE_CHECKING:  # pragma: no cover
+    from furl import furl
+    from yarl import URL
 
 ANYTHING = anything()
 
 
 def had_request(
     method: Union[str, Matcher[str]] = ANYTHING,
-    path: Union[furl, str, Matcher[Union[furl, URL, str]]] = ANYTHING,
+    path: Union["furl", "URL", str, Matcher[Union["furl", "URL", str]]] = ANYTHING,
     query: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
     headers: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
     body: Union[str, Matcher[str]] = ANYTHING,
@@ -41,9 +43,7 @@ def had_request(
     :param body: Request's body matched...
     :param times: Request's number of times called matched matched...
     """
-    return HadRequest(
-        method=method, path=path, query=query, headers=headers, body=body, times=times
-    )
+    return HadRequest(method=method, path=path, query=query, headers=headers, body=body, times=times)
 
 
 class HadRequest(BaseMatcher):
@@ -60,7 +60,7 @@ class HadRequest(BaseMatcher):
     def __init__(
         self,
         method: Union[str, Matcher[str]] = ANYTHING,
-        path: Union[furl, str, Matcher[Union[furl, URL, str]]] = ANYTHING,
+        path: Union["furl", "URL", str, Matcher[Union["furl", "URL", str]]] = ANYTHING,
         query: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
         headers: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
         body: Union[str, Matcher[str]] = ANYTHING,
@@ -74,7 +74,7 @@ class HadRequest(BaseMatcher):
             or body != ANYTHING
             or times != ANYTHING
         ):  # pragma: no cover
-            warnings.warn("Use builder-style with_X and and_X methods, rather than arguments.")
+            warnings.warn("Use builder-style with_X and and_X methods, rather than arguments.", stacklevel=2)
         self.method: Matcher[str] = wrap_matcher(method)
         self.path: Matcher[Union[furl, URL, str]] = wrap_matcher(path)
         self.query: Matcher[Mapping[str, str]] = wrap_matcher(query)
@@ -100,23 +100,17 @@ class HadRequest(BaseMatcher):
         self.append_matcher_description(self.json, "json", description)
 
     @staticmethod
-    def append_matcher_description(
-        field_matcher: Matcher[Any], field_name: str, description: Description
-    ) -> None:
+    def append_matcher_description(field_matcher: Matcher[Any], field_name: str, description: Description) -> None:
         if not isinstance(field_matcher, IsAnything):
             description.append_text(f" {field_name}: ").append_description_of(field_matcher)
 
-    def describe_mismatch(
-        self, actual: Union[Imposter, MountebankServer], description: Description
-    ) -> None:
-        description.append_text("found ").append_description_of(len(self.matching_requests))
-        description.append_text(" matching requests: ").append_description_of(
-            self.matching_requests
-        )
-        description.append_text(". All requests: ").append_description_of(self.all_requests)
+    def describe_mismatch(self, item: Union[Imposter, MountebankServer], mismatch_description: Description) -> None:  # noqa: ARG002
+        mismatch_description.append_text("found ").append_description_of(len(self.matching_requests))
+        mismatch_description.append_text(" matching requests: ").append_description_of(self.matching_requests)
+        mismatch_description.append_text(". All requests: ").append_description_of(self.all_requests)
 
-    def _matches(self, actual: Union[Imposter, MountebankServer]) -> bool:
-        self.all_requests = cast(Sequence[HttpRequest], actual.get_actual_requests())
+    def _matches(self, item: Union[Imposter, MountebankServer]) -> bool:
+        self.all_requests = cast(Sequence[HttpRequest], item.get_actual_requests())
         self.matching_requests = [
             request
             for request in self.all_requests
@@ -140,11 +134,11 @@ class HadRequest(BaseMatcher):
     def and_method(self, method: Union[str, Matcher[str]]):
         return self.with_method(method)
 
-    def with_path(self, path: Union[furl, str, Matcher[Union[furl, URL, str]]]):
+    def with_path(self, path: Union["furl", "URL", str, Matcher[Union["furl", "URL", str]]]):
         self.path = wrap_matcher(path)
         return self
 
-    def and_path(self, path: Union[furl, str, Matcher[Union[furl, URL, str]]]):
+    def and_path(self, path: Union["furl", "URL", str, Matcher[Union["furl", "URL", str]]]):
         return self.with_path(path)
 
     def with_query(self, query: Union[Mapping[str, str], Matcher[Mapping[str, str]]]):
@@ -172,7 +166,7 @@ class HadRequest(BaseMatcher):
         self.json = wrap_matcher(json)
         return self
 
-    def and_json(self, json: Union[JsonStructure, JsonStructure]):
+    def and_json(self, json: Union[JsonStructure, Matcher[JsonStructure]]):
         return self.with_json(json)
 
     def with_times(self, times: Union[int, Matcher[int]]):
@@ -214,9 +208,7 @@ class EmailSent(BaseMatcher):
         # TODO: builder style, & lots more attributes.
         self.body_text = wrap_matcher(body_text)
         self.subject = wrap_matcher(subject)
-        self.to = wrap_matcher(
-            to
-        )  # TODO: Type is wrong here - to is a sequence of addresses and names.
+        self.to = wrap_matcher(to)  # TODO: Type is wrong here - to is a sequence of addresses and names.
 
     def describe_to(self, description: Description) -> None:
         description.append_text("email with")
@@ -232,18 +224,16 @@ class EmailSent(BaseMatcher):
         if not isinstance(matcher, IsAnything):
             description.append_text(f" {text}: ").append_description_of(matcher)
 
-    def describe_mismatch(
-        self, actual: Union[Imposter, MountebankServer], description: Description
-    ) -> None:
-        sent_email = self.get_sent_email(actual)
+    def describe_mismatch(self, item: Union[Imposter, MountebankServer], mismatch_description: Description) -> None:
+        sent_email = self.get_sent_email(item)
         matching_emails = self.get_matching_emails(sent_email)
 
-        description.append_text("found ").append_description_of(len(matching_emails))
-        description.append_text(" matching emails: ").append_description_of(matching_emails)
-        description.append_text(". All emails: ").append_description_of(sent_email)
+        mismatch_description.append_text("found ").append_description_of(len(matching_emails))
+        mismatch_description.append_text(" matching emails: ").append_description_of(matching_emails)
+        mismatch_description.append_text(". All emails: ").append_description_of(sent_email)
 
-    def _matches(self, actual: Union[Imposter, MountebankServer]) -> bool:
-        sent_email = self.get_sent_email(actual)
+    def _matches(self, item: Union[Imposter, MountebankServer]) -> bool:
+        sent_email = self.get_sent_email(item)
         matching_emails = self.get_matching_emails(sent_email)
 
         return len(matching_emails) > 0
@@ -256,7 +246,5 @@ class EmailSent(BaseMatcher):
         return [
             email
             for email in sent_email
-            if self.body_text.matches(email.text)
-            and self.subject.matches(email.subject)
-            and self.to.matches(email.to)
+            if self.body_text.matches(email.text) and self.subject.matches(email.subject) and self.to.matches(email.to)
         ]

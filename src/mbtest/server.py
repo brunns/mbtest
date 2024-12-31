@@ -1,17 +1,16 @@
-﻿# encoding=utf-8
 import logging
 import subprocess  # nosec
 import time
 from collections import abc
+from collections.abc import Iterable, MutableSequence, Sequence
 from operator import attrgetter
 from pathlib import Path
 from threading import Lock
-from typing import Iterable, List, MutableSequence, Optional, Sequence, Set, Union
+from typing import ClassVar, Optional, Union
 
-import requests
-from _pytest.fixtures import FixtureRequest  # type: ignore
-from furl import furl
-from requests import RequestException
+import httpx
+from _pytest.fixtures import FixtureRequest  # type: ignore[attr-defined]
+from yarl import URL
 
 from mbtest.imposters import Imposter
 from mbtest.imposters.imposters import Request
@@ -27,9 +26,9 @@ def mock_server(
     executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
     port: int = 2525,
     timeout: int = 5,
-    debug: bool = True,
-    allow_injection: bool = True,
-    local_only: bool = True,
+    debug: bool = True,  # noqa: FBT001,FBT002
+    allow_injection: bool = True,  # noqa: FBT001,FBT002
+    local_only: bool = True,  # noqa: FBT001,FBT002
     data_dir: Union[str, None] = ".mbdb",
 ) -> "MountebankServer":
     """`Pytest fixture <https://docs.pytest.org/en/latest/fixture.html>`_, making available a mock server, running one
@@ -151,7 +150,7 @@ class MountebankServer:
 
         :param definition: One or more Imposters."""
         json = definition.as_structure()
-        post = requests.post(self.server_url, json=json, timeout=10)
+        post = httpx.post(str(self.server_url), json=json)
         post.raise_for_status()
         definition.attach(self.host, post.json()["port"], self.server_url)
         self._running_imposters.append(definition)
@@ -163,7 +162,7 @@ class MountebankServer:
 
     def delete_impostor(self, imposter):
         """Delete impostor from server."""
-        requests.delete(imposter.configuration_url, timeout=30).raise_for_status()
+        httpx.delete(str(imposter.configuration_url)).raise_for_status()
         self._running_imposters = [
             i for i in self._running_imposters if i.configuration_url != imposter.configuration_url
         ]
@@ -175,19 +174,17 @@ class MountebankServer:
         return actual_requests
 
     @property
-    def server_url(self) -> furl:
-        return furl().set(
-            scheme=self.scheme, host=self.host, port=self.server_port, path=self.imposters_path
-        )
+    def server_url(self) -> URL:
+        return URL.build(scheme=self.scheme, host=self.host or "", port=self.server_port or 0) / self.imposters_path
 
     def query_all_imposters(self) -> Sequence[Imposter]:
         """Yield all imposters running on the server, including those defined elsewhere."""
-        server_info = requests.get(self.server_url, timeout=30)
+        server_info = httpx.get(str(self.server_url))
         imposters_structure = server_info.json()["imposters"]
         all_imposters: MutableSequence[Imposter] = []
         for imposter_structure in imposters_structure:
             impostor_url = imposter_structure["_links"]["self"]["href"]
-            imposter = Imposter.from_structure(requests.get(impostor_url, timeout=30).json())
+            imposter = Imposter.from_structure(httpx.get(str(impostor_url)).json())
             imposter.host = self.host
             imposter.server_url = self.server_url
             all_imposters.append(imposter)
@@ -237,43 +234,45 @@ class ExecutingMountebankServer(MountebankServer):
     :param data_dir: Persist all operations to disk, in this directory.
     """
 
-    running: Set[int] = set()
+    running: ClassVar[set[int]] = set()
     start_lock = Lock()
 
     def __init__(
         self,
         executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
         port: int = 2525,
-        timeout: int = 5,
-        debug: bool = True,
-        allow_injection: bool = True,
-        local_only: bool = True,
+        timeout: float = 5,
+        debug: bool = True,  # noqa: FBT001,FBT002
+        allow_injection: bool = True,  # noqa: FBT001,FBT002
+        local_only: bool = True,  # noqa: FBT001,FBT002
         data_dir: Union[str, None] = ".mbdb",
     ) -> None:
         super().__init__(port)
         with self.start_lock:
             if self.server_port in self.running:
-                raise MountebankPortInUseException(f"Already running on port {self.server_port}.")
+                msg = f"Already running on port {self.server_port}."
+                raise MountebankPortInUseException(msg)
             try:
-                options = self._build_options(port, debug, allow_injection, local_only, data_dir)
-                self.mb_process = subprocess.Popen([str(executable)] + options)  # nosec
+                options = self._build_options(
+                    port, data_dir, debug=debug, allow_injection=allow_injection, local_only=local_only
+                )
+                self.mb_process = subprocess.Popen([str(executable)] + options)  # noqa: RUF005, S603
                 self._await_start(timeout)
                 self.running.add(port)
-                logger.info(
-                    "Spawned mb process %s on port %s.", self.mb_process.pid, self.server_port
-                )
-            except OSError:
-                logger.error(
+                logger.info("Spawned mb process %s on port %s.", self.mb_process.pid, self.server_port)
+            except OSError as e:
+                logger.exception(
                     "Failed to spawn mb process with executable at %s. Have you installed Mountebank?",
                     executable,
+                    exc_info=e,
                 )
                 raise
 
     @staticmethod
     def _build_options(
-        port: int, debug: bool, allow_injection: bool, local_only: bool, data_dir: Optional[str]
-    ) -> List[str]:
-        options: List[str] = ["start", "--port", str(port)]
+        port: int, data_dir: Optional[str], *, debug: bool = True, allow_injection: bool = True, local_only: bool = True
+    ) -> list[str]:
+        options: list[str] = ["start", "--port", str(port)]
         if debug:
             options.append("--debug")
         if allow_injection:
@@ -284,21 +283,24 @@ class ExecutingMountebankServer(MountebankServer):
             options += ["--datadir", data_dir]
         return options
 
-    def _await_start(self, timeout: int) -> None:
+    def _await_start(self, timeout: float) -> None:
         start_time = time.time()
         started = False
 
         while time.time() - start_time < timeout:
             try:
-                requests.get(self.server_url, timeout=1).raise_for_status()
-                started = True
-                break
-            except RequestException:
+                response = httpx.get(str(self.server_url))
+                response.raise_for_status()
+            except httpx.HTTPError:
                 started = False
                 time.sleep(0.1)
+            else:
+                started = True
+                break
 
         if not started:
-            raise MountebankTimeoutError(f"Mountebank failed to start within {timeout} seconds.")
+            mag = f"Mountebank failed to start within {timeout} seconds."
+            raise MountebankTimeoutError(mag)
 
         logger.debug("Server started at %s.", self.server_url)
 

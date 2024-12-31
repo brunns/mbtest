@@ -1,4 +1,3 @@
-# encoding=utf-8
 import http
 
 from brunns.builder import Builder, a_boolean, a_string, an_integer, one_of
@@ -95,9 +94,7 @@ class CopyBuilder(Builder):
 
     from_ = a_string
     into = a_string
-    using = lambda: one_of(
-        UsingRegexBuilder().build(), UsingXpathBuilder().build(), UsingJsonpathBuilder().build()
-    )
+    using = lambda: one_of(UsingRegexBuilder().build(), UsingXpathBuilder().build(), UsingJsonpathBuilder().build())
 
 
 class TcpPredicateBuilder(Builder):
@@ -115,9 +112,7 @@ class KeyBuilder(Builder):
     target = Key
 
     from_ = a_string
-    using = lambda: one_of(
-        UsingRegexBuilder().build(), UsingXpathBuilder().build(), UsingJsonpathBuilder().build()
-    )
+    using = lambda: one_of(UsingRegexBuilder().build(), UsingXpathBuilder().build(), UsingJsonpathBuilder().build())
     index = lambda: an_integer(1, 50)
 
 

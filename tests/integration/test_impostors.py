@@ -1,16 +1,14 @@
-# encoding=utf-8
 import json
 import logging
 import os
 from pathlib import Path
 
+import httpx
 import pytest
-import requests
 import trustme
 from brunns.matchers.data import json_matching
 from brunns.matchers.response import is_response
 from hamcrest import assert_that, contains_exactly, has_entries
-from requests.exceptions import SSLError
 
 from mbtest.imposters import Imposter, Predicate, Response, Stub
 from mbtest.imposters.responses import HttpResponse
@@ -22,12 +20,19 @@ logger = logging.getLogger(__name__)
 def test_multiple_imposters(mock_server):
     imposters = [
         Imposter(Stub(Predicate(path="/test1"), Response(body="sausages"))),
-        Imposter([Stub([Predicate(path="/test2")], [Response(body="chips", status_code=201)])]),
+        Imposter(
+            [
+                Stub(
+                    [Predicate(path="/test2")],
+                    [Response(body="chips", status_code=201)],
+                )
+            ]
+        ),
     ]
 
     with mock_server(imposters):
-        r1 = requests.get(f"{imposters[0].url}/test1")
-        r2 = requests.get(f"{imposters[1].url}/test2")
+        r1 = httpx.get(f"{imposters[0].url}/test1")
+        r2 = httpx.get(f"{imposters[1].url}/test2")
 
     assert_that(r1, is_response().with_status_code(200).and_body("sausages"))
     assert_that(r2, is_response().with_status_code(201).and_body("chips"))
@@ -37,7 +42,7 @@ def test_default_imposter(mock_server):
     imposter = Imposter(Stub())
 
     with mock_server(imposter):
-        r = requests.get(f"{imposter.url}/")
+        r = httpx.get(f"{imposter.url}/")
 
     assert_that(r, is_response().with_status_code(200).and_body(""))
 
@@ -46,7 +51,7 @@ def test_imposter_had_request_matcher(mock_server):
     imposter = Imposter(Stub(Predicate(path="/test"), Response(body="sausages")))
 
     with mock_server(imposter):
-        response = requests.get(f"{imposter.url}/test")
+        response = httpx.get(f"{imposter.url}/test")
 
         assert_that(response, is_response().with_status_code(200).and_body("sausages"))
         assert_that(imposter, had_request().with_path("/test").and_method("GET"))
@@ -63,7 +68,7 @@ def test_add_stub_to_running_impostor(mock_server):
     )
 
     with mock_server(impostor):
-        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        responses = [httpx.get(f"{impostor.url}/test{i}") for i in range(3)]
         assert_that(
             responses,
             contains_exactly(
@@ -78,7 +83,7 @@ def test_add_stub_to_running_impostor(mock_server):
         )
         assert index == 1
 
-        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        responses = [httpx.get(f"{impostor.url}/test{i}") for i in range(3)]
         assert_that(
             responses,
             contains_exactly(
@@ -100,7 +105,7 @@ def test_add_stubs_to_running_impostor(mock_server):
     )
 
     with mock_server(impostor):
-        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        responses = [httpx.get(f"{impostor.url}/test{i}") for i in range(3)]
         assert_that(
             responses,
             contains_exactly(
@@ -115,7 +120,7 @@ def test_add_stubs_to_running_impostor(mock_server):
                 Stub(Predicate(path="/test1"), Response(body="response1")),
             ]
         )
-        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        responses = [httpx.get(f"{impostor.url}/test{i}") for i in range(3)]
         assert_that(
             responses,
             contains_exactly(
@@ -141,7 +146,7 @@ def test_remove_and_replace_stub_from_running_impostor(mock_server):
     )
 
     with mock_server(impostor):
-        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        responses = [httpx.get(f"{impostor.url}/test{i}") for i in range(3)]
         assert_that(
             responses,
             contains_exactly(
@@ -153,7 +158,7 @@ def test_remove_and_replace_stub_from_running_impostor(mock_server):
 
         impostor.delete_stub(1)
 
-        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        responses = [httpx.get(f"{impostor.url}/test{i}") for i in range(3)]
         assert_that(
             responses,
             contains_exactly(
@@ -164,7 +169,7 @@ def test_remove_and_replace_stub_from_running_impostor(mock_server):
         )
 
         impostor.add_stub(Stub(Predicate(path="/test1"), Response(body="response1")))
-        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        responses = [httpx.get(f"{impostor.url}/test{i}") for i in range(3)]
         assert_that(
             responses,
             contains_exactly(
@@ -190,7 +195,7 @@ def test_update_stub_at_running_impostor(mock_server):
     )
 
     with mock_server(impostor):
-        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(3)]
+        responses = [httpx.get(f"{impostor.url}/test{i}") for i in range(3)]
         assert_that(
             responses,
             contains_exactly(
@@ -202,7 +207,7 @@ def test_update_stub_at_running_impostor(mock_server):
 
         impostor.update_stub(1, Stub(Predicate(path="/test3"), Response(body="response3")))
 
-        responses = [requests.get(f"{impostor.url}/test{i}") for i in range(4)]
+        responses = [httpx.get(f"{impostor.url}/test{i}") for i in range(4)]
         assert_that(
             responses,
             contains_exactly(
@@ -224,7 +229,7 @@ def test_build_imposter_from_structure_on_disk(mock_server):
     imposter = Imposter.from_structure(structure["imposters"][0])
 
     with mock_server(imposter):
-        response = requests.get(f"{imposter.url}/tutorial")
+        response = httpx.get(f"{imposter.url}/tutorial")
 
     # Then
     assert_that(
@@ -239,9 +244,8 @@ def test_https_impostor_fails_if_cert_not_supplied(mock_server):
         protocol=Imposter.Protocol.HTTPS,
     )
 
-    with mock_server(imposter):
-        with pytest.raises(SSLError):
-            requests.get(f"{imposter.url}/test")
+    with mock_server(imposter), pytest.raises(httpx.ConnectError, match="certificate verify failed"):
+        httpx.get(f"{imposter.url}/test")
 
 
 def test_https_impostor_works_with_cert_supplied(mock_server):
@@ -257,7 +261,7 @@ def test_https_impostor_works_with_cert_supplied(mock_server):
     )
 
     with mock_server(imposter), ca.cert_pem.tempfile() as certfile:
-        response = requests.get(f"{imposter.url}/test", verify=certfile)
+        response = httpx.get(f"{imposter.url}/test", verify=certfile)
 
     assert_that(response, is_response().with_status_code(200).and_body("sausages"))
 
@@ -269,8 +273,8 @@ def test_default_response(mock_server):
     )
 
     with mock_server(imposter):
-        r1 = requests.get(f"{imposter.url}/test1")
-        r2 = requests.get(f"{imposter.url}/test2")
+        r1 = httpx.get(f"{imposter.url}/test1")
+        r2 = httpx.get(f"{imposter.url}/test2")
 
     assert_that(r1, is_response().with_status_code(200).and_body("sausages"))
     assert_that(r2, is_response().with_status_code(201).and_body("chips"))

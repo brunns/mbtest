@@ -1,4 +1,3 @@
-# encoding=utf-8
 import logging
 
 from mbtest.imposters import Proxy
@@ -23,9 +22,7 @@ def test_structure_wait():
 
 
 def test_structure_inject_headers():
-    expected_proxy = (
-        ProxyBuilder().with_inject_headers({"X-Clacks-Overhead": "GNU Terry Pratchett"}).build()
-    )
+    expected_proxy = ProxyBuilder().with_inject_headers({"X-Clacks-Overhead": "GNU Terry Pratchett"}).build()
     proxy_structure = expected_proxy.as_structure()
     proxy = BaseResponse.from_structure(proxy_structure)
     assert proxy.inject_headers == expected_proxy.inject_headers

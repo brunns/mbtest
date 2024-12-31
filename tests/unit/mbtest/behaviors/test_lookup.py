@@ -1,4 +1,3 @@
-# encoding=utf-8
 import logging
 
 from mbtest.imposters import Key, Lookup, UsingJsonpath

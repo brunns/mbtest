@@ -1,4 +1,3 @@
-# encoding=utf-8
 import json
 from unittest.mock import MagicMock
 
@@ -27,9 +26,7 @@ def test_request_matcher():
     )
     assert_that(
         had_request().with_times(4).and_query(has_entries(a="b")).and_body("chips"),
-        has_string(
-            "<4> call(s) with query parameters: a dictionary containing {'a': 'b'} body: 'chips'"
-        ),
+        has_string("<4> call(s) with query parameters: a dictionary containing {'a': 'b'} body: 'chips'"),
     )
     assert_that(
         had_request().with_path("/sausages").and_method("PUT").and_times(99),
@@ -50,25 +47,20 @@ def test_request_matcher_with_json():
     # Given
     server = MagicMock()
     request1 = (
-        HttpRequestBuilder()
-        .with_path("/test")
-        .and_method("GET")
-        .and_body(json.dumps({"a": "b", "c": "d"}))
-        .build()
+        HttpRequestBuilder().with_path("/test").and_method("GET").and_body(json.dumps({"a": "b", "c": "d"})).build()
     )
     request2 = (
-        HttpRequestBuilder()
-        .with_path("/test")
-        .and_method("GET")
-        .and_body(json.dumps({"e": "f", "g": "j"}))
-        .build()
+        HttpRequestBuilder().with_path("/test").and_method("GET").and_body(json.dumps({"e": "f", "g": "j"})).build()
     )
     server.get_actual_requests.return_value = [request1, request2]
 
     # When
 
     # Then
-    assert_that(server, had_request().with_times(1).and_json(has_entries(a="b")).and_method("GET"))
+    assert_that(
+        server,
+        had_request().with_times(1).and_json(has_entries(a="b")).and_method("GET"),
+    )
 
 
 def test_email_sent():

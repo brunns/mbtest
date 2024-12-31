@@ -1,6 +1,5 @@
-# encoding=utf-8
-from collections.abc import Sequence
-from typing import Iterable, List, Optional, Union, cast
+from collections.abc import Iterable, Sequence
+from typing import Optional, Union, cast
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.predicates import BasePredicate, Predicate
@@ -43,7 +42,7 @@ class Stub(JsonSerializable):
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> "Stub":
-        responses: List[Union[InjectionResponse, Proxy, Response]] = []
+        responses: list[Union[InjectionResponse, Proxy, Response]] = []
         for response in structure.get("responses", ()):
             if "proxy" in response:
                 responses.append(Proxy.from_structure(response))
@@ -52,10 +51,7 @@ class Stub(JsonSerializable):
             else:
                 responses.append(Response.from_structure(response))
         return cls(
-            [
-                BasePredicate.from_structure(predicate)
-                for predicate in structure.get("predicates", ())
-            ],
+            [BasePredicate.from_structure(predicate) for predicate in structure.get("predicates", ())],
             responses,
         )
 
@@ -88,8 +84,8 @@ class AddStub(JsonSerializable):
             structure["index"] = self.index
         return structure
 
-    @staticmethod
-    def from_structure(structure: JsonStructure) -> "AddStub":
+    @classmethod
+    def from_structure(cls, structure: JsonStructure) -> "AddStub":
         return AddStub(
             index=structure.get("index"),
             stub=Stub.from_structure(structure.get("stub")),
