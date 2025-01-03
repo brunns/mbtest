@@ -44,6 +44,7 @@ class Predicate(LogicallyCombinablePredicate):
     :param query: Query arguments, keys and values.
     :param body: Body text. Can be a string, or a JSON serialisable data structure.
     :param headers: Headers, keys and values.
+    :param form: Form-encoded key-value pairs in the body.
     :param xpath: xpath query
     :param jsonpath: jsonpath query
     :param operator:
@@ -88,6 +89,7 @@ class Predicate(LogicallyCombinablePredicate):
         headers: Optional[Mapping[str, str]] = None,
         xpath: Optional[str] = None,
         jsonpath: Optional[str] = None,
+        form: Optional[Mapping[str, str]] = None,
         operator: Union[Operator, str] = Operator.EQUALS,
         case_sensitive: bool = True,  # noqa: FBT001,FBT002
     ) -> None:
@@ -98,6 +100,7 @@ class Predicate(LogicallyCombinablePredicate):
         self.headers = headers
         self.xpath = xpath
         self.jsonpath = jsonpath
+        self.form = form
         self.operator = operator if isinstance(operator, Predicate.Operator) else Predicate.Operator(operator)
         self.case_sensitive = case_sensitive
 
@@ -132,6 +135,7 @@ class Predicate(LogicallyCombinablePredicate):
         self.set_if_in_dict(inner, "query", "query")
         self.set_if_in_dict(inner, "body", "body")
         self.set_if_in_dict(inner, "headers", "headers")
+        self.set_if_in_dict(inner, "form", "form")
         if "method" in inner:
             self.method = Predicate.Method(inner["method"])
 
@@ -141,6 +145,7 @@ class Predicate(LogicallyCombinablePredicate):
         self.add_if_true(fields, "query", self.query)
         self.add_if_true(fields, "body", self.body)
         self.add_if_true(fields, "headers", self.headers)
+        self.add_if_true(fields, "form", self.form)
         if self.method:
             fields["method"] = self.method.value
         return fields

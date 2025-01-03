@@ -71,6 +71,13 @@ def test_structure_headers():
     assert predicate.headers == expected_predicate.headers
 
 
+def test_structure_form():
+    expected_predicate = Predicate(form={"key": "value"})
+    predicate_structure = expected_predicate.as_structure()
+    predicate = BasePredicate.from_structure(predicate_structure)
+    assert predicate.headers == expected_predicate.headers
+
+
 def test_structure_operator():
     expected_predicate = Predicate(operator="deepEquals")
     predicate_structure = expected_predicate.as_structure()
