@@ -1,9 +1,8 @@
 # Change Log
 
-## 2.13.2
+## 2.14
 
-* Enhancement - add form to Predicate.
-* Fix - added the `imurl` package to dependencies
+* Enhancement - add form to Predicate. (Thanks [@kwist-sgr](https://github.com/kwist-sgr).)
 
 ## 2.13.1
 

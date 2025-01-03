@@ -39,6 +39,8 @@ class PredicateBuilder(Builder):
     body = lambda: one_of(None, a_string())
     headers = lambda: one_of(None, {a_string(): a_string()})
     xpath = lambda: one_of(None, a_string())
+    jsonpath = lambda: one_of(None, a_string())
+    form = lambda: one_of(None, {a_string(): a_string()})
     operator = lambda: one_of(*list(Predicate.Operator))
     case_sensitive = a_boolean
 
