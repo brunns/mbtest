@@ -3,6 +3,7 @@
 ## 2.14
 
 * Enhancement - add form to Predicate. (Thanks [@kwist-sgr](https://github.com/kwist-sgr).)
+* Fix - remove [`imurl`](https://github.com/thesketh/imurl) usage entirely.
 
 ## 2.13.1
 
