@@ -48,9 +48,9 @@ class Imposter(JsonSerializable):
         key: Optional[str] = None,
         cert: Optional[str] = None,
     ) -> None:
-        stubs = cast(Iterable[Stub], stubs if isinstance(stubs, abc.Sequence) else [stubs])
+        stubs = cast("Iterable[Stub]", stubs if isinstance(stubs, abc.Sequence) else [stubs])
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
-        self.stubs = [Stub(responses=cast(Proxy, stub)) if isinstance(stub, Proxy) else stub for stub in stubs]
+        self.stubs = [Stub(responses=cast("Proxy", stub)) if isinstance(stub, Proxy) else stub for stub in stubs]
         self.port = port
         self.protocol = protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
         self.name = name
@@ -107,12 +107,12 @@ class Imposter(JsonSerializable):
     @property
     def attached(self) -> bool:
         """Imposter is attached to a running MB server."""
-        return cast(bool, self.port and self.host and self.server_url)
+        return cast("bool", self.port and self.host and self.server_url)
 
     @property
     def configuration_url(self) -> URL:
         if self.attached:
-            return cast(URL, self.server_url) / str(self.port)
+            return cast("URL", self.server_url) / str(self.port)
         msg = f"Unattached imposter {self} has no configuration URL."
         raise AttributeError(msg)
 

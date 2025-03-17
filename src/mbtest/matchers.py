@@ -110,7 +110,7 @@ class HadRequest(BaseMatcher):
         mismatch_description.append_text(". All requests: ").append_description_of(self.all_requests)
 
     def _matches(self, item: Union[Imposter, MountebankServer]) -> bool:
-        self.all_requests = cast(Sequence[HttpRequest], item.get_actual_requests())
+        self.all_requests = cast("Sequence[HttpRequest]", item.get_actual_requests())
         self.matching_requests = [
             request
             for request in self.all_requests
@@ -240,7 +240,7 @@ class EmailSent(BaseMatcher):
 
     @staticmethod
     def get_sent_email(actual) -> Sequence[SentEmail]:
-        return cast(Sequence[SentEmail], list(actual.get_actual_requests()))
+        return cast("Sequence[SentEmail]", list(actual.get_actual_requests()))
 
     def get_matching_emails(self, sent_email) -> Sequence[SentEmail]:
         return [

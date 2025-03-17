@@ -30,7 +30,7 @@ class Using(JsonSerializable, abc.ABC):
     def from_structure(cls, structure: JsonStructure) -> "Using":
         method = cls.Method(structure["method"])
         return cast(
-            type["Using"],
+            "type[Using]",
             {
                 cls.Method.REGEX: UsingRegex,
                 cls.Method.XPATH: UsingXpath,

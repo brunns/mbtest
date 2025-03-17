@@ -21,14 +21,14 @@ class Stub(JsonSerializable):
     ) -> None:
         if predicates:
             self.predicates = cast(
-                Iterable[BasePredicate],
+                "Iterable[BasePredicate]",
                 predicates if isinstance(predicates, Sequence) else [predicates],
             )
         else:
             self.predicates = [Predicate()]
         if responses:
             self.responses = cast(
-                Iterable[BaseResponse],
+                "Iterable[BaseResponse]",
                 responses if isinstance(responses, Sequence) else [responses],
             )
         else:
