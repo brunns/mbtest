@@ -36,7 +36,7 @@ class LogicallyCombinablePredicate(BasePredicate, ABC):
 
 
 class Predicate(LogicallyCombinablePredicate):
-    """Represents a `Mountebank predicate <http://www.mbtest.org/docs/api/predicates>`_.
+    """Represents a `Mountebank predicate <http://localhost:2525/docs/api/predicates>`_.
     A predicate can be thought of as a trigger, which may or may not match a request.
 
     :param path: URL path.
@@ -66,7 +66,7 @@ class Predicate(LogicallyCombinablePredicate):
         OPTIONS = "OPTIONS"
 
     class Operator(Enum):
-        """`Predicate operator <http://www.mbtest.org/docs/api/predicates>`_."""
+        """`Predicate operator <http://localhost:2525/docs/api/predicates>`_."""
 
         EQUALS = "equals"
         DEEP_EQUALS = "deepEquals"
@@ -196,7 +196,7 @@ class NotPredicate(LogicallyCombinablePredicate):
 
 
 class TcpPredicate(LogicallyCombinablePredicate):
-    """Represents a `Mountebank TCP predicate <http://www.mbtest.org/docs/protocols/tcp>`_.
+    """Represents a `Mountebank TCP predicate <http://localhost:2525/docs/protocols/tcp>`_.
     A predicate can be thought of as a trigger, which may or may not match a request.
 
     :param data: Data to match the request.
@@ -214,7 +214,7 @@ class TcpPredicate(LogicallyCombinablePredicate):
 
 
 class InjectionPredicate(BasePredicate, Injecting):
-    """Represents a `Mountebank injection predicate <http://www.mbtest.org/docs/api/injection>`_.
+    """Represents a `Mountebank injection predicate <http://localhost:2525/docs/api/injection>`_.
     A predicate can be thought of as a trigger, which may or may not match a request.
 
     Injection requires Mountebank version 2.0 or higher.

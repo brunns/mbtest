@@ -13,7 +13,7 @@ from mbtest.imposters.stubs import AddStub, Stub
 
 
 class Imposter(JsonSerializable):
-    """Represents a `Mountebank imposter <http://www.mbtest.org/docs/api/mocks>`_.
+    """Represents a `Mountebank imposter <http://localhost:2525/docs/api/mocks>`_.
     Think of an imposter as a mock website, running a protocol, on a specific port.
     Required behaviors are specified using stubs.
 
@@ -29,7 +29,7 @@ class Imposter(JsonSerializable):
     """
 
     class Protocol(Enum):
-        """Imposter `Protocol <http://www.mbtest.org/docs/protocols/http>`_."""
+        """Imposter `Protocol <http://localhost:2525/docs/protocols/http>`_."""
 
         HTTP = "http"
         HTTPS = "https"

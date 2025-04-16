@@ -29,7 +29,7 @@ class BaseResponse(JsonSerializable, ABC):
 
 
 class HttpResponse(JsonSerializable):
-    """Represents a `Mountebank HTTP response <http://www.mbtest.org/docs/protocols/http>`_.
+    """Represents a `Mountebank HTTP response <http://localhost:2525/docs/protocols/http>`_.
 
     :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
     :param status_code: HTTP status code
@@ -76,17 +76,17 @@ class HttpResponse(JsonSerializable):
 
 
 class Response(BaseResponse):
-    """Represents a `Mountebank 'is' response behavior <http://www.mbtest.org/docs/api/stubs>`_.
+    """Represents a `Mountebank 'is' response behavior <http://localhost:2525/docs/api/stubs>`_.
 
     :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
     :param status_code: HTTP status code
-    :param wait: `Add latency, in ms <http://www.mbtest.org/docs/api/behaviors#behavior-wait>`_.
+    :param wait: `Add latency, in ms <http://localhost:2525/docs/api/behaviors#behavior-wait>`_.
     :param repeat: `Repeat this many times before moving on to next response
-        <http://www.mbtest.org/docs/api/behaviors#behavior-repeat>`_.
+        <http://localhost:2525/docs/api/behaviors#behavior-repeat>`_.
     :param headers: Response HTTP headers
     :param mode: Mode - text or binary
     :param copy: Copy behavior
-    :param decorate: `Decorate behavior <http://www.mbtest.org/docs/api/behaviors#behavior-decorate>`_.
+    :param decorate: `Decorate behavior <http://localhost:2525/docs/api/behaviors#behavior-decorate>`_.
     :param lookup: Lookup behavior
     :param shell_transform: shellTransform behavior
     :param http_response: HTTP Response Fields - use this **or** the body, status_code, headers and mode fields,
@@ -186,7 +186,7 @@ class TcpResponse(BaseResponse):
 
 
 class FaultResponse(BaseResponse):
-    """Represents a `Mountebank fault response <https://www.mbtest.org/docs/api/faults>`_.
+    """Represents a `Mountebank fault response <https://localhost:2525/docs/api/faults>`_.
 
     :param fault: The fault to simulate.
     """
@@ -208,7 +208,7 @@ class FaultResponse(BaseResponse):
 
 
 class Proxy(BaseResponse):
-    """Represents a `Mountebank proxy <http://www.mbtest.org/docs/api/proxies>`_.
+    """Represents a `Mountebank proxy <http://localhost:2525/docs/api/proxies>`_.
 
     :param to: The origin server, to which the request should proxy.
     """
@@ -271,7 +271,7 @@ class Proxy(BaseResponse):
 
 
 class PredicateGenerator(JsonSerializable):
-    """Represents a `Mountebank predicate generator <https://www.mbtest.org/docs/api/proxies#proxy-predicate-generators>`_.
+    """Represents a `Mountebank predicate generator <https://localhost:2525/docs/api/proxies#proxy-predicate-generators>`_.
 
     :param path: Include the path in the generated predicate.
     """
@@ -304,7 +304,7 @@ class PredicateGenerator(JsonSerializable):
 
 
 class InjectionResponse(BaseResponse, Injecting):
-    """Represents a `Mountebank injection response <http://www.mbtest.org/docs/api/injection>`_.
+    """Represents a `Mountebank injection response <http://localhost:2525/docs/api/injection>`_.
 
     Injection requires Mountebank version 2.0 or higher.
 

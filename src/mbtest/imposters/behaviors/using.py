@@ -41,7 +41,7 @@ class Using(JsonSerializable, abc.ABC):
 
 class UsingRegex(Using):
     """
-    `Select values from the response using a regular expression. <http://www.mbtest.org/docs/api/behaviors#copy-regex-replacement>`_
+    `Select values from the response using a regular expression. <http://localhost:2525/docs/api/behaviors#copy-regex-replacement>`_
 
     :param selector: The selector used to select the value(s) from the request.
     :param ignore_case: Uses a case-insensitive regular expression
@@ -72,7 +72,7 @@ class UsingRegex(Using):
 
 class UsingXpath(Using):
     """
-    `Select values from the response using an xpath expression. <http://www.mbtest.org/docs/api/behaviors#copy-xpath-replacement>`_
+    `Select values from the response using an xpath expression. <http://localhost:2525/docs/api/behaviors#copy-xpath-replacement>`_
 
     :param selector: The selector used to select the value(s) from the request.
     :param ns: The ns object maps namespace aliases to URLs
@@ -97,7 +97,7 @@ class UsingXpath(Using):
 
 class UsingJsonpath(Using):
     """
-    `Select values from the response using a jsonpath expression. <http://www.mbtest.org/docs/api/behaviors#copy-jsonpath-replacement>`_
+    `Select values from the response using a jsonpath expression. <http://localhost:2525/docs/api/behaviors#copy-jsonpath-replacement>`_
 
     :param selector: The selector used to select the value(s) from the request.
     """

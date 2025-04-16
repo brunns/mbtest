@@ -1,7 +1,7 @@
 Welcome to mbtest's documentation
 =================================
 
-Opinionated Python wrapper & utils for the `Mountebank`_ over the wire
+Opinionated Python wrapper & utils for the Mountebank over the wire
 test double tool.
 
 Includes `pytest`_ fixture and `PyHamcrest`_ matchers.
@@ -18,7 +18,7 @@ Installation
 
 Install from `Pypi <https://pypi.org/project/mbtest/>`_ as usual, using pip , `tox`_, or ``setup.py``.
 
-Also requires `Mountebank`_ to have been installed::
+Also requires Mountebank to have been installed::
 
     $ npm install mountebank@2.9 --omit=dev
 
@@ -61,7 +61,6 @@ Needs a `pytest fixture`_, most easily defined in `conftest.py`_:
        return server.mock_server(request)
 
 
-.. _Mountebank: http://www.mbtest.org/
 .. _pytest: https://pytest.org
 .. _PyHamcrest: https://pyhamcrest.readthedocs.io
 .. _tox: https://tox.readthedocs.io
