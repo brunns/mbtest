@@ -60,7 +60,7 @@
 
 ## 2.5
 
-* Add [dynamic predicates and responses](http://www.mbtest.org/docs/api/injection). This feature requires Mountebank 2.0 or later, but all other features should continue to work with older version.
+* Add [dynamic predicates and responses](http://localhost:2525/docs/api/injection). This feature requires Mountebank 2.0 or later, but all other features should continue to work with older version.
 * Add MountebankServer.query_all_imposters() method to retrieve all imposters from a running MB server, including those not created locally.
 
 ## 2.4

@@ -60,7 +60,7 @@ def mock_server(
     :param debug: Start the server in debug mode, which records all requests. This needs to be `True` for the
         :py:func:`mbtest.matchers.had_request` matcher to work.
     :param allow_injection: Allow JavaScript injection. If `True`, `local_only` should also be `True`,as per
-        `Mountebank security <http://www.mbtest.org/docs/security>`_.
+        `Mountebank security <http://localhost:2525/docs/security>`_.
     :param local_only: Accept request only from localhost.
     :param data_dir: Persist all operations to disk, in this directory.
 
@@ -229,7 +229,7 @@ class ExecutingMountebankServer(MountebankServer):
     :param debug: Start the server in debug mode, which records all requests. This needs to be `True` for the
         :py:func:`mbtest.matchers.had_request` matcher to work.
     :param allow_injection: Allow JavaScript injection. If `True`, `local_only` should also be `True`,as per
-        `Mountebank security <http://www.mbtest.org/docs/security>`_.
+        `Mountebank security <http://localhost:2525/docs/security>`_.
     :param local_only: Accept request only from localhost.
     :param data_dir: Persist all operations to disk, in this directory.
     """

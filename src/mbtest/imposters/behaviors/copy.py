@@ -6,7 +6,7 @@ from mbtest.imposters.behaviors.using import Using
 
 
 class Copy(JsonSerializable):
-    """Represents a `copy behavior <http://www.mbtest.org/docs/api/behaviors#behavior-copy>`_.
+    """Represents a `copy behavior <http://localhost:2525/docs/api/behaviors#behavior-copy>`_.
 
     :param from_: The name of the request field to copy from, or, if the request field is an object, then an object
         specifying the path to the request field.

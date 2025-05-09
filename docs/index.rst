@@ -60,8 +60,7 @@ Needs a `pytest fixture`_, most easily defined in `conftest.py`_:
    def mock_server(request):
        return server.mock_server(request)
 
-
-.. _Mountebank: http://www.mbtest.org/
+.. _Mountebank: https://github.com/bbyars/mountebank
 .. _pytest: https://pytest.org
 .. _PyHamcrest: https://pyhamcrest.readthedocs.io
 .. _tox: https://tox.readthedocs.io

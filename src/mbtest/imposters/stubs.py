@@ -7,7 +7,7 @@ from mbtest.imposters.responses import BaseResponse, InjectionResponse, Proxy, R
 
 
 class Stub(JsonSerializable):
-    """Represents a `Mountebank stub <http://www.mbtest.org/docs/api/stubs>`_.
+    """Represents a `Mountebank stub <http://localhost:2525/docs/api/stubs>`_.
     Think of a stub as a behavior, triggered by a matching predicate.
 
     :param predicates: Trigger this stub if one of these predicates matches the request
@@ -57,7 +57,7 @@ class Stub(JsonSerializable):
 
 
 class AddStub(JsonSerializable):
-    """Represents a `Mountebank add stub request <http://www.mbtest.org/docs/api/overview#add-stub>`.
+    """Represents a `Mountebank add stub request <http://localhost:2525/docs/api/overview#add-stub>`.
     To add new stab to an existing imposter.
 
     :param index: The index in imposter stubs array.

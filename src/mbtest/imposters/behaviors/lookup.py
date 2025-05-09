@@ -6,7 +6,7 @@ from mbtest.imposters.behaviors.using import Using
 
 
 class Lookup(JsonSerializable):
-    """Represents a `lookup behavior <http://www.mbtest.org/docs/api/behaviors#behavior-lookup>`_.
+    """Represents a `lookup behavior <http://localhost:2525/docs/api/behaviors#behavior-lookup>`_.
 
     :param key: How to select the key from the request.
     :param datasource_path: The path to the data source.
