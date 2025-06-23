@@ -279,7 +279,7 @@ class PredicateGenerator(JsonSerializable):
     def __init__(
         self,
         path: bool = False,  # noqa: FBT001,FBT002
-        query: Union[bool, Mapping[str, str]] = False,  # noqa: FBT002
+        query: Union[bool, Mapping[str, str]] = False,  # noqa: FBT001,FBT002
         operator: Predicate.Operator = Predicate.Operator.EQUALS,
         case_sensitive: bool = True,  # noqa: FBT001,FBT002
     ):
