@@ -53,7 +53,7 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        python: ['3.13', '3.12', '3.11', '3.10', '3.9', 'pypy-3.10']
+        python: ['3.13', '3.12', '3.11', '3.10', 'pypy-3.10']
         node-version: ['24.x']
         mbtest-version: ['2.9']
         os: ['ubuntu-latest']
@@ -147,9 +147,7 @@ jobs:
       - name: Install build tools
         run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
       - name: Install mbtest ${{ matrix.mbtest-version }}
-        env:
-          MBTEST_VERSION: ${{ matrix.mbtest-version }}
-        run: npm install mountebank@$MBTEST_VERSION --omit=dev
+        run: npm install mountebank@${{ matrix.mbtest-version }} --omit=dev
       - name: Run Tests
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
