@@ -26,7 +26,7 @@ install_dependencies = [
     "httpx>=0.28",
 ]
 test_dependencies = [
-    "pytest>=6.0",
+    "pytest>=9.0",
     "contexttimer>=0.3",
     "brunns-builder>=1.1",
     "trustme>=0.9",
@@ -76,10 +76,11 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Testing",
     ],
-    python_requires=">=3.9",
+    python_requires=">=3.10",
     install_requires=install_dependencies,
     tests_require=test_dependencies,
     extras_require=extras,

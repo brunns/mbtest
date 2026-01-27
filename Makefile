@@ -8,7 +8,7 @@ colima:
 
 .PHONY: test
 test: colima ## Run tests
-	tox -e py39,py313,pypy3.10
+	tox -e py310,py314,pypy3.11
 
 .PHONY: coverage
 coverage: colima ## Test coverage report
@@ -16,7 +16,7 @@ coverage: colima ## Test coverage report
 
 .PHONY: precommit-test
 precommit-test: colima
-	tox -e py39,coverage
+	tox -e py310,coverage
 
 .PHONY: lint
 lint: check-format  ## Lint code
@@ -30,7 +30,7 @@ pylint:
 
 .PHONY: typecheck
 typecheck:
-	tox -e pyright,mypy
+	tox -e pyright
 
 .PHONY: check-format
 check-format:
@@ -78,11 +78,11 @@ clean: ## Clean generated files
 
 .PHONY: repl
 repl: ## Python REPL
-	tox -e py313 -- python
+	tox -e py314 -- python
 
 .PHONY: outdated
 outdated: ## List outdated dependancies
-	tox -e py313 -- pip list -o
+	tox -e py314 -- pip list -o
 
 .PHONY: help
 help: ## Show this help

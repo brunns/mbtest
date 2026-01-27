@@ -6,7 +6,7 @@ from collections.abc import Iterable, MutableSequence, Sequence
 from operator import attrgetter
 from pathlib import Path
 from threading import Lock
-from typing import ClassVar, Optional, Union
+from typing import ClassVar
 
 import httpx
 from _pytest.fixtures import FixtureRequest  # type: ignore[attr-defined]
@@ -23,13 +23,13 @@ DEFAULT_MB_EXECUTABLE = find_mountebank_executable()
 
 def mock_server(
     request: FixtureRequest,
-    executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
+    executable: str | Path = DEFAULT_MB_EXECUTABLE,
     port: int = 2525,
     timeout: int = 5,
     debug: bool = True,  # noqa: FBT001,FBT002
     allow_injection: bool = True,  # noqa: FBT001,FBT002
     local_only: bool = True,  # noqa: FBT001,FBT002
-    data_dir: Union[str, None] = ".mbdb",
+    data_dir: str | None = ".mbdb",
 ) -> "MountebankServer":
     """`Pytest fixture <https://docs.pytest.org/en/latest/fixture.html>`_, making available a mock server, running one
     or more imposters, one for each domain being mocked.
@@ -134,7 +134,7 @@ class MountebankServer:
     def __exit__(self, ex_type, ex_value, ex_traceback) -> None:
         self.delete_imposters()
 
-    def add_imposters(self, definition: Union[Imposter, Iterable[Imposter]]) -> None:
+    def add_imposters(self, definition: Imposter | Iterable[Imposter]) -> None:
         """Add imposters to Mountebank server.
 
         :param definition: One or more Imposters.
@@ -239,13 +239,13 @@ class ExecutingMountebankServer(MountebankServer):
 
     def __init__(
         self,
-        executable: Union[str, Path] = DEFAULT_MB_EXECUTABLE,
+        executable: str | Path = DEFAULT_MB_EXECUTABLE,
         port: int = 2525,
         timeout: float = 5,
         debug: bool = True,  # noqa: FBT001,FBT002
         allow_injection: bool = True,  # noqa: FBT001,FBT002
         local_only: bool = True,  # noqa: FBT001,FBT002
-        data_dir: Union[str, None] = ".mbdb",
+        data_dir: str | None = ".mbdb",
     ) -> None:
         super().__init__(port)
         with self.start_lock:
@@ -270,7 +270,7 @@ class ExecutingMountebankServer(MountebankServer):
 
     @staticmethod
     def _build_options(
-        port: int, data_dir: Optional[str], *, debug: bool = True, allow_injection: bool = True, local_only: bool = True
+        port: int, data_dir: str | None, *, debug: bool = True, allow_injection: bool = True, local_only: bool = True
     ) -> list[str]:
         options: list[str] = ["start", "--port", str(port)]
         if debug:

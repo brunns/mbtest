@@ -1,5 +1,5 @@
 from collections.abc import Iterable, Sequence
-from typing import Optional, Union, cast
+from typing import cast
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.predicates import BasePredicate, Predicate
@@ -16,8 +16,8 @@ class Stub(JsonSerializable):
 
     def __init__(
         self,
-        predicates: Optional[Union[BasePredicate, Iterable[BasePredicate]]] = None,
-        responses: Optional[Union[BaseResponse, Iterable[BaseResponse]]] = None,
+        predicates: BasePredicate | Iterable[BasePredicate] | None = None,
+        responses: BaseResponse | Iterable[BaseResponse] | None = None,
     ) -> None:
         if predicates:
             self.predicates = cast(
@@ -42,7 +42,7 @@ class Stub(JsonSerializable):
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> "Stub":
-        responses: list[Union[InjectionResponse, Proxy, Response]] = []
+        responses: list[InjectionResponse | Proxy | Response] = []
         for response in structure.get("responses", ()):
             if "proxy" in response:
                 responses.append(Proxy.from_structure(response))
@@ -67,8 +67,8 @@ class AddStub(JsonSerializable):
 
     def __init__(
         self,
-        stub: Optional[Stub] = None,
-        index: Optional[int] = None,
+        stub: Stub | None = None,
+        index: int | None = None,
     ) -> None:
         self.index = index
         if stub:

@@ -21,13 +21,13 @@ ANYTHING = anything()
 
 
 def had_request(
-    method: Union[str, Matcher[str]] = ANYTHING,
+    method: str | Matcher[str] = ANYTHING,
     path: Union["furl", "URL", str, Matcher[Union["furl", "URL", str]]] = ANYTHING,
-    query: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
-    headers: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
-    body: Union[str, Matcher[str]] = ANYTHING,
-    times: Union[int, Matcher[int]] = ANYTHING,
-) -> Matcher[Union[Imposter, MountebankServer]]:
+    query: Mapping[str, str] | Matcher[Mapping[str, str]] = ANYTHING,
+    headers: Mapping[str, str] | Matcher[Mapping[str, str]] = ANYTHING,
+    body: str | Matcher[str] = ANYTHING,
+    times: int | Matcher[int] = ANYTHING,
+) -> Matcher[Imposter | MountebankServer]:
     """Mountebank server has recorded call matching.
 
     Build criteria with `with_` and `and_` methods:
@@ -59,12 +59,12 @@ class HadRequest(BaseMatcher):
 
     def __init__(
         self,
-        method: Union[str, Matcher[str]] = ANYTHING,
+        method: str | Matcher[str] = ANYTHING,
         path: Union["furl", "URL", str, Matcher[Union["furl", "URL", str]]] = ANYTHING,
-        query: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
-        headers: Union[Mapping[str, str], Matcher[Mapping[str, str]]] = ANYTHING,
-        body: Union[str, Matcher[str]] = ANYTHING,
-        times: Union[int, Matcher[int]] = ANYTHING,
+        query: Mapping[str, str] | Matcher[Mapping[str, str]] = ANYTHING,
+        headers: Mapping[str, str] | Matcher[Mapping[str, str]] = ANYTHING,
+        body: str | Matcher[str] = ANYTHING,
+        times: int | Matcher[int] = ANYTHING,
     ):
         if (
             method != ANYTHING
@@ -76,7 +76,7 @@ class HadRequest(BaseMatcher):
         ):  # pragma: no cover
             warnings.warn("Use builder-style with_X and and_X methods, rather than arguments.", stacklevel=2)
         self.method: Matcher[str] = wrap_matcher(method)
-        self.path: Matcher[Union[furl, URL, str]] = wrap_matcher(path)
+        self.path: Matcher[furl | URL | str] = wrap_matcher(path)
         self.query: Matcher[Mapping[str, str]] = wrap_matcher(query)
         self.headers: Matcher[Mapping[str, str]] = wrap_matcher(headers)
         self.body: Matcher[str] = wrap_matcher(body)
@@ -104,12 +104,12 @@ class HadRequest(BaseMatcher):
         if not isinstance(field_matcher, IsAnything):
             description.append_text(f" {field_name}: ").append_description_of(field_matcher)
 
-    def describe_mismatch(self, item: Union[Imposter, MountebankServer], mismatch_description: Description) -> None:  # noqa: ARG002
+    def describe_mismatch(self, item: Imposter | MountebankServer, mismatch_description: Description) -> None:  # noqa: ARG002
         mismatch_description.append_text("found ").append_description_of(len(self.matching_requests))
         mismatch_description.append_text(" matching requests: ").append_description_of(self.matching_requests)
         mismatch_description.append_text(". All requests: ").append_description_of(self.all_requests)
 
-    def _matches(self, item: Union[Imposter, MountebankServer]) -> bool:
+    def _matches(self, item: Imposter | MountebankServer) -> bool:
         self.all_requests = cast("Sequence[HttpRequest]", item.get_actual_requests())
         self.matching_requests = [
             request
@@ -127,11 +127,11 @@ class HadRequest(BaseMatcher):
 
         return self.times.matches(len(self.matching_requests))
 
-    def with_method(self, method: Union[str, Matcher[str]]):
+    def with_method(self, method: str | Matcher[str]):
         self.method = wrap_matcher(method)
         return self
 
-    def and_method(self, method: Union[str, Matcher[str]]):
+    def and_method(self, method: str | Matcher[str]):
         return self.with_method(method)
 
     def with_path(self, path: Union["furl", "URL", str, Matcher[Union["furl", "URL", str]]]):
@@ -141,47 +141,47 @@ class HadRequest(BaseMatcher):
     def and_path(self, path: Union["furl", "URL", str, Matcher[Union["furl", "URL", str]]]):
         return self.with_path(path)
 
-    def with_query(self, query: Union[Mapping[str, str], Matcher[Mapping[str, str]]]):
+    def with_query(self, query: Mapping[str, str] | Matcher[Mapping[str, str]]):
         self.query = wrap_matcher(query)
         return self
 
-    def and_query(self, query: Union[Mapping[str, str], Matcher[Mapping[str, str]]]):
+    def and_query(self, query: Mapping[str, str] | Matcher[Mapping[str, str]]):
         return self.with_query(query)
 
-    def with_headers(self, headers: Union[Mapping[str, str], Matcher[Mapping[str, str]]]):
+    def with_headers(self, headers: Mapping[str, str] | Matcher[Mapping[str, str]]):
         self.headers = wrap_matcher(headers)
         return self
 
-    def and_headers(self, headers: Union[Mapping[str, str], Matcher[Mapping[str, str]]]):
+    def and_headers(self, headers: Mapping[str, str] | Matcher[Mapping[str, str]]):
         return self.with_headers(headers)
 
-    def with_body(self, body: Union[str, Matcher[str]]):
+    def with_body(self, body: str | Matcher[str]):
         self.body = wrap_matcher(body)
         return self
 
-    def and_body(self, body: Union[str, Matcher[str]]):
+    def and_body(self, body: str | Matcher[str]):
         return self.with_body(body)
 
-    def with_json(self, json: Union[JsonStructure, Matcher[JsonStructure]]):
+    def with_json(self, json: JsonStructure | Matcher[JsonStructure]):
         self.json = wrap_matcher(json)
         return self
 
-    def and_json(self, json: Union[JsonStructure, Matcher[JsonStructure]]):
+    def and_json(self, json: JsonStructure | Matcher[JsonStructure]):
         return self.with_json(json)
 
-    def with_times(self, times: Union[int, Matcher[int]]):
+    def with_times(self, times: int | Matcher[int]):
         self.times = wrap_matcher(times)
         return self
 
-    def and_times(self, times: Union[int, Matcher[int]]):
+    def and_times(self, times: int | Matcher[int]):
         return self.with_times(times)
 
 
 def email_sent(
-    to: Union[str, Matcher[str]] = ANYTHING,
-    subject: Union[str, Matcher[str]] = ANYTHING,
-    body_text: Union[str, Matcher[str]] = ANYTHING,
-) -> Matcher[Union[Imposter, MountebankServer]]:
+    to: str | Matcher[str] = ANYTHING,
+    subject: str | Matcher[str] = ANYTHING,
+    body_text: str | Matcher[str] = ANYTHING,
+) -> Matcher[Imposter | MountebankServer]:
     """Mountebank SMTP server was asked to sent email matching:
 
     :param to: Email's to field matched...
@@ -201,9 +201,9 @@ class EmailSent(BaseMatcher):
 
     def __init__(
         self,
-        to: Union[str, Matcher[str]] = ANYTHING,
-        subject: Union[str, Matcher[str]] = ANYTHING,
-        body_text: Union[str, Matcher[str]] = ANYTHING,
+        to: str | Matcher[str] = ANYTHING,
+        subject: str | Matcher[str] = ANYTHING,
+        body_text: str | Matcher[str] = ANYTHING,
     ) -> None:
         # TODO: builder style, & lots more attributes.
         self.body_text = wrap_matcher(body_text)
@@ -224,7 +224,7 @@ class EmailSent(BaseMatcher):
         if not isinstance(matcher, IsAnything):
             description.append_text(f" {text}: ").append_description_of(matcher)
 
-    def describe_mismatch(self, item: Union[Imposter, MountebankServer], mismatch_description: Description) -> None:
+    def describe_mismatch(self, item: Imposter | MountebankServer, mismatch_description: Description) -> None:
         sent_email = self.get_sent_email(item)
         matching_emails = self.get_matching_emails(sent_email)
 
@@ -232,7 +232,7 @@ class EmailSent(BaseMatcher):
         mismatch_description.append_text(" matching emails: ").append_description_of(matching_emails)
         mismatch_description.append_text(". All emails: ").append_description_of(sent_email)
 
-    def _matches(self, item: Union[Imposter, MountebankServer]) -> bool:
+    def _matches(self, item: Imposter | MountebankServer) -> bool:
         sent_email = self.get_sent_email(item)
         matching_emails = self.get_matching_emails(sent_email)
 

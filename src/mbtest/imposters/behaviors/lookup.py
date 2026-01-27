@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Union
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.behaviors.using import Using
@@ -14,7 +13,7 @@ class Lookup(JsonSerializable):
     :param into: The token to replace in the response with the selected request value.
     """
 
-    def __init__(self, key: "Key", datasource_path: Union[str, Path], datasource_key_column: str, into: str):
+    def __init__(self, key: "Key", datasource_path: str | Path, datasource_key_column: str, into: str):
         self.key = key
         self.datasource_path = datasource_path
         self.datasource_key_column = datasource_key_column

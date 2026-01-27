@@ -1,5 +1,4 @@
 from collections.abc import Mapping
-from typing import Union
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.behaviors.using import Using
@@ -14,7 +13,7 @@ class Copy(JsonSerializable):
     :param using: The configuration needed to select values from the response.
     """
 
-    def __init__(self, from_: Union[str, Mapping[str, str]], into: str, using: Using) -> None:
+    def __init__(self, from_: str | Mapping[str, str], into: str, using: Using) -> None:
         self.from_ = from_
         self.into = into
         self.using = using

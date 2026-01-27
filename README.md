@@ -90,13 +90,13 @@ brew install pyenv colima docker
 pyenv install -s 3.{9..13}
 pyenv local 3.9 3.13
 pip install tox tox-pyenv
-colima start
+colima status || colima start
 ```
 
 In order to run `make test`, you'll also need to have Mountebank installed locally:
 
 ```sh
-npm install mountebank@2.9 --production
+npm install mountebank@2.9 --omit=dev
 ```
 
 (`mbtest` is tested against Mountebank versions back as far as 1.16, but obviously only features supported by the Mountebank version you're using will work.)

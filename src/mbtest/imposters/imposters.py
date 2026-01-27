@@ -2,7 +2,7 @@ from collections import abc
 from collections.abc import Iterable, Mapping, Sequence
 from enum import Enum
 from json import JSONDecodeError, loads
-from typing import NamedTuple, Optional, Union, cast
+from typing import NamedTuple, cast
 
 import httpx
 from yarl import URL
@@ -38,15 +38,15 @@ class Imposter(JsonSerializable):
 
     def __init__(
         self,
-        stubs: Union[Stub, Iterable[Stub]],
-        port: Optional[int] = None,
+        stubs: Stub | Iterable[Stub],
+        port: int | None = None,
         protocol: Protocol = Protocol.HTTP,
-        name: Optional[str] = None,
-        default_response: Optional[HttpResponse] = None,
+        name: str | None = None,
+        default_response: HttpResponse | None = None,
         record_requests: bool = True,  # noqa: FBT001,FBT002
         mutual_auth: bool = False,  # noqa: FBT001,FBT002
-        key: Optional[str] = None,
-        cert: Optional[str] = None,
+        key: str | None = None,
+        cert: str | None = None,
     ) -> None:
         stubs = cast("Iterable[Stub]", stubs if isinstance(stubs, abc.Sequence) else [stubs])
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
@@ -56,14 +56,14 @@ class Imposter(JsonSerializable):
         self.name = name
         self.default_response = default_response
         self.record_requests = record_requests
-        self.host: Optional[str] = None
-        self.server_url: Optional[URL] = None
+        self.host: str | None = None
+        self.server_url: URL | None = None
         self.mutual_auth = mutual_auth
         self.key = key
         self.cert = cert
 
     @property
-    def url(self) -> Optional[URL]:
+    def url(self) -> URL | None:
         if self.host:
             return URL.build(scheme=self.protocol.value, host=self.host, port=self.port)
         return None
@@ -125,7 +125,7 @@ class Imposter(JsonSerializable):
         all_stubs = self.query_all_stubs()
         return [s for s in all_stubs if any(not isinstance(r, Proxy) for r in s.responses)]
 
-    def add_stubs(self, definition: Union[Stub, Iterable[Stub]], index: Optional[int] = None) -> None:
+    def add_stubs(self, definition: Stub | Iterable[Stub], index: int | None = None) -> None:
         """Add one or more stubs to a running impostor."""
         if isinstance(definition, abc.Iterable):
             for stub in definition:
@@ -133,7 +133,7 @@ class Imposter(JsonSerializable):
         else:
             self.add_stub(definition, index)
 
-    def add_stub(self, definition: Stub, index: Optional[int] = None) -> int:
+    def add_stub(self, definition: Stub, index: int | None = None) -> int:
         """Add a stub to a running impostor. Returns index of new stub."""
         json = AddStub(stub=definition, index=index).as_structure()
         post = httpx.post(f"{self.configuration_url}/stubs", json=json)
@@ -220,7 +220,7 @@ class SentEmail(Request):
 
     @staticmethod
     def from_json(json: JsonStructure) -> "SentEmail":
-        email: Mapping[str, Union[str, Sequence[Address]]] = {
+        email: Mapping[str, str | Sequence[Address]] = {
             SentEmail._map_key(k): SentEmail._translate_value(v) for k, v in json.items()
         }
         return SentEmail(**email)  # type: ignore[arg-type]
@@ -230,7 +230,7 @@ class SentEmail(Request):
         return {"from": "from_"}.get(key, key)
 
     @staticmethod
-    def _translate_value(value: JsonStructure) -> Union[str, Sequence[Address]]:
+    def _translate_value(value: JsonStructure) -> str | Sequence[Address]:
         if isinstance(value, str):
             return value
         if "address" in value and "name" in value:

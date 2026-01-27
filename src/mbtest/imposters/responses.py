@@ -1,7 +1,7 @@
 from abc import ABC
 from collections.abc import Iterable, Mapping, MutableMapping, Sequence
 from enum import Enum
-from typing import Optional, Union
+from typing import Optional
 from xml.etree import ElementTree as ET  # nosec - We are creating, not parsing XML.
 
 from furl import furl
@@ -40,9 +40,9 @@ class HttpResponse(JsonSerializable):
 
     def __init__(
         self,
-        body: Union[str, JsonStructure] = "",
-        status_code: Union[int, str] = 200,
-        headers: Optional[Mapping[str, str]] = None,
+        body: str | JsonStructure = "",
+        status_code: int | str = 200,
+        headers: Mapping[str, str] | None = None,
         mode: Optional["Response.Mode"] = None,
     ) -> None:
         super().__init__()
@@ -99,18 +99,18 @@ class Response(BaseResponse):
 
     def __init__(
         self,
-        body: Union[str, JsonStructure] = "",
-        status_code: Union[int, str] = 200,
-        wait: Optional[Union[int, str]] = None,
-        repeat: Optional[int] = None,
-        headers: Optional[Mapping[str, str]] = None,
-        mode: Optional[Mode] = None,
-        copy: Optional[Copy] = None,
-        decorate: Optional[str] = None,
-        lookup: Optional[Lookup] = None,
-        shell_transform: Optional[Union[str, Iterable[str]]] = None,
+        body: str | JsonStructure = "",
+        status_code: int | str = 200,
+        wait: int | str | None = None,
+        repeat: int | None = None,
+        headers: Mapping[str, str] | None = None,
+        mode: Mode | None = None,
+        copy: Copy | None = None,
+        decorate: str | None = None,
+        lookup: Lookup | None = None,
+        shell_transform: str | Iterable[str] | None = None,
         *,
-        http_response: Optional[HttpResponse] = None,
+        http_response: HttpResponse | None = None,
     ) -> None:
         self.http_response = http_response or HttpResponse(
             body=body, status_code=status_code, headers=headers, mode=mode
@@ -222,12 +222,12 @@ class Proxy(BaseResponse):
 
     def __init__(
         self,
-        to: Union[furl, URL, str],
-        wait: Optional[int] = None,
-        inject_headers: Optional[Mapping[str, str]] = None,
+        to: furl | URL | str,
+        wait: int | None = None,
+        inject_headers: Mapping[str, str] | None = None,
         mode: "Proxy.Mode" = Mode.ONCE,
-        predicate_generators: Optional[Iterable["PredicateGenerator"]] = None,
-        decorate: Optional[str] = None,
+        predicate_generators: Iterable["PredicateGenerator"] | None = None,
+        decorate: str | None = None,
     ) -> None:
         self.to = to
         self.wait = wait
@@ -279,7 +279,7 @@ class PredicateGenerator(JsonSerializable):
     def __init__(
         self,
         path: bool = False,  # noqa: FBT001,FBT002
-        query: Union[bool, Mapping[str, str]] = False,  # noqa: FBT001,FBT002
+        query: bool | Mapping[str, str] = False,  # noqa: FBT001,FBT002
         operator: Predicate.Operator = Predicate.Operator.EQUALS,
         case_sensitive: bool = True,  # noqa: FBT001,FBT002
     ):

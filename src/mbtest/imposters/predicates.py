@@ -1,7 +1,6 @@
 from abc import ABC
 from collections.abc import Mapping
 from enum import Enum
-from typing import Optional, Union
 
 from mbtest.imposters.base import Injecting, JsonSerializable, JsonStructure
 
@@ -82,15 +81,15 @@ class Predicate(LogicallyCombinablePredicate):
 
     def __init__(
         self,
-        path: Optional[str] = None,
-        method: Optional[Union[Method, str]] = None,
-        query: Optional[Mapping[str, Union[str, int, bool]]] = None,
-        body: Optional[Union[str, JsonStructure]] = None,
-        headers: Optional[Mapping[str, str]] = None,
-        xpath: Optional[str] = None,
-        jsonpath: Optional[str] = None,
-        form: Optional[Mapping[str, str]] = None,
-        operator: Union[Operator, str] = Operator.EQUALS,
+        path: str | None = None,
+        method: Method | str | None = None,
+        query: Mapping[str, str | int | bool] | None = None,
+        body: str | JsonStructure | None = None,
+        headers: Mapping[str, str] | None = None,
+        xpath: str | None = None,
+        jsonpath: str | None = None,
+        form: Mapping[str, str] | None = None,
+        operator: Operator | str = Operator.EQUALS,
         case_sensitive: bool = True,  # noqa: FBT001,FBT002
     ) -> None:
         self.path = path
