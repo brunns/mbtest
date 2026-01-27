@@ -61,7 +61,7 @@ precommit: precommit-test typecheck lint docs ## Pre-commit targets
 .PHONY: recreate
 recreate: clean jsdeps ## Recreate tox environments
 	tox --recreate --notest -p -s
-	tox --recreate --notest -e coverage,format,check-format,mypy,pyright,docs -p
+	tox --recreate --notest -e coverage,format,check-format,pyright,docs -p
 
 .PHONY: jsdeps
 jsdeps:

@@ -210,6 +210,6 @@ jobs:
       - name: Check format
         run: tox -e check-format
       - name: Check types
-        run: tox -e pyright,mypy
+        run: tox -e pyright
       - name: Build docs
         run: tox -e docs
