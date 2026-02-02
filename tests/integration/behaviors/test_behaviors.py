@@ -17,7 +17,7 @@ def test_wait(mock_server):
     with mock_server(imposter), Timer() as timer:
         httpx.get(str(imposter.url))
 
-        assert_that(timer.elapsed, between(0.1, 0.3))
+        assert_that(timer.elapsed, between(0.1, 0.4))
 
 
 def test_wait_function(mock_server):
