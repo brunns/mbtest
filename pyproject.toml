@@ -45,7 +45,7 @@ dev = [
     "sphinx-autodoc-typehints>=1.10",
     "furo",
     "ruff",
-    "pyright==1.1.391",
+    "pyright==1.1.408",
     "types-requests",
     "mutmut",
     "pipdeptree",
