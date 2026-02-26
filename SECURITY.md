@@ -12,4 +12,4 @@ currently being supported with security updates.
 
 ## Reporting a Vulnerability
 
-Please report vulerabilities to simon@brunn.ing.
+Please report vulnerabilities to simon@brunn.ing.

@@ -126,3 +126,6 @@ mb.log
 # mutation tests
 .mutmut-cache
 html/
+
+# AI cruft
+/.claude/
