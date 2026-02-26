@@ -8,15 +8,16 @@ colima:
 
 .PHONY: test
 test: colima ## Run tests
-	tox -e py310,py314,pypy3.11
+	uv run pytest tests/unit/ tests/integration/
 
 .PHONY: coverage
 coverage: colima ## Test coverage report
-	tox -e coverage
+	uv run pytest --cov src/mbtest --cov-report=term-missing
 
 .PHONY: precommit-test
 precommit-test: colima
-	tox -e py310,coverage
+	uv run pytest tests/unit/ tests/integration/
+	uv run pytest --cov src/mbtest --cov-report=term-missing
 
 .PHONY: lint
 lint: check-format  ## Lint code
@@ -24,44 +25,37 @@ lint: check-format  ## Lint code
 .PHONY: extra-lint
 extra-lint: typecheck  ## Extra, optional linting.
 
-.PHONY: pylint
-pylint:
-	tox -e pylint
-
 .PHONY: typecheck
 typecheck:
-	tox -e pyright
+	uv run pyright src/
 
 .PHONY: check-format
 check-format:
-	tox -e check-format
+	uv run ruff format . --check
+	uv run ruff check .
 
 .PHONY: format
 format: ## Format code
-	tox -e format
-
-.PHONY: piprot
-piprot: ## Check for outdated dependencies
-	tox -e piprot
+	uv run ruff format .
+	uv run ruff check . --fix
 
 .PHONY: mutmut
 mutmut: clean ## Run mutation tests
-	tox -e mutmut run
-	tox -e mutmut html
-	open open html/index.html
+	uv run mutmut run
+	uv run mutmut html
+	open html/index.html
 
 .PHONY: docs
 docs:  ## Generate documentation
-	tox -e docs
+	uv run sphinx-build docs build_docs --color -W -bhtml
 
 .PHONY: precommit
 precommit: precommit-test typecheck lint docs ## Pre-commit targets
 	@ python -m this
 
-.PHONY: recreate
-recreate: clean jsdeps ## Recreate tox environments
-	tox --recreate --notest -p -s
-	tox --recreate --notest -e coverage,format,check-format,pyright,docs -p
+.PHONY: sync
+sync: ## Install/sync dependencies
+	uv sync --all-groups
 
 .PHONY: jsdeps
 jsdeps:
@@ -78,11 +72,11 @@ clean: ## Clean generated files
 
 .PHONY: repl
 repl: ## Python REPL
-	tox -e py314 -- python
+	uv run python
 
 .PHONY: outdated
 outdated: ## List outdated dependancies
-	tox -e py314 -- pip list -o
+	uv pip list --outdated
 
 .PHONY: help
 help: ## Show this help

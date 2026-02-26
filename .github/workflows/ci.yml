@@ -27,8 +27,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install build tools
-        run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -43,9 +43,8 @@ jobs:
       - name: Run Tests
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
-        # Run tox using the version of Python in `PATH`
-        run: tox -e py
-        
+        run: uv run pytest tests/unit/ tests/integration/
+
   test-py-versions:
     name: 'Test Python versions'
     needs: test
@@ -76,8 +75,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install build tools
-        run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -85,9 +84,8 @@ jobs:
       - name: Run Tests
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
-        # Run tox using the version of Python in `PATH`
-        run: tox -e py
-        
+        run: uv run pytest tests/unit/ tests/integration/
+
   test-mb-versions:
     name: 'Test Mountebank versions'
     needs: test
@@ -110,8 +108,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install build tools
-        run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -119,9 +117,8 @@ jobs:
       - name: Run Tests
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
-        # Run tox using the version of Python in `PATH`
-        run: tox -e py
-        
+        run: uv run pytest tests/unit/ tests/integration/
+
   test-oses:
     name: 'Test OSes'
     needs: test
@@ -144,15 +141,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install build tools
-        run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Install mbtest ${{ matrix.mbtest-version }}
         run: npm install mountebank@${{ matrix.mbtest-version }} --omit=dev
       - name: Run Tests
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
-        # Run tox using the version of Python in `PATH`
-        run: tox -e py
+        run: uv run pytest tests/unit/ tests/integration/
 
   coverage:
     name: 'Check coverage'
@@ -176,8 +172,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install build tools
-        run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -185,7 +181,7 @@ jobs:
       - name: Check coverage
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
-        run: tox -e coverage
+        run: uv run pytest --cov src/mbtest --cov-report=term-missing
 
   lint-etc:
     name: 'Linting and docs'
@@ -203,11 +199,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - name: Install build tools
-        run: python3 -m pip install --upgrade pip setuptools wheel tox~=3.0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Check format
-        run: tox -e check-format
+        run: uv run ruff format . --check
+      - name: Lint
+        run: uv run ruff check .
       - name: Check types
-        run: tox -e pyright
+        run: uv run pyright src/
       - name: Build docs
-        run: tox -e docs
+        run: uv run sphinx-build docs build_docs --color -W -bhtml

@@ -78,24 +78,17 @@ See the [Documentation](https://mbtest.readthedocs.io/) for more.
 
 ## Contributing
 
-Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html) and [tox](https://tox.readthedocs.io). 
-[PyEnv](https://github.com/pyenv/pyenv) may also come in handy so tests can be run against various Python versions. 
+Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html) and [uv](https://docs.astral.sh/uv/).
+[PyEnv](https://github.com/pyenv/pyenv) may also come in handy so tests can be run against various Python versions.
 
 Integration tests run against an instance of Mountebank running in Docker.
 
-Currently, the `Makefile` targets use Python 3.8 and 3.11 via tox, so a quick-start setup could be:
-
 ```sh
-brew install pyenv colima docker
-pyenv install -s 3.{9..13}
-pyenv local 3.9 3.13
-pip install tox tox-pyenv
+brew install pyenv colima docker uv
+pyenv install -s 3.10 3.14
+pyenv local 3.10 3.14
 colima status || colima start
-```
-
-In order to run `make test`, you'll also need to have Mountebank installed locally:
-
-```sh
+uv sync --all-groups
 npm install mountebank@2.9 --omit=dev
 ```
 
@@ -109,16 +102,34 @@ Running `make precommit` tells you if you're OK to commit. For more options, run
 
 ## Releasing
 
-Requires [gh](https://cli.github.com/), [setuptools](https://setuptools.readthedocs.io),
-[wheel](https://github.com/pypa/wheel) and [twine](https://twine.readthedocs.io). To release version `n.n.n`, first
-update the version number in `setup.py`, then:
+Update the version number in `pyproject.toml`, commit, then:
 
 ```sh
-version="n.n.n" # Needs to match new version number in setup.py.
+version="n.n.n"
 git checkout -b "release-$version"
-make precommit && git commit -am"Release $version" && git push --set-upstream origin "release-$version" # If not already all pushed, which it should be.
-gh release create "v$version" --target "release-$version" --generate-notes
-python setup.py sdist bdist_wheel && twine upload dist/*$version*
-git checkout master && git merge "release-$version"
-git push
+make precommit && git commit -am"Release $version" && git push --set-upstream origin "release-$version"
+git tag "v$version" && git push origin "v$version"
 ```
+
+Pushing the tag triggers the release workflow, which builds, tests, publishes to PyPI via OIDC, and creates the GitHub release automatically.
+
+### PyPI trusted publishing setup
+
+Before the first automated release, a one-time setup is required.
+
+#### On PyPI
+
+1. Log in to [pypi.org](https://pypi.org) and navigate to the mbtest project.
+2. Go to **Manage → Publishing**.
+3. Under **Add a new pending publisher**, fill in:
+   - **PyPI project name**: `mbtest`
+   - **Owner**: `brunns`
+   - **Repository name**: `mbtest`
+   - **Workflow name**: `release.yml`
+   - **Environment name**: `pypi`
+4. Click **Add**.
+
+#### On GitHub
+
+In the repository **Settings → Environments**, create an environment named `pypi`.
+No secrets are needed — OIDC handles authentication automatically.
