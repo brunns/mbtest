@@ -98,7 +98,7 @@ Running `make precommit` tells you if you're OK to commit. For more options, run
 
 ## Releasing
 
-Update the version number in `pyproject.toml`, commit, then:
+Update the version number in `pyproject.toml` and `SECURITY.md`, commit, then:
 
 ```sh
 version="n.n.n"
