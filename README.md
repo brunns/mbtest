@@ -78,15 +78,11 @@ See the [Documentation](https://mbtest.readthedocs.io/) for more.
 
 ## Contributing
 
-Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html) and [uv](https://docs.astral.sh/uv/).
-[PyEnv](https://github.com/pyenv/pyenv) may also come in handy so tests can be run against various Python versions.
-
+Requires [make](https://www.gnu.org/software/make/manual/html_node/index.html), [uv](https://docs.astral.sh/uv/), and [Node.js](https://nodejs.org/) (for Mountebank).
 Integration tests run against an instance of Mountebank running in Docker.
 
 ```sh
-brew install pyenv colima docker uv
-pyenv install -s 3.10 3.14
-pyenv local 3.10 3.14
+brew install colima docker uv node
 colima status || colima start
 uv sync --all-groups
 npm install mountebank@2.9 --omit=dev
