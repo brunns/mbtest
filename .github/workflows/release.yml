@@ -14,18 +14,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.14'
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24.x'
-      - name: Install Mountebank
-        run: npm install mountebank@2.9 --omit=dev
       - name: Install uv
         uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.14'
+      - name: Install Mountebank
+        run: npm install mountebank@2.9 --omit=dev
       - name: Run tests
         run: uv run pytest tests/unit/ tests/integration/
       - name: Check coverage

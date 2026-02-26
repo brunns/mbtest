@@ -19,16 +19,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install uv
         uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python }}
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -67,16 +65,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install uv
         uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python }}
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -100,16 +96,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install uv
         uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python }}
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -133,16 +127,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install uv
         uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python }}
       - name: Install mbtest ${{ matrix.mbtest-version }}
         run: npm install mountebank@${{ matrix.mbtest-version }} --omit=dev
       - name: Run Tests
@@ -164,16 +156,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install uv
         uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python }}
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -195,12 +185,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
       - name: Install uv
         uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python }}
       - name: Check format
         run: uv run ruff format . --check
       - name: Lint
