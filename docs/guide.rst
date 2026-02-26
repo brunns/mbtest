@@ -8,6 +8,7 @@ Guide
    :caption: Contents:
 
       Use with Docker <guide/docker.rst>
+   Record and Replay <guide/record-replay.rst>
 
 TODO
 ----

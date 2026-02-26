@@ -108,6 +108,20 @@ def test_imposter_complex_predicates(predicate):
     assert_that(actual, has_identical_properties_to(expected, ignoring=["configuration_url"]))
 
 
+def test_save_and_load_roundtrip(tmp_path):
+    # Given
+    path = tmp_path / "imposter.json"
+    original = Imposter(Stub(responses=Response()), port=4567)
+
+    # When
+    original.save(path)
+    loaded = Imposter.from_file(path)
+
+    # Then
+    assert loaded.port == original.port
+    assert json.loads(path.read_text())["protocol"] == "http"
+
+
 def test_http_request_roundtrip():
     # Given
     assert HttpRequestBuilder().with_body("bananas").build().json is None

@@ -1,12 +1,13 @@
 import logging
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from brunns.matchers.mock import call_has_args as with_args
 from brunns.matchers.mock import has_call
 from hamcrest import assert_that, contains_exactly, contains_string
 
-from mbtest.server import ExecutingMountebankServer
+from mbtest.imposters import Imposter, Response, Stub
+from mbtest.server import ExecutingMountebankServer, MountebankServer
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,31 @@ def test_server_default_options():
                 )
             ),
         )
+
+
+def test_get_replayable_imposter():
+    # Given
+    server = MountebankServer(port=2525)
+    imposter = Imposter(Stub(responses=Response(body="hello")), port=4567)
+    imposter.attach("localhost", 4567, server.server_url)
+
+    mock_response = MagicMock()
+    mock_response.json.return_value = {
+        "protocol": "http",
+        "port": 4567,
+        "stubs": [{"responses": [{"is": {"statusCode": 200, "body": "hello"}}], "predicates": []}],
+    }
+
+    with patch("httpx.get", return_value=mock_response) as mock_get:
+        # When
+        result = server.get_replayable_imposter(imposter)
+
+    # Then
+    assert result.port == 4567
+    assert len(result.stubs) == 1
+    called_url = str(mock_get.call_args[0][0])
+    assert "replayable=true" in called_url
+    assert "removeProxies=true" in called_url
 
 
 def test_server_non_default_options():

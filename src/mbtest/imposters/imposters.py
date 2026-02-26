@@ -1,7 +1,8 @@
 from collections import abc
 from collections.abc import Iterable, Mapping, Sequence
 from enum import Enum
-from json import JSONDecodeError, loads
+from json import JSONDecodeError, dumps, loads
+from pathlib import Path
 from typing import NamedTuple, cast
 
 import httpx
@@ -93,6 +94,25 @@ class Imposter(JsonSerializable):
         imposter.set_if_in_dict(structure, "key", "key")
         imposter.set_if_in_dict(structure, "cert", "cert")
         return imposter
+
+    def save(self, path: Path | str) -> None:
+        """Save this imposter to a JSON file for later replay.
+
+        The saved file can be loaded with :meth:`from_file` and posted to a
+        Mountebank server, or used directly with Mountebank's ``--configfile`` option.
+
+        :param path: Destination file path.
+        """
+        Path(path).write_text(dumps(self.as_structure(), indent=2))
+
+    @classmethod
+    def from_file(cls, path: Path | str) -> "Imposter":
+        """Load an imposter from a JSON file previously saved with :meth:`save`.
+
+        :param path: Source file path.
+        :returns: An Imposter object.
+        """
+        return cls.from_structure(loads(Path(path).read_text()))
 
     def get_actual_requests(self) -> Sequence["Request"]:
         json = httpx.get(str(self.configuration_url)).json()["requests"]

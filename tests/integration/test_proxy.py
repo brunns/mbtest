@@ -172,6 +172,28 @@ def test_proxy_without_stub(mock_server, httpbin):
 
 
 @pytest.mark.xfail(not HTTPBIN_CONTAINERISED, reason="Public httpbin horribly flaky.")
+def test_record_and_replay_via_server(mock_server, httpbin, tmp_path):
+    """Proxy requests through Mountebank, then retrieve as a replayable imposter and save/load from file."""
+    proxy_imposter = Imposter(Stub(responses=Proxy(to=httpbin, mode=Proxy.Mode.ONCE)))
+
+    with mock_server(proxy_imposter) as server:
+        httpx.get(str(proxy_imposter.url / "status/418"))
+        replayable = server.get_replayable_imposter(proxy_imposter)
+
+    assert replayable.port == proxy_imposter.port
+    assert len(replayable.stubs) > 0
+
+    saved = tmp_path / "recorded.json"
+    replayable.save(saved)
+    loaded = Imposter.from_file(saved)
+    assert loaded.port == replayable.port
+
+    with mock_server(loaded):
+        response = httpx.get(str(loaded.url / "status/418"))
+        assert_that(response, is_response().with_status_code(418).and_body(contains_string("teapot")))
+
+
+@pytest.mark.xfail(not HTTPBIN_CONTAINERISED, reason="Public httpbin horribly flaky.")
 def test_proxy_delay(mock_server):
     target_imposter = Imposter(Stub(Predicate(path="/test")))
     with mock_server(target_imposter) as server:

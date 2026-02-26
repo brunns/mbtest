@@ -190,6 +190,24 @@ class MountebankServer:
             all_imposters.append(imposter)
         return sorted(all_imposters, key=attrgetter("port"))
 
+    def get_replayable_imposter(self, imposter: Imposter) -> Imposter:
+        """Retrieve a replayable version of an imposter.
+
+        Calls ``GET /imposters/{port}?replayable=true&removeProxies=true``, which
+        returns the imposter with all proxy responses captured as concrete stubs,
+        ready to replay without an upstream service.
+
+        :param imposter: The running imposter to retrieve.
+        :returns: A new Imposter object populated with the recorded stubs.
+        """
+        url = imposter.configuration_url % {"replayable": "true", "removeProxies": "true"}
+        response = httpx.get(str(url))
+        response.raise_for_status()
+        result = Imposter.from_structure(response.json())
+        result.host = self.host
+        result.server_url = self.server_url
+        return result
+
     def import_running_imposters(self) -> None:
         """Replaces all running imposters with those defined on the server"""
         self._running_imposters = []
