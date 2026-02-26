@@ -47,7 +47,6 @@ dev = [
     "ruff",
     "pyright==1.1.408",
     "types-requests",
-    "mutmut",
     "pipdeptree",
 ]
 

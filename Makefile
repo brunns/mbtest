@@ -39,12 +39,6 @@ format: ## Format code
 	uv run ruff format .
 	uv run ruff check . --fix
 
-.PHONY: mutmut
-mutmut: clean ## Run mutation tests
-	uv run mutmut run
-	uv run mutmut html
-	open html/index.html
-
 .PHONY: docs
 docs:  ## Generate documentation
 	uv run sphinx-build docs build_docs --color -W -bhtml
@@ -66,7 +60,7 @@ jsdeps:
 clean: ## Clean generated files
 	find . -name '*.pyc' -delete
 	find . -name '*.pyo' -delete
-	- rm -r build/ build_docs/ dist/ *.egg-info/ .cache .coverage .pytest_cache/ .mbdb/ .mypy_cache/ *.log *.pid *.svg .mutmut-cache html/
+	- rm -r build/ build_docs/ dist/ *.egg-info/ .cache .coverage .pytest_cache/ .mbdb/ .mypy_cache/ *.log *.pid *.svg
 	find . -name "__pycache__" -type d -print | xargs -t rm -r
 	find . -name "test-output" -type d -print | xargs -t rm -r
 
