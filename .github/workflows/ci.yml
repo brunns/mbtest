@@ -27,6 +27,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python }}
+          enable-cache: true
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -73,6 +74,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python }}
+          enable-cache: true
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -104,6 +106,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python }}
+          enable-cache: true
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -135,6 +138,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python }}
+          enable-cache: true
       - name: Install mbtest ${{ matrix.mbtest-version }}
         run: npm install mountebank@${{ matrix.mbtest-version }} --omit=dev
       - name: Run Tests
@@ -164,6 +168,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python }}
+          enable-cache: true
       - name: Install mbtest ${{ matrix.mbtest-version }}
         env:
           MBTEST_VERSION: ${{ matrix.mbtest-version }}
@@ -189,6 +194,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python }}
+          enable-cache: true
       - name: Check format
         run: uv run ruff format . --check
       - name: Lint
