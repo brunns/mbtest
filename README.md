@@ -21,6 +21,7 @@ Includes [pytest](https://pytest.org) fixture and [PyHamcrest](https://pyhamcres
 [![Codacy Coverage](https://api.codacy.com/project/badge/coverage/3b7c694664974d17a34e594c43af0c1b)](https://www.codacy.com/app/brunns/mbtest)
 [![Documentation Status](https://readthedocs.org/projects/mbtest/badge/?version=latest)](https://mbtest.readthedocs.io/en/latest/?badge=latest)
 [![Lines of Code](https://tokei.rs/b1/github/brunns/mbtest)](https://github.com/brunns/mbtest)
+[![gitcgr](https://gitcgr.com/badge/brunns/mbtest.svg)](https://gitcgr.com/brunns/mbtest)
 
 
 ## Setup
