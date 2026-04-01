@@ -90,7 +90,7 @@ wheels = [
 
 [[package]]
 name = "brunns-matchers"
-version = "2.11.1"
+version = "2.11.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -105,9 +105,9 @@ dependencies = [
     { name = "werkzeug" },
     { name = "yarl" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ff/ec/536976390c2686d3adfab409206cd59db0522c3b2673ecdcdd218bc4df61/brunns_matchers-2.11.1.tar.gz", hash = "sha256:b8e4374f5fe4ed00b07ca09a4d1bc1895693894ca31e677c122d350bca0b4d93", size = 23943, upload-time = "2026-02-10T13:53:46.246Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/70/f7/728cb01b4ca008f80c7f40d5abf2ef1654ac8867a1b18f76b9ee35edbc4a/brunns_matchers-2.11.2.tar.gz", hash = "sha256:8997ce5b79ea366648b32d59689335feb7542cb0db67f5b9ee169d5accaf1ed4", size = 23947, upload-time = "2026-03-26T06:27:18.997Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b9/24/6253fb6817e26accfffe4a6c920fe176180f049d9249830a502e79722856/brunns_matchers-2.11.1-py3-none-any.whl", hash = "sha256:dfe13f23fc92d14dfab29288de1085edee5821edb4b17bb3ad45cfb7803afa5c", size = 28697, upload-time = "2026-02-10T13:53:44.282Z" },
+    { url = "https://files.pythonhosted.org/packages/41/25/e47ee35c7a9ea26448f6c881a6cddf0dbdd5f773944b1e744f845547429b/brunns_matchers-2.11.2-py3-none-any.whl", hash = "sha256:16644d98127f2f21a51c9f1845dd4de56901dc4292930324ea275210fa60ce95", size = 28683, upload-time = "2026-03-26T06:27:17.685Z" },
 ]
 
 [[package]]
