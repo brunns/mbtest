@@ -749,7 +749,7 @@ wheels = [
 
 [[package]]
 name = "mbtest"
-version = "2.15.0"
+version = "2.15.1"
 source = { editable = "." }
 dependencies = [
     { name = "brunns-matchers" },

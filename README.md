@@ -105,6 +105,7 @@ version="n.n.n"
 git checkout -b "release-$version"
 make precommit && git commit -am"Release $version" && git push --set-upstream origin "release-$version"
 git tag "v$version" && git push origin "v$version"
+git co master && git rebase "release-$version"
 ```
 
 Pushing the tag triggers the release workflow, which builds, tests, publishes to PyPI via OIDC, and creates the GitHub release automatically.
