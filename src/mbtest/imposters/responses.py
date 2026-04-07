@@ -4,7 +4,6 @@ from enum import Enum
 from typing import Optional
 from xml.etree import ElementTree as ET  # nosec - We are creating, not parsing XML.
 
-from furl import furl
 from yarl import URL
 
 from mbtest.imposters.base import Injecting, JsonSerializable, JsonStructure
@@ -222,7 +221,7 @@ class Proxy(BaseResponse):
 
     def __init__(
         self,
-        to: furl | URL | str,
+        to: URL | str,
         wait: int | None = None,
         inject_headers: Mapping[str, str] | None = None,
         mode: "Proxy.Mode" = Mode.ONCE,
