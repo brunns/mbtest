@@ -98,14 +98,15 @@ Running `make precommit` tells you if you're OK to commit. For more options, run
 
 ## Releasing
 
-Update the version number in `pyproject.toml` and `SECURITY.md`, commit, then:
+1. Update version in `pyproject.toml` (using `uv version --bump major|minor|patch`), `docs/conf.py`, and `SECURITY.md`, commit, then:
 
 ```sh
-version="n.n.n"
+version=`uv version --short`
+git pull -r
 git checkout -b "release-$version"
 make precommit && git commit -am"Release $version" && git push --set-upstream origin "release-$version"
 git tag "v$version" && git push origin "v$version"
-git co master && git rebase "release-$version"
+git co master && git rebase "release-$version" && git push
 ```
 
 Pushing the tag triggers the release workflow, which builds, tests, publishes to PyPI via OIDC, and creates the GitHub release automatically.

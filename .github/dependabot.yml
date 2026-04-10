@@ -14,7 +14,7 @@ updates:
       prefix: "chore(deps)"
     open-pull-requests-limit: 10
     cooldown:
-      default-days: 4
+      default-days: 7
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -26,4 +26,4 @@ updates:
     commit-message:
       prefix: "chore(ci)"
     cooldown:
-      default-days: 4
+      default-days: 7

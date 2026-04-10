@@ -27,10 +27,14 @@ classifiers = [
 dependencies = [
     "pyhamcrest>=2.0",
     "Deprecated>=1.2",
-    "brunns-matchers>=2.9",
+    "brunns-matchers>=3.0",
     "yarl>=1.9",
     "httpx>=0.28",
 ]
+
+[tool.uv]
+exclude-newer = "7 days"
+exclude-newer-package = { brunns-matchers = false, mbtest = false }
 
 [dependency-groups]
 dev = [
@@ -46,7 +50,6 @@ dev = [
     "furo",
     "ruff",
     "pyright==1.1.408",
-    "types-requests",
 ]
 
 [project.urls]
