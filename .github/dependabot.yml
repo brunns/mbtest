@@ -12,7 +12,8 @@ updates:
       - "python"
     commit-message:
       prefix: "chore(deps)"
-    open-pull-requests-limit: 10
+    assignees:
+      - "brunns"
     cooldown:
       default-days: 7
 
@@ -25,5 +26,7 @@ updates:
       - "github-actions"
     commit-message:
       prefix: "chore(ci)"
+    assignees:
+      - "brunns"
     cooldown:
       default-days: 7
