@@ -90,24 +90,16 @@ wheels = [
 
 [[package]]
 name = "brunns-matchers"
-version = "2.11.2"
+version = "3.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "beautifulsoup4" },
     { name = "brunns-row" },
     { name = "deprecated" },
-    { name = "feedparser" },
-    { name = "furl" },
-    { name = "httpx" },
     { name = "pyhamcrest" },
-    { name = "requests" },
-    { name = "scripttest" },
-    { name = "werkzeug" },
-    { name = "yarl" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/70/f7/728cb01b4ca008f80c7f40d5abf2ef1654ac8867a1b18f76b9ee35edbc4a/brunns_matchers-2.11.2.tar.gz", hash = "sha256:8997ce5b79ea366648b32d59689335feb7542cb0db67f5b9ee169d5accaf1ed4", size = 23947, upload-time = "2026-03-26T06:27:18.997Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/68/be/311dd9a22636ae2e974e0167cfabab8a011008485db6890319b84892cf39/brunns_matchers-3.0.0.tar.gz", hash = "sha256:dcb03bc27a7e4b3d52e65b5cc564a7ceb50d6f4e0397498e18f10be444d80f34", size = 24166, upload-time = "2026-04-08T11:52:34.258Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/41/25/e47ee35c7a9ea26448f6c881a6cddf0dbdd5f773944b1e744f845547429b/brunns_matchers-2.11.2-py3-none-any.whl", hash = "sha256:16644d98127f2f21a51c9f1845dd4de56901dc4292930324ea275210fa60ce95", size = 28683, upload-time = "2026-03-26T06:27:17.685Z" },
+    { url = "https://files.pythonhosted.org/packages/fa/7b/60efae0b9d7cdd39791001cef1d17ef967af7473d07051200f3c395d387b/brunns_matchers-3.0.0-py3-none-any.whl", hash = "sha256:6f44f46d27d834c2c6b8e81511b88919a60cc753d97db1a74194da2729a24b10", size = 29325, upload-time = "2026-04-08T11:52:32.747Z" },
 ]
 
 [[package]]
@@ -541,18 +533,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/50/79/66800aadf48771f6b62f7eb014e352e5d06856655206165d775e675a02c9/exceptiongroup-1.3.1.tar.gz", hash = "sha256:8b412432c6055b0b7d14c310000ae93352ed6754f70fa8f7c34141f91c4e3219", size = 30371, upload-time = "2025-11-21T23:01:54.787Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/8a/0e/97c33bf5009bdbac74fd2beace167cab3f978feb69cc36f1ef79360d6c4e/exceptiongroup-1.3.1-py3-none-any.whl", hash = "sha256:a7a39a3bd276781e98394987d3a5701d0c4edffb633bb7a5144577f82c773598", size = 16740, upload-time = "2025-11-21T23:01:53.443Z" },
-]
-
-[[package]]
-name = "feedparser"
-version = "6.0.12"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "sgmllib3k" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/dc/79/db7edb5e77d6dfbc54d7d9df72828be4318275b2e580549ff45a962f6461/feedparser-6.0.12.tar.gz", hash = "sha256:64f76ce90ae3e8ef5d1ede0f8d3b50ce26bcce71dd8ae5e82b1cd2d4a5f94228", size = 286579, upload-time = "2025-09-10T13:33:59.486Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/4e/eb/c96d64137e29ae17d83ad2552470bafe3a7a915e85434d9942077d7fd011/feedparser-6.0.12-py3-none-any.whl", hash = "sha256:6bbff10f5a52662c00a2e3f86a38928c37c48f77b3c511aedcd51de933549324", size = 81480, upload-time = "2025-09-10T13:33:58.022Z" },
 ]
 
 [[package]]
@@ -1241,21 +1221,6 @@ wheels = [
 ]
 
 [[package]]
-name = "scripttest"
-version = "2.0.post1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/6b/75/40225296f18bcd24c95258f3a01fce7e4a014b67141209846d794c3bb694/scripttest-2.0.post1.tar.gz", hash = "sha256:a6067f1feadf4b2ed3e594b0b32e41589640e7fa3974765aa63d508520c0bfdc", size = 16203, upload-time = "2025-04-09T20:06:34.35Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/84/5435e29eb508955dfd3caeefa193f0ddd09f5b0b4ddc3f9fc17819776a1b/scripttest-2.0.post1-py3-none-any.whl", hash = "sha256:ec818fd362d5ee0321e000ea43c0540020336771f5168bd591ddd5b37258ca06", size = 7462, upload-time = "2025-04-09T20:06:30.914Z" },
-]
-
-[[package]]
-name = "sgmllib3k"
-version = "1.0.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/9e/bd/3704a8c3e0942d711c1299ebf7b9091930adae6675d7c8f476a7ce48653c/sgmllib3k-1.0.0.tar.gz", hash = "sha256:7868fb1c8bfa764c1ac563d3cf369c381d1325d36124933a726f29fcdaa812e9", size = 5750, upload-time = "2010-08-24T14:33:52.445Z" }
-
-[[package]]
 name = "six"
 version = "1.17.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1587,18 +1552,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/c7/24/5f1b3bdffd70275f6661c76461e25f024d5a38a46f04aaca912426a2b1d3/urllib3-2.6.3.tar.gz", hash = "sha256:1b62b6884944a57dbe321509ab94fd4d3b307075e0c2eae991ac71ee15ad38ed", size = 435556, upload-time = "2026-01-07T16:24:43.925Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/39/08/aaaad47bc4e9dc8c725e68f9d04865dbcb2052843ff09c97b08904852d84/urllib3-2.6.3-py3-none-any.whl", hash = "sha256:bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4", size = 131584, upload-time = "2026-01-07T16:24:42.685Z" },
-]
-
-[[package]]
-name = "werkzeug"
-version = "3.1.6"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "markupsafe" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/61/f1/ee81806690a87dab5f5653c1f146c92bc066d7f4cebc603ef88eb9e13957/werkzeug-3.1.6.tar.gz", hash = "sha256:210c6bede5a420a913956b4791a7f4d6843a43b6fcee4dfa08a65e93007d0d25", size = 864736, upload-time = "2026-02-19T15:17:18.884Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/4d/ec/d58832f89ede95652fd01f4f24236af7d32b70cab2196dfcc2d2fd13c5c2/werkzeug-3.1.6-py3-none-any.whl", hash = "sha256:7ddf3357bb9564e407607f988f683d72038551200c704012bb9a4c523d42f131", size = 225166, upload-time = "2026-02-19T15:17:17.475Z" },
 ]
 
 [[package]]
