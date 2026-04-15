@@ -1,28 +1,31 @@
+from __future__ import annotations
+
 import warnings
-from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from hamcrest import anything
 from hamcrest.core.base_matcher import BaseMatcher
 from hamcrest.core.core.isanything import IsAnything
-from hamcrest.core.description import Description
 from hamcrest.core.helpers.wrap_matcher import wrap_matcher
-from hamcrest.core.matcher import Matcher
-
-from mbtest.imposters.base import JsonStructure
-from mbtest.imposters.imposters import HttpRequest, Imposter, SentEmail
-from mbtest.server import MountebankServer
 
 if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Mapping, Sequence
+
     from furl import furl
+    from hamcrest.core.description import Description
+    from hamcrest.core.matcher import Matcher
     from yarl import URL
+
+    from mbtest.imposters.base import JsonStructure
+    from mbtest.imposters.imposters import HttpRequest, Imposter, SentEmail
+    from mbtest.server import MountebankServer
 
 ANYTHING = anything()
 
 
 def had_request(
     method: str | Matcher[str] = ANYTHING,
-    path: Union["furl", "URL", str, Matcher[Union["furl", "URL", str]]] = ANYTHING,
+    path: furl | URL | str | Matcher[furl | URL | str] = ANYTHING,
     query: Mapping[str, str] | Matcher[Mapping[str, str]] = ANYTHING,
     headers: Mapping[str, str] | Matcher[Mapping[str, str]] = ANYTHING,
     body: str | Matcher[str] = ANYTHING,
@@ -60,12 +63,12 @@ class HadRequest(BaseMatcher):
     def __init__(
         self,
         method: str | Matcher[str] = ANYTHING,
-        path: Union["furl", "URL", str, Matcher[Union["furl", "URL", str]]] = ANYTHING,
+        path: furl | URL | str | Matcher[furl | URL | str] = ANYTHING,
         query: Mapping[str, str] | Matcher[Mapping[str, str]] = ANYTHING,
         headers: Mapping[str, str] | Matcher[Mapping[str, str]] = ANYTHING,
         body: str | Matcher[str] = ANYTHING,
         times: int | Matcher[int] = ANYTHING,
-    ):
+    ) -> None:
         if (
             method != ANYTHING
             or path != ANYTHING
@@ -127,53 +130,53 @@ class HadRequest(BaseMatcher):
 
         return self.times.matches(len(self.matching_requests))
 
-    def with_method(self, method: str | Matcher[str]):
+    def with_method(self, method: str | Matcher[str]) -> HadRequest:
         self.method = wrap_matcher(method)
         return self
 
-    def and_method(self, method: str | Matcher[str]):
+    def and_method(self, method: str | Matcher[str]) -> HadRequest:
         return self.with_method(method)
 
-    def with_path(self, path: Union["furl", "URL", str, Matcher[Union["furl", "URL", str]]]):
+    def with_path(self, path: furl | URL | str | Matcher[furl | URL | str]) -> HadRequest:
         self.path = wrap_matcher(path)
         return self
 
-    def and_path(self, path: Union["furl", "URL", str, Matcher[Union["furl", "URL", str]]]):
+    def and_path(self, path: furl | URL | str | Matcher[furl | URL | str]) -> HadRequest:
         return self.with_path(path)
 
-    def with_query(self, query: Mapping[str, str] | Matcher[Mapping[str, str]]):
+    def with_query(self, query: Mapping[str, str] | Matcher[Mapping[str, str]]) -> HadRequest:
         self.query = wrap_matcher(query)
         return self
 
-    def and_query(self, query: Mapping[str, str] | Matcher[Mapping[str, str]]):
+    def and_query(self, query: Mapping[str, str] | Matcher[Mapping[str, str]]) -> HadRequest:
         return self.with_query(query)
 
-    def with_headers(self, headers: Mapping[str, str] | Matcher[Mapping[str, str]]):
+    def with_headers(self, headers: Mapping[str, str] | Matcher[Mapping[str, str]]) -> HadRequest:
         self.headers = wrap_matcher(headers)
         return self
 
-    def and_headers(self, headers: Mapping[str, str] | Matcher[Mapping[str, str]]):
+    def and_headers(self, headers: Mapping[str, str] | Matcher[Mapping[str, str]]) -> HadRequest:
         return self.with_headers(headers)
 
-    def with_body(self, body: str | Matcher[str]):
+    def with_body(self, body: str | Matcher[str]) -> HadRequest:
         self.body = wrap_matcher(body)
         return self
 
-    def and_body(self, body: str | Matcher[str]):
+    def and_body(self, body: str | Matcher[str]) -> HadRequest:
         return self.with_body(body)
 
-    def with_json(self, json: JsonStructure | Matcher[JsonStructure]):
+    def with_json(self, json: JsonStructure | Matcher[JsonStructure]) -> HadRequest:
         self.json = wrap_matcher(json)
         return self
 
-    def and_json(self, json: JsonStructure | Matcher[JsonStructure]):
+    def and_json(self, json: JsonStructure | Matcher[JsonStructure]) -> HadRequest:
         return self.with_json(json)
 
-    def with_times(self, times: int | Matcher[int]):
+    def with_times(self, times: int | Matcher[int]) -> HadRequest:
         self.times = wrap_matcher(times)
         return self
 
-    def and_times(self, times: int | Matcher[int]):
+    def and_times(self, times: int | Matcher[int]) -> HadRequest:
         return self.with_times(times)
 
 

@@ -1,24 +1,31 @@
+from __future__ import annotations
+
 import logging
 import subprocess  # nosec
 import time
 from collections import abc
-from collections.abc import Iterable, MutableSequence, Sequence
 from operator import attrgetter
-from pathlib import Path
 from threading import Lock
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar, Final
 
 import httpx
-from _pytest.fixtures import FixtureRequest  # type: ignore[attr-defined]
 from yarl import URL
 
 from mbtest.imposters import Imposter
-from mbtest.imposters.imposters import Request
 from mbtest.util import find_mountebank_executable
+
+if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Iterable, MutableSequence, Sequence
+    from pathlib import Path
+    from types import TracebackType
+
+    from _pytest.fixtures import FixtureRequest
+
+    from mbtest.imposters.imposters import Request
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MB_EXECUTABLE = find_mountebank_executable()
+DEFAULT_MB_EXECUTABLE: Final[Path] = find_mountebank_executable()
 
 
 def mock_server(
@@ -30,7 +37,7 @@ def mock_server(
     allow_injection: bool = True,  # noqa: FBT001,FBT002
     local_only: bool = True,  # noqa: FBT001,FBT002
     data_dir: str | None = ".mbdb",
-) -> "MountebankServer":
+) -> MountebankServer:
     """`Pytest fixture <https://docs.pytest.org/en/latest/fixture.html>`_, making available a mock server, running one
     or more imposters, one for each domain being mocked.
 
@@ -123,15 +130,17 @@ class MountebankServer:
         self.imposters_path = imposters_path
         self._running_imposters: MutableSequence[Imposter] = []
 
-    def __call__(self, imposters: Sequence[Imposter]) -> "MountebankServer":
+    def __call__(self, imposters: Imposter | Iterable[Imposter]) -> MountebankServer:
         self.imposters = imposters
         return self
 
-    def __enter__(self) -> "MountebankServer":
+    def __enter__(self) -> MountebankServer:
         self.add_imposters(self.imposters)
         return self
 
-    def __exit__(self, ex_type, ex_value, ex_traceback) -> None:
+    def __exit__(
+        self, ex_type: type[BaseException] | None, ex_value: BaseException | None, ex_traceback: TracebackType | None
+    ) -> None:
         self.delete_imposters()
 
     def add_imposters(self, definition: Imposter | Iterable[Imposter]) -> None:
@@ -145,7 +154,7 @@ class MountebankServer:
         else:
             self.add_impostor(definition)
 
-    def add_impostor(self, definition):
+    def add_impostor(self, definition: Imposter) -> None:
         """Add single imposter to Mountebank server.
 
         :param definition: One or more Imposters."""
@@ -160,7 +169,7 @@ class MountebankServer:
         while self._running_imposters:
             self.delete_impostor(self._running_imposters[0])
 
-    def delete_impostor(self, imposter):
+    def delete_impostor(self, imposter: Imposter) -> None:
         """Delete impostor from server."""
         httpx.delete(str(imposter.configuration_url)).raise_for_status()
         self._running_imposters = [

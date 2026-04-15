@@ -1,13 +1,18 @@
+from __future__ import annotations
+
 from abc import ABC
-from collections.abc import Mapping
 from enum import Enum
+from typing import TYPE_CHECKING, Any
 
 from mbtest.imposters.base import Injecting, JsonSerializable, JsonStructure
+
+if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Mapping
 
 
 class BasePredicate(JsonSerializable, ABC):
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "BasePredicate":  # noqa: C901
+    def from_structure(cls, structure: JsonStructure) -> BasePredicate:  # noqa: C901
         if "and" in structure:
             return AndPredicate.from_structure(structure)
         if "or" in structure:
@@ -24,13 +29,13 @@ class BasePredicate(JsonSerializable, ABC):
 
 
 class LogicallyCombinablePredicate(BasePredicate, ABC):
-    def __and__(self, other: "BasePredicate") -> "AndPredicate":
+    def __and__(self, other: BasePredicate) -> AndPredicate:
         return AndPredicate(self, other)
 
-    def __or__(self, other: "BasePredicate") -> "OrPredicate":
+    def __or__(self, other: BasePredicate) -> OrPredicate:
         return OrPredicate(self, other)
 
-    def __invert__(self) -> "NotPredicate":
+    def __invert__(self) -> NotPredicate:
         return NotPredicate(self)
 
 
@@ -82,14 +87,14 @@ class Predicate(LogicallyCombinablePredicate):
     def __init__(
         self,
         path: str | None = None,
-        method: Method | str | None = None,
+        method: Predicate.Method | str | None = None,
         query: Mapping[str, str | int | bool] | None = None,
         body: str | JsonStructure | None = None,
         headers: Mapping[str, str] | None = None,
         xpath: str | None = None,
         jsonpath: str | None = None,
         form: Mapping[str, str] | None = None,
-        operator: Operator | str = Operator.EQUALS,
+        operator: Predicate.Operator | str = Operator.EQUALS,
         case_sensitive: bool = True,  # noqa: FBT001,FBT002
     ) -> None:
         self.path = path
@@ -115,7 +120,7 @@ class Predicate(LogicallyCombinablePredicate):
         return predicate
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "Predicate":
+    def from_structure(cls, structure: JsonStructure) -> Predicate:
         operators = tuple(filter(Predicate.Operator.has_value, structure.keys()))
         if len(operators) != 1:
             msg = "Each predicate must define exactly one operator."
@@ -129,7 +134,7 @@ class Predicate(LogicallyCombinablePredicate):
             predicate.jsonpath = structure["jsonpath"]["selector"]
         return predicate
 
-    def fields_from_structure(self, inner):
+    def fields_from_structure(self, inner: Mapping[str, Any]) -> None:
         self.set_if_in_dict(inner, "path", "path")
         self.set_if_in_dict(inner, "query", "query")
         self.set_if_in_dict(inner, "body", "body")
@@ -138,7 +143,7 @@ class Predicate(LogicallyCombinablePredicate):
         if "method" in inner:
             self.method = Predicate.Method(inner["method"])
 
-    def fields_as_structure(self):
+    def fields_as_structure(self) -> dict[str, Any]:
         fields = {}
         self.add_if_true(fields, "path", self.path)
         self.add_if_true(fields, "query", self.query)
@@ -159,7 +164,7 @@ class AndPredicate(LogicallyCombinablePredicate):
         return {"and": [self.left.as_structure(), self.right.as_structure()]}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "AndPredicate":
+    def from_structure(cls, structure: JsonStructure) -> AndPredicate:
         return cls(
             BasePredicate.from_structure(structure["and"][0]),
             BasePredicate.from_structure(structure["and"][1]),
@@ -175,7 +180,7 @@ class OrPredicate(LogicallyCombinablePredicate):
         return {"or": [self.left.as_structure(), self.right.as_structure()]}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "OrPredicate":
+    def from_structure(cls, structure: JsonStructure) -> OrPredicate:
         return cls(
             BasePredicate.from_structure(structure["or"][0]),
             BasePredicate.from_structure(structure["or"][1]),
@@ -190,7 +195,7 @@ class NotPredicate(LogicallyCombinablePredicate):
         return {"not": self.inverted.as_structure()}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "NotPredicate":
+    def from_structure(cls, structure: JsonStructure) -> NotPredicate:
         return cls(BasePredicate.from_structure(structure["not"]))
 
 
@@ -208,7 +213,7 @@ class TcpPredicate(LogicallyCombinablePredicate):
         return {"contains": {"data": self.data}}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "TcpPredicate":
+    def from_structure(cls, structure: JsonStructure) -> TcpPredicate:
         return cls(structure["contains"]["data"])
 
 
@@ -222,5 +227,5 @@ class InjectionPredicate(BasePredicate, Injecting):
     """
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "InjectionPredicate":
+    def from_structure(cls, structure: JsonStructure) -> InjectionPredicate:
         return cls(inject=structure["inject"])

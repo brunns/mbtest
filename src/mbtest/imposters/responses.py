@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 from abc import ABC
 from collections.abc import Iterable, Mapping, MutableMapping, Sequence
 from enum import Enum
-from typing import Optional
 from xml.etree import ElementTree as ET  # nosec - We are creating, not parsing XML.
 
 from yarl import URL
@@ -13,7 +14,7 @@ from mbtest.imposters.predicates import Predicate
 
 class BaseResponse(JsonSerializable, ABC):
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "BaseResponse":  # noqa: C901
+    def from_structure(cls, structure: JsonStructure) -> BaseResponse:  # noqa: C901
         if "is" in structure and "_behaviors" in structure:
             return Response.from_structure(structure)
         if "is" in structure and "data" in structure["is"]:
@@ -42,7 +43,7 @@ class HttpResponse(JsonSerializable):
         body: str | JsonStructure = "",
         status_code: int | str = 200,
         headers: Mapping[str, str] | None = None,
-        mode: Optional["Response.Mode"] = None,
+        mode: Response.Mode | None = None,
     ) -> None:
         super().__init__()
         self._body = body
@@ -65,7 +66,7 @@ class HttpResponse(JsonSerializable):
         return is_structure
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "HttpResponse":
+    def from_structure(cls, structure: JsonStructure) -> HttpResponse:
         response = cls()
         response.set_if_in_dict(structure, "body", "_body")
         response.mode = Response.Mode(structure.get("_mode", "text"))
@@ -103,7 +104,7 @@ class Response(BaseResponse):
         wait: int | str | None = None,
         repeat: int | None = None,
         headers: Mapping[str, str] | None = None,
-        mode: Mode | None = None,
+        mode: Response.Mode | None = None,
         copy: Copy | None = None,
         decorate: str | None = None,
         lookup: Lookup | None = None,
@@ -141,7 +142,7 @@ class Response(BaseResponse):
         return behaviors
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "Response":
+    def from_structure(cls, structure: JsonStructure) -> Response:
         response = cls()
         response.http_response = HttpResponse.from_structure(structure["is"])
         behaviors = structure.get("_behaviors", {})
@@ -156,19 +157,19 @@ class Response(BaseResponse):
         return response
 
     @property
-    def body(self):
+    def body(self) -> str:
         return self.http_response.body
 
     @property
-    def status_code(self):
+    def status_code(self) -> int | str:
         return self.http_response.status_code
 
     @property
-    def headers(self):
+    def headers(self) -> Mapping[str, str] | None:
         return self.http_response.headers
 
     @property
-    def mode(self):
+    def mode(self) -> Response.Mode:
         return self.http_response.mode
 
 
@@ -180,7 +181,7 @@ class TcpResponse(BaseResponse):
         return {"is": {"data": self.data}}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "TcpResponse":
+    def from_structure(cls, structure: JsonStructure) -> TcpResponse:
         return cls(data=structure["is"]["data"])
 
 
@@ -194,14 +195,14 @@ class FaultResponse(BaseResponse):
         CONNECTION_RESET_BY_PEER = "CONNECTION_RESET_BY_PEER"
         RANDOM_DATA_THEN_CLOSE = "RANDOM_DATA_THEN_CLOSE"
 
-    def __init__(self, fault: Fault) -> None:
+    def __init__(self, fault: FaultResponse.Fault) -> None:
         self.fault = fault
 
     def as_structure(self) -> JsonStructure:
         return {"fault": self.fault.name}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "FaultResponse":
+    def from_structure(cls, structure: JsonStructure) -> FaultResponse:
         fault = cls.Fault(structure["fault"])
         return cls(fault=fault)
 
@@ -224,8 +225,8 @@ class Proxy(BaseResponse):
         to: URL | str,
         wait: int | None = None,
         inject_headers: Mapping[str, str] | None = None,
-        mode: "Proxy.Mode" = Mode.ONCE,
-        predicate_generators: Iterable["PredicateGenerator"] | None = None,
+        mode: Proxy.Mode = Mode.ONCE,
+        predicate_generators: Iterable[PredicateGenerator] | None = None,
         decorate: str | None = None,
     ) -> None:
         self.to = to
@@ -251,7 +252,7 @@ class Proxy(BaseResponse):
         return behaviors
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "Proxy":
+    def from_structure(cls, structure: JsonStructure) -> Proxy:
         proxy_structure = structure["proxy"]
         proxy = cls(
             to=URL(proxy_structure["to"]),
@@ -294,7 +295,7 @@ class PredicateGenerator(JsonSerializable):
         return {"caseSensitive": self.case_sensitive, "matches": matches}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "PredicateGenerator":
+    def from_structure(cls, structure: JsonStructure) -> PredicateGenerator:
         path = structure["matches"].get("path", None)
         query = structure["matches"].get("query", None)
         operator = Predicate.Operator[structure["operator"]] if "operator" in structure else Predicate.Operator.EQUALS
@@ -311,5 +312,5 @@ class InjectionResponse(BaseResponse, Injecting):
     """
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "InjectionResponse":
+    def from_structure(cls, structure: JsonStructure) -> InjectionResponse:
         return cls(inject=structure["inject"])

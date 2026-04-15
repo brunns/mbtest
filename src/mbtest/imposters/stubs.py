@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Iterable, Sequence
 from typing import cast
 
@@ -41,7 +43,7 @@ class Stub(JsonSerializable):
         }
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "Stub":
+    def from_structure(cls, structure: JsonStructure) -> Stub:
         responses: list[InjectionResponse | Proxy | Response] = []
         for response in structure.get("responses", ()):
             if "proxy" in response:
@@ -85,7 +87,7 @@ class AddStub(JsonSerializable):
         return structure
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "AddStub":
+    def from_structure(cls, structure: JsonStructure) -> AddStub:
         return AddStub(
             index=structure.get("index"),
             stub=Stub.from_structure(structure.get("stub")),

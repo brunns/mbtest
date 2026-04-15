@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 import abc
-from collections.abc import Mapping
 from enum import Enum
-from typing import cast
+from typing import TYPE_CHECKING, cast
+
+if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Mapping
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 
@@ -19,7 +23,7 @@ class Using(JsonSerializable, abc.ABC):
         XPATH = "xpath"
         JSONPATH = "jsonpath"
 
-    def __init__(self, method: Method, selector: str) -> None:
+    def __init__(self, method: Using.Method, selector: str) -> None:
         self.method = method
         self.selector = selector
 
@@ -27,7 +31,7 @@ class Using(JsonSerializable, abc.ABC):
         return {"method": self.method.value, "selector": self.selector}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "Using":
+    def from_structure(cls, structure: JsonStructure) -> Using:
         method = cls.Method(structure["method"])
         return cast(
             "type[Using]",
@@ -62,7 +66,7 @@ class UsingRegex(Using):
         return structure
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "UsingRegex":
+    def from_structure(cls, structure: JsonStructure) -> UsingRegex:
         return cls(
             selector=structure["selector"],
             ignore_case=structure["options"]["ignoreCase"],
@@ -89,7 +93,7 @@ class UsingXpath(Using):
         return structure
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "UsingXpath":
+    def from_structure(cls, structure: JsonStructure) -> UsingXpath:
         using = cls(selector=structure["selector"])
         using.set_if_in_dict(structure, "ns", "ns")
         return using
@@ -106,5 +110,5 @@ class UsingJsonpath(Using):
         super().__init__(Using.Method.JSONPATH, selector)
 
     @classmethod
-    def from_structure(cls, structure) -> "UsingJsonpath":
+    def from_structure(cls, structure: JsonStructure) -> UsingJsonpath:
         return cls(selector=structure["selector"])

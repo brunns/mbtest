@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 from collections import abc
-from collections.abc import Iterable, Mapping, Sequence
 from enum import Enum
 from json import JSONDecodeError, dumps, loads
 from pathlib import Path
-from typing import NamedTuple, cast
+from typing import TYPE_CHECKING, NamedTuple, cast
 
 import httpx
 from yarl import URL
@@ -11,6 +12,9 @@ from yarl import URL
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.responses import HttpResponse, Proxy
 from mbtest.imposters.stubs import AddStub, Stub
+
+if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Iterable, Mapping, Sequence
 
 
 class Imposter(JsonSerializable):
@@ -41,7 +45,7 @@ class Imposter(JsonSerializable):
         self,
         stubs: Stub | Iterable[Stub],
         port: int | None = None,
-        protocol: Protocol = Protocol.HTTP,
+        protocol: Imposter.Protocol = Protocol.HTTP,
         name: str | None = None,
         default_response: HttpResponse | None = None,
         record_requests: bool = True,  # noqa: FBT001,FBT002
@@ -82,7 +86,7 @@ class Imposter(JsonSerializable):
         return structure
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "Imposter":
+    def from_structure(cls, structure: JsonStructure) -> Imposter:
         imposter = cls([Stub.from_structure(stub) for stub in structure["stubs"]])
         imposter.set_if_in_dict(structure, "port", "port")
         imposter.protocol = cls.Protocol(structure["protocol"])
@@ -106,7 +110,7 @@ class Imposter(JsonSerializable):
         Path(path).write_text(dumps(self.as_structure(), indent=2))
 
     @classmethod
-    def from_file(cls, path: Path | str) -> "Imposter":
+    def from_file(cls, path: Path | str) -> Imposter:
         """Load an imposter from a JSON file previously saved with :meth:`save`.
 
         :param path: Source file path.
@@ -114,7 +118,7 @@ class Imposter(JsonSerializable):
         """
         return cls.from_structure(loads(Path(path).read_text()))
 
-    def get_actual_requests(self) -> Sequence["Request"]:
+    def get_actual_requests(self) -> Sequence[Request]:
         json = httpx.get(str(self.configuration_url)).json()["requests"]
         return [Request.from_json(req) for req in json]
 
@@ -177,7 +181,7 @@ class Imposter(JsonSerializable):
 
 class Request:
     @staticmethod
-    def from_json(json: JsonStructure) -> "Request":
+    def from_json(json: JsonStructure) -> Request:
         if "envelopeFrom" in json:
             return SentEmail.from_json(json)
         return HttpRequest.from_json(json)
@@ -196,7 +200,7 @@ class HttpRequest(Request):
         headers: Mapping[str, str],
         body: str,
         **kwargs,  # noqa: ARG002
-    ):
+    ) -> None:
         self.method = method
         self.path = path
         self.query = query
@@ -204,11 +208,11 @@ class HttpRequest(Request):
         self.body = body
 
     @staticmethod
-    def from_json(json: JsonStructure) -> "HttpRequest":
+    def from_json(json: JsonStructure) -> HttpRequest:
         return HttpRequest(**json)
 
     @property
-    def json(self):
+    def json(self) -> JsonStructure | None:
         try:
             return loads(self.body) if self.body else None
         except JSONDecodeError:
@@ -230,7 +234,7 @@ class SentEmail(Request):
         subject: str,
         text: str,
         **kwargs,  # noqa: ARG002
-    ):
+    ) -> None:
         self.from_ = from_
         self.to = to
         self.cc = cc
@@ -239,7 +243,7 @@ class SentEmail(Request):
         self.text = text
 
     @staticmethod
-    def from_json(json: JsonStructure) -> "SentEmail":
+    def from_json(json: JsonStructure) -> SentEmail:
         email: Mapping[str, str | Sequence[Address]] = {
             SentEmail._map_key(k): SentEmail._translate_value(v) for k, v in json.items()
         }
@@ -258,6 +262,6 @@ class SentEmail(Request):
         return [Address(**addr) if "address" in addr and "name" in addr else addr for addr in value]
 
 
-def smtp_imposter(name="smtp", *, record_requests=True) -> Imposter:
+def smtp_imposter(name: str = "smtp", *, record_requests: bool = True) -> Imposter:
     """Canned SMTP server imposter."""
     return Imposter([], 5525, protocol=Imposter.Protocol.SMTP, name=name, record_requests=record_requests)
