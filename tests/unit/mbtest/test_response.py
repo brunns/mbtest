@@ -1,4 +1,5 @@
 import logging
+from http import HTTPStatus
 
 from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, instance_of
@@ -39,7 +40,7 @@ def test_structure_body():
 
 
 def test_structure_status():
-    expected_response = Response(status_code=204)
+    expected_response = Response(status_code=HTTPStatus.NO_CONTENT)
     response_structure = expected_response.as_structure()
     response = BaseResponse.from_structure(response_structure)
     assert response.status_code == expected_response.status_code

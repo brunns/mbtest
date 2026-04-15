@@ -1,6 +1,7 @@
 import logging
 import os
 from decimal import Decimal
+from http import HTTPStatus
 
 import httpx
 import pytest
@@ -24,12 +25,12 @@ def test_body(mock_server):
 
 
 def test_status(mock_server):
-    imposter = Imposter(Stub(responses=Response(status_code=204)))
+    imposter = Imposter(Stub(responses=Response(status_code=HTTPStatus.NO_CONTENT)))
 
     with mock_server(imposter):
         response = httpx.get(str(imposter.url))
 
-        assert_that(response, is_response().with_status_code(204))
+        assert_that(response, is_response().with_status_code(HTTPStatus.NO_CONTENT))
 
 
 def test_headers(mock_server):

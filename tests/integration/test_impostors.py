@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from http import HTTPStatus
 from pathlib import Path
 
 import httpx
@@ -24,7 +25,7 @@ def test_multiple_imposters(mock_server):
             [
                 Stub(
                     [Predicate(path="/test2")],
-                    [Response(body="chips", status_code=201)],
+                    [Response(body="chips", status_code=HTTPStatus.CREATED)],
                 )
             ]
         ),
@@ -269,7 +270,7 @@ def test_https_impostor_works_with_cert_supplied(mock_server):
 def test_default_response(mock_server):
     imposter = Imposter(
         Stub(Predicate(path="/test1"), Response(body="sausages")),
-        default_response=HttpResponse("chips", status_code=201),
+        default_response=HttpResponse("chips", status_code=HTTPStatus.CREATED),
     )
 
     with mock_server(imposter):

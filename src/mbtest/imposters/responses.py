@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC
 from dataclasses import dataclass, field
 from enum import Enum
+from http import HTTPStatus
 from typing import TYPE_CHECKING
 from xml.etree import ElementTree as ET  # nosec - We are creating, not parsing XML.
 
@@ -38,21 +39,21 @@ class HttpResponse(JsonSerializable):
     """Represents a `Mountebank HTTP response <http://localhost:2525/docs/protocols/http>`_.
 
     :param body: Body text for response. Can be a string, bytes, an XML Element, or a JSON serialisable data structure.
-    :param status_code: HTTP status code
+    :param status_code: HTTP status code - prefer :class:`http.HTTPStatus` values.
     :param headers: Response HTTP headers
     :param mode: Mode - text or binary
 
     """
 
     body: str | JsonStructure | ET.Element | bytes = ""
-    status_code: int | str = 200
+    status_code: HTTPStatus | int | str = HTTPStatus.OK
     headers: Mapping[str, str] | None = None
     mode: Response.Mode
 
     def __init__(
         self,
         body: str | JsonStructure | ET.Element | bytes = "",
-        status_code: int | str = 200,
+        status_code: HTTPStatus | int | str = HTTPStatus.OK,
         headers: Mapping[str, str] | None = None,
         mode: Response.Mode | None = None,
     ) -> None:
@@ -77,7 +78,7 @@ class HttpResponse(JsonSerializable):
     def from_structure(cls, structure: JsonStructure) -> HttpResponse:
         return cls(
             body=structure.get("body", ""),
-            status_code=structure.get("statusCode", 200),
+            status_code=structure.get("statusCode", HTTPStatus.OK),
             headers=structure.get("headers"),
             mode=Response.Mode(structure.get("_mode", "text")),
         )
@@ -88,7 +89,7 @@ class Response(BaseResponse):
     """Represents a `Mountebank 'is' response behavior <http://localhost:2525/docs/api/stubs>`_.
 
     :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
-    :param status_code: HTTP status code
+    :param status_code: HTTP status code - prefer :class:`http.HTTPStatus` values.
     :param wait: `Add latency, in ms <http://localhost:2525/docs/api/behaviors#behavior-wait>`_.
     :param repeat: `Repeat this many times before moving on to next response
         <http://localhost:2525/docs/api/behaviors#behavior-repeat>`_.
@@ -117,7 +118,7 @@ class Response(BaseResponse):
     def __init__(
         self,
         body: str | JsonStructure = "",
-        status_code: int | str = 200,
+        status_code: HTTPStatus | int | str = HTTPStatus.OK,
         wait: int | str | None = None,
         repeat: int | None = None,
         headers: Mapping[str, str] | None = None,
@@ -175,7 +176,7 @@ class Response(BaseResponse):
         return self.http_response.body
 
     @property
-    def status_code(self) -> int | str:
+    def status_code(self) -> HTTPStatus | int | str:
         return self.http_response.status_code
 
     @property
@@ -184,7 +185,7 @@ class Response(BaseResponse):
 
     @property
     def mode(self) -> Response.Mode:
-        return self.http_response.mode  # type: ignore[return-value]
+        return self.http_response.mode
 
 
 @dataclass

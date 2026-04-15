@@ -131,7 +131,7 @@ class HttpResponseBuilder(Builder):
     target = HttpResponse
 
     body = a_string
-    status_code = lambda: one_of(*[s.value for s in http.HTTPStatus])
+    status_code = lambda: one_of(*http.HTTPStatus)
     headers = lambda: one_of(None, {a_string(): a_string()})
     mode = lambda: one_of(*Response.Mode)
 
