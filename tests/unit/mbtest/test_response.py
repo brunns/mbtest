@@ -149,6 +149,23 @@ def test_fault_response_roundtrip():
     assert_that(actual, has_identical_properties_to(expected))
 
 
+def test_response_from_structure_without_behaviors():
+    # Mountebank omits _behaviors when no behaviors are set on a live imposter
+    # Given
+    expected = ResponseBuilder(
+        copy=None, lookup=None, decorate=None, shell_transform=None, wait=None, repeat=None
+    ).build()
+    structure = expected.as_structure()
+    del structure["_behaviors"]
+
+    # When
+    actual = BaseResponse.from_structure(structure)
+
+    # Then
+    assert_that(actual, instance_of(Response))
+    assert_that(actual, has_identical_properties_to(expected))
+
+
 def test_http_response_structure_no_mode():
     expected_response = HttpResponse()
     response_structure = expected_response.as_structure()

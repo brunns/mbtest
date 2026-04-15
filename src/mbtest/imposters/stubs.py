@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
-from typing import cast
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Iterable
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.predicates import BasePredicate, Predicate
-from mbtest.imposters.responses import BaseResponse, InjectionResponse, Proxy, Response
+from mbtest.imposters.responses import BaseResponse, Response
 
 
 class Stub(JsonSerializable):
@@ -21,20 +23,8 @@ class Stub(JsonSerializable):
         predicates: BasePredicate | Iterable[BasePredicate] | None = None,
         responses: BaseResponse | Iterable[BaseResponse] | None = None,
     ) -> None:
-        if predicates:
-            self.predicates = cast(
-                "Iterable[BasePredicate]",
-                predicates if isinstance(predicates, Sequence) else [predicates],
-            )
-        else:
-            self.predicates = [Predicate()]
-        if responses:
-            self.responses = cast(
-                "Iterable[BaseResponse]",
-                responses if isinstance(responses, Sequence) else [responses],
-            )
-        else:
-            self.responses = [Response()]
+        self.predicates = self.one_or_many(predicates) or [Predicate()]
+        self.responses = self.one_or_many(responses) or [Response()]
 
     def as_structure(self) -> JsonStructure:
         return {
@@ -44,17 +34,9 @@ class Stub(JsonSerializable):
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> Stub:
-        responses: list[InjectionResponse | Proxy | Response] = []
-        for response in structure.get("responses", ()):
-            if "proxy" in response:
-                responses.append(Proxy.from_structure(response))
-            elif "inject" in response:
-                responses.append(InjectionResponse.from_structure(response))
-            else:
-                responses.append(Response.from_structure(response))
         return cls(
-            [BasePredicate.from_structure(predicate) for predicate in structure.get("predicates", ())],
-            responses,
+            [BasePredicate.from_structure(p) for p in structure.get("predicates", ())],
+            [BaseResponse.from_structure(r) for r in structure.get("responses", ())],
         )
 
 

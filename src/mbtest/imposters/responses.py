@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from abc import ABC
-from collections.abc import Iterable, Mapping, MutableMapping, Sequence
 from enum import Enum
+from typing import TYPE_CHECKING
 from xml.etree import ElementTree as ET  # nosec - We are creating, not parsing XML.
+
+if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Iterable, Mapping, MutableMapping
 
 from yarl import URL
 
@@ -15,10 +18,10 @@ from mbtest.imposters.predicates import Predicate
 class BaseResponse(JsonSerializable, ABC):
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> BaseResponse:  # noqa: C901
-        if "is" in structure and "_behaviors" in structure:
-            return Response.from_structure(structure)
         if "is" in structure and "data" in structure["is"]:
             return TcpResponse.from_structure(structure)
+        if "is" in structure:
+            return Response.from_structure(structure)
         if "proxy" in structure:
             return Proxy.from_structure(structure)
         if "inject" in structure:
@@ -118,9 +121,9 @@ class Response(BaseResponse):
         # TODO: Deprecate HttpResponse arguments
         self.wait = wait
         self.repeat = repeat
-        self.copy = copy if isinstance(copy, Sequence) else [copy] if copy else None
+        self.copy = self.one_or_many(copy)
         self.decorate = decorate
-        self.lookup = lookup if isinstance(lookup, Sequence) else [lookup] if lookup else None
+        self.lookup = self.one_or_many(lookup)
         self.shell_transform = shell_transform
 
     def as_structure(self) -> JsonStructure:

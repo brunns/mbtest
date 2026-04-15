@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, TypeAlias
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any, TypeAlias, TypeVar, cast
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Mapping, MutableMapping
+    from collections.abc import Iterable, Mapping, MutableMapping
+
+_T = TypeVar("_T")
 
 # JsonStructure: TypeAlias = str | int | float | bool | None | list[JsonStructure] | dict[str, JsonStructure]
 JsonStructure: TypeAlias = Any  # TODO Pending a better solution to https://github.com/python/typing/issues/182
@@ -36,10 +39,21 @@ class JsonSerializable(ABC):
 
     @staticmethod
     def add_if_true(dictionary: MutableMapping[str, Any], key: str, value: Any) -> None:
+        """Add key/value to dictionary only if value is truthy."""
         if value:
             dictionary[key] = value
 
+    @staticmethod
+    def one_or_many(value: _T | Iterable[_T] | None) -> list[_T] | None:
+        """Normalise None / a single item / an iterable to a list, or None."""
+        if value is None:
+            return None
+        if isinstance(value, Sequence):
+            return list(cast("Iterable[_T]", value))
+        return cast("list[_T]", [value])
+
     def set_if_in_dict(self, dictionary: Mapping[str, Any], key: str, name: str) -> None:
+        """Set attribute name to dictionary[key] if key is present."""
         if key in dictionary:
             setattr(self, name, dictionary[key])
 
