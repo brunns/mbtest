@@ -125,7 +125,7 @@ class HttpRequestFactory(DataclassFactory[HttpRequest]):
 
 
 class SentEmailFactory(DataclassFactory[SentEmail]):
-    from_ = Use(lambda: [AddressFactory.build()])
+    from_ = Use(AddressFactory.build)
     to = Use(lambda: [AddressFactory.build(), AddressFactory.build()])
     cc = Use(lambda: [AddressFactory.build(), AddressFactory.build()])
     bcc = Use(lambda: [AddressFactory.build(), AddressFactory.build()])

@@ -6,6 +6,7 @@ from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, has_entries, instance_of
 
 from mbtest.imposters import Imposter, Proxy, Response, Stub
+from mbtest.imposters.imposters import Address, SentEmail
 from tests.utils.builders import (
     AndPredicateFactory,
     HttpRequestFactory,
@@ -120,6 +121,22 @@ def test_save_and_load_roundtrip(tmp_path):
     # Then
     assert loaded.port == original.port
     assert json.loads(path.read_text())["protocol"] == "http"
+
+
+def test_sent_email_from_json_with_dict_address():
+    # Given - Mountebank sometimes returns a single address as a dict rather than a list
+    json_data = {
+        "from": {"address": "sender@example.com", "name": "Sender"},
+        "to": {"address": "recipient@example.com", "name": "Recipient"},
+        "subject": "Hello",
+        "text": "World",
+    }
+
+    # When
+    email = SentEmail.from_json(json_data)
+
+    # Then
+    assert email.to == [Address(address="recipient@example.com", name="Recipient")]
 
 
 def test_http_request_roundtrip():

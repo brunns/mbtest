@@ -34,8 +34,8 @@ def test_email(mock_server):
         # Then
         assert_that(
             imposter,
-            email_sent(
-                to=has_item(has_properties(address=to_email)),
-                body_text=body_text,
-            ),
+            email_sent()
+            .with_from_(has_properties(address=from_email))
+            .and_to(has_item(has_properties(address=to_email)))
+            .and_body_text(body_text),
         )

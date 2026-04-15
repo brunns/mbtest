@@ -238,7 +238,7 @@ class Address:
 
 @dataclass
 class SentEmail(Request):
-    from_: list[Address]
+    from_: Address
     to: list[Address]
     cc: list[Address]
     bcc: list[Address]
@@ -248,7 +248,7 @@ class SentEmail(Request):
     @staticmethod
     def from_json(json: JsonStructure) -> SentEmail:
         return SentEmail(
-            from_=SentEmail._parse_addresses(json.get("from", {})),
+            from_=Address(**json["from"]) if isinstance(json.get("from"), dict) else Address(address="", name=""),
             to=SentEmail._parse_addresses(json.get("to", [])),
             cc=SentEmail._parse_addresses(json.get("cc", [])),
             bcc=SentEmail._parse_addresses(json.get("bcc", [])),

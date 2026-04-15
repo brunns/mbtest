@@ -60,17 +60,20 @@ def test_request_matcher_with_json():
 def test_email_sent():
     # Given
     server = MagicMock()
-    request = SentEmailFactory.build(text="sausages")
+    request = SentEmailFactory.build(text="sausages", subject="eggs")
     server.get_actual_requests.return_value = [request, request]
 
     # When
 
     # Then
-    assert_that(server, email_sent(body_text="sausages"))
-    assert_that(server, not_(email_sent(body_text="chips")))
-    assert_that(email_sent(body_text="sausages"), has_string("email with body text: 'sausages'"))
+    assert_that(server, email_sent().with_body_text("sausages"))
+    assert_that(server, not_(email_sent().with_body_text("chips")))
+    assert_that(server, email_sent().with_subject("eggs"))
+    assert_that(server, email_sent().and_subject("eggs"))
+    assert_that(server, email_sent().and_from_(request.from_))
+    assert_that(email_sent().with_body_text("sausages"), has_string("email with body text: 'sausages'"))
     assert_that(
-        email_sent(body_text="chips"),
+        email_sent().with_body_text("chips"),
         mismatches_with(
             server,
             all_of(

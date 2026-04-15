@@ -17,7 +17,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from yarl import URL
 
     from mbtest.imposters.base import JsonStructure
-    from mbtest.imposters.imposters import HttpRequest, Imposter, SentEmail
+    from mbtest.imposters.imposters import Address, HttpRequest, Imposter, SentEmail
     from mbtest.server import MountebankServer
 
 ANYTHING = anything()
@@ -181,22 +181,31 @@ class HadRequest(BaseMatcher):
 
 
 def email_sent(
-    to: str | Matcher[str] = ANYTHING,
+    from_: Address | Matcher[Address] = ANYTHING,
+    to: Sequence[Address] | Matcher[Sequence[Address]] = ANYTHING,
     subject: str | Matcher[str] = ANYTHING,
     body_text: str | Matcher[str] = ANYTHING,
 ) -> Matcher[Imposter | MountebankServer]:
-    """Mountebank SMTP server was asked to sent email matching:
+    """Mountebank SMTP server was asked to sent email matching.
 
+    Build criteria with `with_` and `and_` methods:
+
+        assert_that(server, email_sent().with_body_text("hello").and_subject("hi"))
+
+    Available attributes as per parameters.
+
+    :param from_: Email's from field matched...
     :param to: Email's to field matched...
     :param subject: Email's subject field matched...
     :param body_text: Email's body matched...
     """
-    return EmailSent(to, subject, body_text)
+    return EmailSent(from_, to, subject, body_text)
 
 
 class EmailSent(BaseMatcher):
-    """Mountebank SMTP server was asked to sent email matching:
+    """Mountebank SMTP server was asked to sent email matching.
 
+    :param from_: Email's from field matched...
     :param to: Email's to field matched...
     :param subject: Email's subject field matched...
     :param body_text: Email's body matched...
@@ -204,14 +213,17 @@ class EmailSent(BaseMatcher):
 
     def __init__(
         self,
-        to: str | Matcher[str] = ANYTHING,
+        from_: Address | Matcher[Address] = ANYTHING,
+        to: Sequence[Address] | Matcher[Sequence[Address]] = ANYTHING,
         subject: str | Matcher[str] = ANYTHING,
         body_text: str | Matcher[str] = ANYTHING,
     ) -> None:
-        # TODO: builder style, & lots more attributes.
-        self.body_text = wrap_matcher(body_text)
-        self.subject = wrap_matcher(subject)
-        self.to = wrap_matcher(to)  # TODO: Type is wrong here - to is a sequence of addresses and names.
+        if from_ != ANYTHING or to != ANYTHING or subject != ANYTHING or body_text != ANYTHING:  # pragma: no cover
+            warnings.warn("Use builder-style with_X and and_X methods, rather than arguments.", stacklevel=2)
+        self.body_text: Matcher[str] = wrap_matcher(body_text)
+        self.subject: Matcher[str] = wrap_matcher(subject)
+        self.to: Matcher[Sequence[Address]] = wrap_matcher(to)
+        self.from_: Matcher[Address] = wrap_matcher(from_)
 
     def describe_to(self, description: Description) -> None:
         description.append_text("email with")
@@ -221,6 +233,7 @@ class EmailSent(BaseMatcher):
         self._append_matcher_description(description, self.body_text, "body text")
         self._append_matcher_description(description, self.subject, "subject")
         self._append_matcher_description(description, self.to, "to")
+        self._append_matcher_description(description, self.from_, "from")
 
     @staticmethod
     def _append_matcher_description(description: Description, matcher: Matcher, text: str) -> None:
@@ -249,5 +262,36 @@ class EmailSent(BaseMatcher):
         return [
             email
             for email in sent_email
-            if self.body_text.matches(email.text) and self.subject.matches(email.subject) and self.to.matches(email.to)
+            if self.body_text.matches(email.text)
+            and self.subject.matches(email.subject)
+            and self.to.matches(email.to)
+            and self.from_.matches(email.from_)
         ]
+
+    def with_from_(self, from_: Address | Matcher[Address]) -> EmailSent:
+        self.from_ = wrap_matcher(from_)
+        return self
+
+    def and_from_(self, from_: Address | Matcher[Address]) -> EmailSent:
+        return self.with_from_(from_)
+
+    def with_to(self, to: Sequence[Address] | Matcher[Sequence[Address]]) -> EmailSent:
+        self.to = wrap_matcher(to)
+        return self
+
+    def and_to(self, to: Sequence[Address] | Matcher[Sequence[Address]]) -> EmailSent:
+        return self.with_to(to)
+
+    def with_subject(self, subject: str | Matcher[str]) -> EmailSent:
+        self.subject = wrap_matcher(subject)
+        return self
+
+    def and_subject(self, subject: str | Matcher[str]) -> EmailSent:
+        return self.with_subject(subject)
+
+    def with_body_text(self, body_text: str | Matcher[str]) -> EmailSent:
+        self.body_text = wrap_matcher(body_text)
+        return self
+
+    def and_body_text(self, body_text: str | Matcher[str]) -> EmailSent:
+        return self.with_body_text(body_text)
