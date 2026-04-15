@@ -1,9 +1,16 @@
-from collections.abc import Mapping
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Mapping
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.behaviors.using import Using
 
 
+@dataclass
 class Copy(JsonSerializable):
     """Represents a `copy behavior <http://localhost:2525/docs/api/behaviors#behavior-copy>`_.
 
@@ -13,14 +20,13 @@ class Copy(JsonSerializable):
     :param using: The configuration needed to select values from the response.
     """
 
-    def __init__(self, from_: str | Mapping[str, str], into: str, using: Using) -> None:
-        self.from_ = from_
-        self.into = into
-        self.using = using
+    from_: str | Mapping[str, str]
+    into: str
+    using: Using
 
     def as_structure(self) -> JsonStructure:
         return {"from": self.from_, "into": self.into, "using": self.using.as_structure()}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> "Copy":
+    def from_structure(cls, structure: JsonStructure) -> Copy:
         return cls(structure["from"], structure["into"], Using.from_structure(structure["using"]))

@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from abc import ABC
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING
 from xml.etree import ElementTree as ET  # nosec - We are creating, not parsing XML.
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Iterable, Mapping, MutableMapping
+    from collections.abc import Iterable, Mapping
 
 from yarl import URL
 
@@ -15,6 +16,7 @@ from mbtest.imposters.behaviors import Copy, Lookup
 from mbtest.imposters.predicates import Predicate
 
 
+@dataclass
 class BaseResponse(JsonSerializable, ABC):
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> BaseResponse:  # noqa: C901
@@ -31,53 +33,57 @@ class BaseResponse(JsonSerializable, ABC):
         raise NotImplementedError  # pragma: no cover
 
 
+@dataclass(init=False)
 class HttpResponse(JsonSerializable):
     """Represents a `Mountebank HTTP response <http://localhost:2525/docs/protocols/http>`_.
 
-    :param body: Body text for response. Can be a string, or a JSON serialisable data structure.
+    :param body: Body text for response. Can be a string, bytes, an XML Element, or a JSON serialisable data structure.
     :param status_code: HTTP status code
     :param headers: Response HTTP headers
     :param mode: Mode - text or binary
 
     """
 
+    body: str | JsonStructure | ET.Element | bytes = ""
+    status_code: int | str = 200
+    headers: Mapping[str, str] | None = None
+    mode: Response.Mode
+
     def __init__(
         self,
-        body: str | JsonStructure = "",
+        body: str | JsonStructure | ET.Element | bytes = "",
         status_code: int | str = 200,
         headers: Mapping[str, str] | None = None,
         mode: Response.Mode | None = None,
     ) -> None:
-        super().__init__()
-        self._body = body
+        self.body = body
         self.status_code = status_code
         self.headers = headers
-        self.mode = mode if isinstance(mode, Response.Mode) else Response.Mode(mode) if mode else Response.Mode.TEXT
-
-    @property
-    def body(self) -> str:
-        if isinstance(self._body, ET.Element):
-            return ET.tostring(self._body, encoding="unicode")
-        if isinstance(self._body, bytes):
-            return self._body.decode("utf-8")
-        return self._body
+        self.mode = mode if mode is not None else Response.Mode.TEXT
 
     def as_structure(self) -> JsonStructure:
-        is_structure = {"statusCode": self.status_code, "_mode": self.mode.value}
-        self.add_if_true(is_structure, "body", self.body)
+        if isinstance(self.body, ET.Element):
+            body_str: str | JsonStructure = ET.tostring(self.body, encoding="unicode")
+        elif isinstance(self.body, bytes):
+            body_str = self.body.decode("utf-8")
+        else:
+            body_str = self.body
+        is_structure: dict[str, JsonStructure] = {"statusCode": self.status_code, "_mode": self.mode.value}
+        self.add_if_true(is_structure, "body", body_str)
         self.add_if_true(is_structure, "headers", self.headers)
         return is_structure
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> HttpResponse:
-        response = cls()
-        response.set_if_in_dict(structure, "body", "_body")
-        response.mode = Response.Mode(structure.get("_mode", "text"))
-        response.set_if_in_dict(structure, "headers", "headers")
-        response.set_if_in_dict(structure, "statusCode", "status_code")
-        return response
+        return cls(
+            body=structure.get("body", ""),
+            status_code=structure.get("statusCode", 200),
+            headers=structure.get("headers"),
+            mode=Response.Mode(structure.get("_mode", "text")),
+        )
 
 
+@dataclass(init=False)
 class Response(BaseResponse):
     """Represents a `Mountebank 'is' response behavior <http://localhost:2525/docs/api/stubs>`_.
 
@@ -100,6 +106,14 @@ class Response(BaseResponse):
         TEXT = "text"
         BINARY = "binary"
 
+    wait: int | str | None = None
+    repeat: int | None = None
+    copy: list[Copy] | None = None
+    decorate: str | None = None
+    lookup: list[Lookup] | None = None
+    shell_transform: str | Iterable[str] | None = None
+    http_response: HttpResponse = field(default_factory=HttpResponse)
+
     def __init__(
         self,
         body: str | JsonStructure = "",
@@ -108,9 +122,9 @@ class Response(BaseResponse):
         repeat: int | None = None,
         headers: Mapping[str, str] | None = None,
         mode: Response.Mode | None = None,
-        copy: Copy | None = None,
+        copy: Copy | Iterable[Copy] | None = None,
         decorate: str | None = None,
-        lookup: Lookup | None = None,
+        lookup: Lookup | Iterable[Lookup] | None = None,
         shell_transform: str | Iterable[str] | None = None,
         *,
         http_response: HttpResponse | None = None,
@@ -118,7 +132,6 @@ class Response(BaseResponse):
         self.http_response = http_response or HttpResponse(
             body=body, status_code=status_code, headers=headers, mode=mode
         )
-        # TODO: Deprecate HttpResponse arguments
         self.wait = wait
         self.repeat = repeat
         self.copy = self.one_or_many(copy)
@@ -146,21 +159,19 @@ class Response(BaseResponse):
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> Response:
-        response = cls()
-        response.http_response = HttpResponse.from_structure(structure["is"])
         behaviors = structure.get("_behaviors", {})
-        response.set_if_in_dict(behaviors, "wait", "wait")
-        response.set_if_in_dict(behaviors, "repeat", "repeat")
-        response.set_if_in_dict(behaviors, "decorate", "decorate")
-        response.set_if_in_dict(behaviors, "shellTransform", "shell_transform")
-        if "copy" in behaviors:
-            response.copy = [Copy.from_structure(c) for c in behaviors["copy"]]
-        if "lookup" in behaviors:
-            response.lookup = [Lookup.from_structure(lookup) for lookup in behaviors["lookup"]]
-        return response
+        return cls(
+            http_response=HttpResponse.from_structure(structure["is"]),
+            wait=behaviors.get("wait"),
+            repeat=behaviors.get("repeat"),
+            decorate=behaviors.get("decorate"),
+            shell_transform=behaviors.get("shellTransform"),
+            copy=[Copy.from_structure(c) for c in behaviors["copy"]] if "copy" in behaviors else None,
+            lookup=[Lookup.from_structure(lk) for lk in behaviors["lookup"]] if "lookup" in behaviors else None,
+        )
 
     @property
-    def body(self) -> str:
+    def body(self) -> str | JsonStructure:
         return self.http_response.body
 
     @property
@@ -173,12 +184,12 @@ class Response(BaseResponse):
 
     @property
     def mode(self) -> Response.Mode:
-        return self.http_response.mode
+        return self.http_response.mode  # type: ignore[return-value]
 
 
+@dataclass
 class TcpResponse(BaseResponse):
-    def __init__(self, data: str) -> None:
-        self.data = data
+    data: str
 
     def as_structure(self) -> JsonStructure:
         return {"is": {"data": self.data}}
@@ -188,6 +199,7 @@ class TcpResponse(BaseResponse):
         return cls(data=structure["is"]["data"])
 
 
+@dataclass
 class FaultResponse(BaseResponse):
     """Represents a `Mountebank fault response <https://localhost:2525/docs/api/faults>`_.
 
@@ -198,18 +210,17 @@ class FaultResponse(BaseResponse):
         CONNECTION_RESET_BY_PEER = "CONNECTION_RESET_BY_PEER"
         RANDOM_DATA_THEN_CLOSE = "RANDOM_DATA_THEN_CLOSE"
 
-    def __init__(self, fault: FaultResponse.Fault) -> None:
-        self.fault = fault
+    fault: FaultResponse.Fault
 
     def as_structure(self) -> JsonStructure:
         return {"fault": self.fault.name}
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> FaultResponse:
-        fault = cls.Fault(structure["fault"])
-        return cls(fault=fault)
+        return cls(fault=cls.Fault(structure["fault"]))
 
 
+@dataclass
 class Proxy(BaseResponse):
     """Represents a `Mountebank proxy <http://localhost:2525/docs/api/proxies>`_.
 
@@ -223,24 +234,15 @@ class Proxy(BaseResponse):
         ALWAYS = "proxyAlways"
         TRANSPARENT = "proxyTransparent"
 
-    def __init__(
-        self,
-        to: URL | str,
-        wait: int | None = None,
-        inject_headers: Mapping[str, str] | None = None,
-        mode: Proxy.Mode = Mode.ONCE,
-        predicate_generators: Iterable[PredicateGenerator] | None = None,
-        decorate: str | None = None,
-    ) -> None:
-        self.to = to
-        self.wait = wait
-        self.inject_headers = inject_headers
-        self.mode = mode
-        self.predicate_generators = predicate_generators if predicate_generators is not None else []
-        self.decorate = decorate
+    to: URL | str
+    wait: int | None = None
+    inject_headers: Mapping[str, str] | None = None
+    mode: Proxy.Mode = Mode.ONCE
+    predicate_generators: list[PredicateGenerator] = field(default_factory=list)
+    decorate: str | None = None
 
     def as_structure(self) -> JsonStructure:
-        proxy = {"to": str(self.to), "mode": self.mode.value}
+        proxy: dict[str, JsonStructure] = {"to": str(self.to), "mode": self.mode.value}
         self.add_if_true(proxy, "injectHeaders", self.inject_headers)
         self.add_if_true(proxy, "predicateGenerators", [pg.as_structure() for pg in self.predicate_generators])
         return {
@@ -257,55 +259,50 @@ class Proxy(BaseResponse):
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> Proxy:
         proxy_structure = structure["proxy"]
-        proxy = cls(
-            to=URL(proxy_structure["to"]),
-            inject_headers=proxy_structure.get("injectHeaders", None),
-            mode=Proxy.Mode(proxy_structure["mode"]),
-            predicate_generators=(
-                [PredicateGenerator.from_structure(pg) for pg in proxy_structure["predicateGenerators"]]
-                if "predicateGenerators" in proxy_structure
-                else None
-            ),
-        )
         behaviors = structure.get("_behaviors", {})
-        proxy.set_if_in_dict(behaviors, "wait", "wait")
-        proxy.set_if_in_dict(behaviors, "decorate", "decorate")
-        return proxy
+        return cls(
+            to=URL(proxy_structure["to"]),
+            inject_headers=proxy_structure.get("injectHeaders"),
+            mode=Proxy.Mode(proxy_structure["mode"]),
+            predicate_generators=[
+                PredicateGenerator.from_structure(pg) for pg in proxy_structure.get("predicateGenerators", [])
+            ],
+            wait=behaviors.get("wait"),
+            decorate=behaviors.get("decorate"),
+        )
 
 
+@dataclass
 class PredicateGenerator(JsonSerializable):
     """Represents a `Mountebank predicate generator <https://localhost:2525/docs/api/proxies#proxy-predicate-generators>`_.
 
     :param path: Include the path in the generated predicate.
     """
 
-    def __init__(
-        self,
-        path: bool = False,  # noqa: FBT001,FBT002
-        query: bool | Mapping[str, str] = False,  # noqa: FBT001,FBT002
-        operator: Predicate.Operator = Predicate.Operator.EQUALS,
-        case_sensitive: bool = True,  # noqa: FBT001,FBT002
-    ):
-        self.path = path
-        self.query = query
-        self.operator = operator
-        self.case_sensitive = case_sensitive
+    path: bool = False
+    query: bool | Mapping[str, str] = False
+    operator: Predicate.Operator = Predicate.Operator.EQUALS
+    case_sensitive: bool = True
 
     def as_structure(self) -> JsonStructure:
-        matches: MutableMapping[str, str] = {}
+        matches: dict[str, str] = {}
         self.add_if_true(matches, "path", self.path)
         self.add_if_true(matches, "query", self.query)
         return {"caseSensitive": self.case_sensitive, "matches": matches}
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> PredicateGenerator:
-        path = structure["matches"].get("path", None)
-        query = structure["matches"].get("query", None)
-        operator = Predicate.Operator[structure["operator"]] if "operator" in structure else Predicate.Operator.EQUALS
-        case_sensitive = structure.get("caseSensitive", False)
-        return cls(path=path, query=query, operator=operator, case_sensitive=case_sensitive)
+        return cls(
+            path=structure["matches"].get("path", None),
+            query=structure["matches"].get("query", None),
+            operator=Predicate.Operator[structure["operator"]]
+            if "operator" in structure
+            else Predicate.Operator.EQUALS,
+            case_sensitive=structure.get("caseSensitive", False),
+        )
 
 
+@dataclass
 class InjectionResponse(BaseResponse, Injecting):
     """Represents a `Mountebank injection response <http://localhost:2525/docs/api/injection>`_.
 

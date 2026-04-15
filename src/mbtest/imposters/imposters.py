@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import abc
+from dataclasses import dataclass, field
 from enum import Enum
 from json import JSONDecodeError, dumps, loads
 from pathlib import Path
@@ -17,6 +18,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Iterable, Mapping, Sequence
 
 
+@dataclass(init=False)
 class Imposter(JsonSerializable):
     """Represents a `Mountebank imposter <http://localhost:2525/docs/api/mocks>`_.
     Think of an imposter as a mock website, running a protocol, on a specific port.
@@ -41,31 +43,46 @@ class Imposter(JsonSerializable):
         SMTP = "smtp"
         TCP = "tcp"
 
+    stubs: list[Stub]
+    port: int | None = None
+    protocol: Imposter.Protocol = Protocol.HTTP
+    name: str | None = None
+    default_response: HttpResponse | None = None
+    record_requests: bool = True
+    mutual_auth: bool = False
+    key: str | None = None
+    cert: str | None = None
+    host: str | None = field(default=None, repr=False, compare=False)
+    server_url: URL | None = field(default=None, repr=False, compare=False)
+
     def __init__(
         self,
         stubs: Stub | Iterable[Stub],
         port: int | None = None,
-        protocol: Imposter.Protocol = Protocol.HTTP,
+        protocol: Imposter.Protocol | str = Protocol.HTTP,
         name: str | None = None,
         default_response: HttpResponse | None = None,
-        record_requests: bool = True,  # noqa: FBT001,FBT002
-        mutual_auth: bool = False,  # noqa: FBT001,FBT002
         key: str | None = None,
         cert: str | None = None,
+        *,
+        record_requests: bool = True,
+        mutual_auth: bool = False,
+        host: str | None = None,
+        server_url: URL | None = None,
     ) -> None:
-        stubs = cast("Iterable[Stub]", stubs if isinstance(stubs, abc.Sequence) else [stubs])
+        stubs_iter = cast("Iterable[Stub]", stubs if isinstance(stubs, abc.Sequence) else [stubs])
         # For backwards compatibility where previously a proxy may have been used directly as a stub.
-        self.stubs = [Stub(responses=cast("Proxy", stub)) if isinstance(stub, Proxy) else stub for stub in stubs]
+        self.stubs = [Stub(responses=cast("Proxy", stub)) if isinstance(stub, Proxy) else stub for stub in stubs_iter]
         self.port = port
         self.protocol = protocol if isinstance(protocol, Imposter.Protocol) else Imposter.Protocol(protocol)
         self.name = name
         self.default_response = default_response
         self.record_requests = record_requests
-        self.host: str | None = None
-        self.server_url: URL | None = None
         self.mutual_auth = mutual_auth
         self.key = key
         self.cert = cert
+        self.host = host
+        self.server_url = server_url
 
     @property
     def url(self) -> URL | None:
@@ -74,7 +91,7 @@ class Imposter(JsonSerializable):
         return None
 
     def as_structure(self) -> JsonStructure:
-        structure = {"protocol": self.protocol.value, "recordRequests": self.record_requests}
+        structure: dict[str, JsonStructure] = {"protocol": self.protocol.value, "recordRequests": self.record_requests}
         self.add_if_true(structure, "port", self.port)
         self.add_if_true(structure, "name", self.name)
         if self.default_response:
@@ -87,17 +104,19 @@ class Imposter(JsonSerializable):
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> Imposter:
-        imposter = cls([Stub.from_structure(stub) for stub in structure["stubs"]])
-        imposter.set_if_in_dict(structure, "port", "port")
-        imposter.protocol = cls.Protocol(structure["protocol"])
-        imposter.set_if_in_dict(structure, "name", "name")
-        if "defaultResponse" in structure:
-            imposter.default_response = HttpResponse.from_structure(structure["defaultResponse"])
-        imposter.set_if_in_dict(structure, "recordRequests", "record_requests")
-        imposter.set_if_in_dict(structure, "mutualAuth", "mutual_auth")
-        imposter.set_if_in_dict(structure, "key", "key")
-        imposter.set_if_in_dict(structure, "cert", "cert")
-        return imposter
+        return cls(
+            stubs=[Stub.from_structure(stub) for stub in structure["stubs"]],
+            port=structure.get("port"),
+            protocol=structure["protocol"],
+            name=structure.get("name"),
+            default_response=HttpResponse.from_structure(structure["defaultResponse"])
+            if "defaultResponse" in structure
+            else None,
+            record_requests=structure.get("recordRequests", True),
+            mutual_auth=structure.get("mutualAuth", False),
+            key=structure.get("key"),
+            cert=structure.get("cert"),
+        )
 
     def save(self, path: Path | str) -> None:
         """Save this imposter to a JSON file for later replay.

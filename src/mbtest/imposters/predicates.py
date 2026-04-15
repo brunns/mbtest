@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC
+from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
@@ -10,6 +11,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
 
 
+@dataclass
 class BasePredicate(JsonSerializable, ABC):
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> BasePredicate:  # noqa: C901
@@ -28,6 +30,7 @@ class BasePredicate(JsonSerializable, ABC):
         raise NotImplementedError  # pragma: no cover
 
 
+@dataclass
 class LogicallyCombinablePredicate(BasePredicate, ABC):
     def __and__(self, other: BasePredicate) -> AndPredicate:
         return AndPredicate(self, other)
@@ -39,6 +42,7 @@ class LogicallyCombinablePredicate(BasePredicate, ABC):
         return NotPredicate(self)
 
 
+@dataclass(init=False)
 class Predicate(LogicallyCombinablePredicate):
     """Represents a `Mountebank predicate <http://localhost:2525/docs/api/predicates>`_.
     A predicate can be thought of as a trigger, which may or may not match a request.
@@ -84,6 +88,17 @@ class Predicate(LogicallyCombinablePredicate):
         def has_value(cls, name: str) -> bool:
             return any(name == item.value for item in cls)
 
+    path: str | None = None
+    method: Predicate.Method | None = None
+    query: Mapping[str, str | int | bool] | None = None
+    body: str | JsonStructure | None = None
+    headers: Mapping[str, str] | None = None
+    xpath: str | None = None
+    jsonpath: str | None = None
+    form: Mapping[str, str] | None = None
+    operator: Predicate.Operator = Operator.EQUALS
+    case_sensitive: bool = True
+
     def __init__(
         self,
         path: str | None = None,
@@ -95,7 +110,8 @@ class Predicate(LogicallyCombinablePredicate):
         jsonpath: str | None = None,
         form: Mapping[str, str] | None = None,
         operator: Predicate.Operator | str = Operator.EQUALS,
-        case_sensitive: bool = True,  # noqa: FBT001,FBT002
+        *,
+        case_sensitive: bool = True,
     ) -> None:
         self.path = path
         self.method = method if isinstance(method, Predicate.Method) else Predicate.Method(method) if method else None
@@ -126,25 +142,22 @@ class Predicate(LogicallyCombinablePredicate):
             msg = "Each predicate must define exactly one operator."
             raise Predicate.InvalidPredicateOperator(msg)
         operator = operators[0]
-        predicate = cls(operator=operator, case_sensitive=structure.get("caseSensitive", True))
-        predicate.fields_from_structure(structure[operator])
-        if "xpath" in structure:
-            predicate.xpath = structure["xpath"]["selector"]
-        if "jsonpath" in structure:
-            predicate.jsonpath = structure["jsonpath"]["selector"]
-        return predicate
-
-    def fields_from_structure(self, inner: Mapping[str, Any]) -> None:
-        self.set_if_in_dict(inner, "path", "path")
-        self.set_if_in_dict(inner, "query", "query")
-        self.set_if_in_dict(inner, "body", "body")
-        self.set_if_in_dict(inner, "headers", "headers")
-        self.set_if_in_dict(inner, "form", "form")
-        if "method" in inner:
-            self.method = Predicate.Method(inner["method"])
+        inner = structure[operator]
+        return cls(
+            operator=operator,
+            case_sensitive=structure.get("caseSensitive", True),
+            path=inner.get("path"),
+            method=inner.get("method"),
+            query=inner.get("query"),
+            body=inner.get("body"),
+            headers=inner.get("headers"),
+            form=inner.get("form"),
+            xpath=structure["xpath"]["selector"] if "xpath" in structure else None,
+            jsonpath=structure["jsonpath"]["selector"] if "jsonpath" in structure else None,
+        )
 
     def fields_as_structure(self) -> dict[str, Any]:
-        fields = {}
+        fields: dict[str, Any] = {}
         self.add_if_true(fields, "path", self.path)
         self.add_if_true(fields, "query", self.query)
         self.add_if_true(fields, "body", self.body)
@@ -155,10 +168,10 @@ class Predicate(LogicallyCombinablePredicate):
         return fields
 
 
+@dataclass
 class AndPredicate(LogicallyCombinablePredicate):
-    def __init__(self, left: BasePredicate, right: BasePredicate) -> None:
-        self.left = left
-        self.right = right
+    left: BasePredicate
+    right: BasePredicate
 
     def as_structure(self) -> JsonStructure:
         return {"and": [self.left.as_structure(), self.right.as_structure()]}
@@ -171,10 +184,10 @@ class AndPredicate(LogicallyCombinablePredicate):
         )
 
 
+@dataclass
 class OrPredicate(LogicallyCombinablePredicate):
-    def __init__(self, left: BasePredicate, right: BasePredicate) -> None:
-        self.left = left
-        self.right = right
+    left: BasePredicate
+    right: BasePredicate
 
     def as_structure(self) -> JsonStructure:
         return {"or": [self.left.as_structure(), self.right.as_structure()]}
@@ -187,9 +200,9 @@ class OrPredicate(LogicallyCombinablePredicate):
         )
 
 
+@dataclass
 class NotPredicate(LogicallyCombinablePredicate):
-    def __init__(self, inverted: BasePredicate) -> None:
-        self.inverted = inverted
+    inverted: BasePredicate
 
     def as_structure(self) -> JsonStructure:
         return {"not": self.inverted.as_structure()}
@@ -199,6 +212,7 @@ class NotPredicate(LogicallyCombinablePredicate):
         return cls(BasePredicate.from_structure(structure["not"]))
 
 
+@dataclass
 class TcpPredicate(LogicallyCombinablePredicate):
     """Represents a `Mountebank TCP predicate <http://localhost:2525/docs/protocols/tcp>`_.
     A predicate can be thought of as a trigger, which may or may not match a request.
@@ -206,8 +220,7 @@ class TcpPredicate(LogicallyCombinablePredicate):
     :param data: Data to match the request.
     """
 
-    def __init__(self, data: str) -> None:
-        self.data = data
+    data: str
 
     def as_structure(self) -> JsonStructure:
         return {"contains": {"data": self.data}}
@@ -217,6 +230,7 @@ class TcpPredicate(LogicallyCombinablePredicate):
         return cls(structure["contains"]["data"])
 
 
+@dataclass
 class InjectionPredicate(BasePredicate, Injecting):
     """Represents a `Mountebank injection predicate <http://localhost:2525/docs/api/injection>`_.
     A predicate can be thought of as a trigger, which may or may not match a request.

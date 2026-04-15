@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, TypeAlias, TypeVar, cast
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Iterable, Mapping, MutableMapping
+    from collections.abc import Iterable, MutableMapping
 
 _T = TypeVar("_T")
 
@@ -13,6 +14,7 @@ _T = TypeVar("_T")
 JsonStructure: TypeAlias = Any  # TODO Pending a better solution to https://github.com/python/typing/issues/182
 
 
+@dataclass
 class JsonSerializable(ABC):
     """Object capable of being converted to a JSON serializable structure (using :py:meth:`as_structure`)
     or from such a structure ((using :py:meth:`from_structure`).
@@ -52,19 +54,10 @@ class JsonSerializable(ABC):
             return list(cast("Iterable[_T]", value))
         return cast("list[_T]", [value])
 
-    def set_if_in_dict(self, dictionary: Mapping[str, Any], key: str, name: str) -> None:
-        """Set attribute name to dictionary[key] if key is present."""
-        if key in dictionary:
-            setattr(self, name, dictionary[key])
 
-    def __repr__(self) -> str:  # pragma: no cover
-        state = (f"{attr:s}={value!r:s}" for (attr, value) in vars(self).items())
-        return f"{self.__class__.__module__:s}.{self.__class__.__name__:s}({', '.join(state):s})"
-
-
+@dataclass
 class Injecting(JsonSerializable, ABC):
-    def __init__(self, inject: str) -> None:
-        self.inject = inject
+    inject: str
 
     def as_structure(self) -> JsonStructure:
         return {"inject": self.inject}

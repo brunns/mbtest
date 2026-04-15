@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -10,6 +11,7 @@ from mbtest.imposters.predicates import BasePredicate, Predicate
 from mbtest.imposters.responses import BaseResponse, Response
 
 
+@dataclass(init=False)
 class Stub(JsonSerializable):
     """Represents a `Mountebank stub <http://localhost:2525/docs/api/stubs>`_.
     Think of a stub as a behavior, triggered by a matching predicate.
@@ -17,6 +19,9 @@ class Stub(JsonSerializable):
     :param predicates: Trigger this stub if one of these predicates matches the request
     :param responses: Use these response behaviors (in order)
     """
+
+    predicates: list[BasePredicate]
+    responses: list[BaseResponse]
 
     def __init__(
         self,
@@ -40,6 +45,7 @@ class Stub(JsonSerializable):
         )
 
 
+@dataclass
 class AddStub(JsonSerializable):
     """Represents a `Mountebank add stub request <http://localhost:2525/docs/api/overview#add-stub>`.
     To add new stab to an existing imposter.
@@ -49,28 +55,18 @@ class AddStub(JsonSerializable):
     :param stub: The stub that will be added to the existing stubs array
     """
 
-    def __init__(
-        self,
-        stub: Stub | None = None,
-        index: int | None = None,
-    ) -> None:
-        self.index = index
-        if stub:
-            self.stub = stub
-        else:
-            self.stub = Stub()
+    stub: Stub = field(default_factory=Stub)
+    index: int | None = None
 
     def as_structure(self) -> JsonStructure:
-        structure = {
-            "stub": self.stub.as_structure(),
-        }
+        structure: dict[str, JsonStructure] = {"stub": self.stub.as_structure()}
         if self.index is not None:
             structure["index"] = self.index
         return structure
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> AddStub:
-        return AddStub(
+        return cls(
+            stub=Stub.from_structure(structure.get("stub", {})),
             index=structure.get("index"),
-            stub=Stub.from_structure(structure.get("stub")),
         )

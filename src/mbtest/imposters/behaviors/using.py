@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import abc
+from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, cast
 
@@ -10,11 +11,11 @@ if TYPE_CHECKING:  # pragma: no cover
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 
 
+@dataclass
 class Using(JsonSerializable, abc.ABC):
     """
     How to select values from the response.
 
-    :param method: The method used to select the value(s) from the request.
     :param selector: The selector used to select the value(s) from the request.
     """
 
@@ -23,9 +24,12 @@ class Using(JsonSerializable, abc.ABC):
         XPATH = "xpath"
         JSONPATH = "jsonpath"
 
-    def __init__(self, method: Using.Method, selector: str) -> None:
-        self.method = method
-        self.selector = selector
+    selector: str
+
+    @property
+    @abc.abstractmethod
+    def method(self) -> Using.Method:  # pragma: no cover
+        raise NotImplementedError
 
     def as_structure(self) -> JsonStructure:
         return {"method": self.method.value, "selector": self.selector}
@@ -43,6 +47,7 @@ class Using(JsonSerializable, abc.ABC):
         ).from_structure(structure)
 
 
+@dataclass
 class UsingRegex(Using):
     """
     `Select values from the response using a regular expression. <http://localhost:2525/docs/api/behaviors#copy-regex-replacement>`_
@@ -52,10 +57,12 @@ class UsingRegex(Using):
     :param multiline: Uses a multiline regular expression
     """
 
-    def __init__(self, selector: str, *, ignore_case: bool = False, multiline: bool = False) -> None:
-        super().__init__(Using.Method.REGEX, selector)
-        self.ignore_case = ignore_case
-        self.multiline = multiline
+    ignore_case: bool = False
+    multiline: bool = False
+
+    @property
+    def method(self) -> Using.Method:
+        return Using.Method.REGEX
 
     def as_structure(self) -> JsonStructure:
         structure = super().as_structure()
@@ -74,6 +81,7 @@ class UsingRegex(Using):
         )
 
 
+@dataclass
 class UsingXpath(Using):
     """
     `Select values from the response using an xpath expression. <http://localhost:2525/docs/api/behaviors#copy-xpath-replacement>`_
@@ -82,9 +90,11 @@ class UsingXpath(Using):
     :param ns: The ns object maps namespace aliases to URLs
     """
 
-    def __init__(self, selector: str, ns: Mapping[str, str] | None = None) -> None:
-        super().__init__(Using.Method.XPATH, selector)
-        self.ns = ns
+    ns: Mapping[str, str] | None = None
+
+    @property
+    def method(self) -> Using.Method:
+        return Using.Method.XPATH
 
     def as_structure(self) -> JsonStructure:
         structure = super().as_structure()
@@ -94,11 +104,13 @@ class UsingXpath(Using):
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> UsingXpath:
-        using = cls(selector=structure["selector"])
-        using.set_if_in_dict(structure, "ns", "ns")
-        return using
+        return cls(
+            selector=structure["selector"],
+            ns=structure.get("ns"),
+        )
 
 
+@dataclass
 class UsingJsonpath(Using):
     """
     `Select values from the response using a jsonpath expression. <http://localhost:2525/docs/api/behaviors#copy-jsonpath-replacement>`_
@@ -106,8 +118,9 @@ class UsingJsonpath(Using):
     :param selector: The selector used to select the value(s) from the request.
     """
 
-    def __init__(self, selector: str) -> None:
-        super().__init__(Using.Method.JSONPATH, selector)
+    @property
+    def method(self) -> Using.Method:
+        return Using.Method.JSONPATH
 
     @classmethod
     def from_structure(cls, structure: JsonStructure) -> UsingJsonpath:
