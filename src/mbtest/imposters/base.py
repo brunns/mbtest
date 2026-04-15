@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeAlias
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping, MutableMapping
 
-# JsonStructure = Union[MutableMapping[str, "JsonStructure"], Iterable["JsonStructure"], str, int, bool, None]
+# JsonStructure: TypeAlias = str | int | float | bool | None | list[JsonStructure] | dict[str, JsonStructure]
 JsonStructure: TypeAlias = Any  # TODO Pending a better solution to https://github.com/python/typing/issues/182
 
 
