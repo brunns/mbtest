@@ -107,6 +107,9 @@ venv.bak/
 .idea/
 *~
 
+# Env
+.envrc
+
 # Node modules
 node_modules/
 package.json
