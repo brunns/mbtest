@@ -1,8 +1,11 @@
 import http
+import random
+from email.message import EmailMessage
 
-from brunns.builder import Builder, a_boolean, a_string, an_integer, one_of
-from brunns.builder.email import EmailAddressBuilder
-from brunns.builder.internet import UrlBuilder
+from faker import Faker
+from polyfactory import Use
+from polyfactory.factories.dataclass_factory import DataclassFactory
+from yarl import URL
 
 from mbtest.imposters import (
     Copy,
@@ -29,190 +32,128 @@ from mbtest.imposters.predicates import (
 )
 from mbtest.imposters.responses import FaultResponse, HttpResponse
 
+fake = Faker()
 
-class PredicateBuilder(Builder):
-    target = Predicate
 
-    path = lambda: one_of(None, a_string())
-    method = lambda: one_of(*Predicate.Method)
-    query = lambda: one_of(None, {a_string(): a_string()})
-    body = lambda: one_of(None, a_string())
-    headers = lambda: one_of(None, {a_string(): a_string()})
-    xpath = lambda: one_of(None, a_string())
-    jsonpath = lambda: one_of(None, a_string())
-    form = lambda: one_of(None, {a_string(): a_string()})
-    operator = lambda: one_of(*list(Predicate.Operator))
-    case_sensitive = a_boolean
+class UsingRegexFactory(DataclassFactory[UsingRegex]): ...
 
 
-class AndPredicateBuilder(Builder):
-    target = AndPredicate
+class UsingXpathFactory(DataclassFactory[UsingXpath]): ...
 
-    left = PredicateBuilder
-    right = PredicateBuilder
 
+class UsingJsonpathFactory(DataclassFactory[UsingJsonpath]): ...
 
-class OrPredicateBuilder(Builder):
-    target = OrPredicate
 
-    left = PredicateBuilder
-    right = PredicateBuilder
+def _random_using():
+    return random.choice([UsingRegexFactory.build(), UsingXpathFactory.build(), UsingJsonpathFactory.build()])  # noqa: S311
 
 
-class NotPredicateBuilder(Builder):
-    target = NotPredicate
+class CopyFactory(DataclassFactory[Copy]):
+    using = Use(_random_using)
 
-    inverted = PredicateBuilder
 
+class TcpPredicateFactory(DataclassFactory[TcpPredicate]): ...
 
-class TcpResponseBuilder(Builder):
-    target = TcpResponse
 
-    data = a_string
+class InjectionPredicateFactory(DataclassFactory[InjectionPredicate]): ...
 
 
-class UsingRegexBuilder(Builder):
-    target = UsingRegex
+class KeyFactory(DataclassFactory[Key]):
+    using = Use(_random_using)
+    index = Use(lambda: random.randint(0, 50))  # noqa: S311
 
-    selector = a_string
-    ignore_case = a_boolean
 
+class LookupFactory(DataclassFactory[Lookup]):
+    key = Use(KeyFactory.build)
+    datasource_path = Use(str)  # from_structure always returns str, so keep consistent
 
-class UsingXpathBuilder(Builder):
-    target = UsingXpath
 
-    selector = a_string
-    ns = a_string
+class PredicateFactory(DataclassFactory[Predicate]): ...
 
 
-class UsingJsonpathBuilder(Builder):
-    target = UsingJsonpath
+class AndPredicateFactory(DataclassFactory[AndPredicate]):
+    left = Use(PredicateFactory.build)
+    right = Use(PredicateFactory.build)
 
-    selector = a_string
 
+class OrPredicateFactory(DataclassFactory[OrPredicate]):
+    left = Use(PredicateFactory.build)
+    right = Use(PredicateFactory.build)
 
-class CopyBuilder(Builder):
-    target = Copy
 
-    from_ = a_string
-    into = a_string
-    using = lambda: one_of(UsingRegexBuilder().build(), UsingXpathBuilder().build(), UsingJsonpathBuilder().build())
+class NotPredicateFactory(DataclassFactory[NotPredicate]):
+    inverted = Use(PredicateFactory.build)
 
 
-class TcpPredicateBuilder(Builder):
-    target = TcpPredicate
+class TcpResponseFactory(DataclassFactory[TcpResponse]): ...
 
-    data = a_string
 
+class HttpResponseFactory(DataclassFactory[HttpResponse]):
+    body = Use(str)
+    status_code = Use(lambda: random.choice(list(http.HTTPStatus)))  # noqa: S311
 
-class InjectionPredicateBuilder(Builder):
-    target = InjectionPredicate
-    inject = a_string()
 
+class FaultResponseFactory(DataclassFactory[FaultResponse]): ...
 
-class KeyBuilder(Builder):
-    target = Key
 
-    from_ = a_string
-    using = lambda: one_of(UsingRegexBuilder().build(), UsingXpathBuilder().build(), UsingJsonpathBuilder().build())
-    index = lambda: an_integer(1, 50)
+class InjectionResponseFactory(DataclassFactory[InjectionResponse]): ...
 
 
-class LookupBuilder(Builder):
-    target = Lookup
+class ResponseFactory(DataclassFactory[Response]):
+    http_response = Use(HttpResponseFactory.build)
+    copy = Use(lambda: random.choice([None, CopyFactory.build()]))  # noqa: S311
+    lookup = Use(lambda: random.choice([None, LookupFactory.build()]))  # noqa: S311
 
-    key = KeyBuilder
-    datasource_path = a_string
-    datasource_key_column = a_string
-    into = a_string
 
+class StubFactory(DataclassFactory[Stub]):
+    predicates = Use(lambda: [PredicateFactory.build(), PredicateFactory.build()])
+    responses = Use(lambda: [ResponseFactory.build(), ResponseFactory.build()])
 
-class HttpResponseBuilder(Builder):
-    target = HttpResponse
 
-    body = a_string
-    status_code = lambda: one_of(*http.HTTPStatus)
-    headers = lambda: one_of(None, {a_string(): a_string()})
-    mode = lambda: one_of(*Response.Mode)
+class ProxyFactory(DataclassFactory[Proxy]):
+    to = Use(lambda: URL("http://example.com"))
+    predicate_generators = Use(list)
 
 
-class FaultResponseBuilder(Builder):
-    target = FaultResponse
+class AddressFactory(DataclassFactory[Address]): ...
 
-    fault = lambda: one_of(*FaultResponse.Fault)
 
+class HttpRequestFactory(DataclassFactory[HttpRequest]):
+    method = Use(lambda: random.choice(list(Predicate.Method)).name)  # noqa: S311
+    query = Use(dict)
+    headers = Use(dict)
 
-class ResponseBuilder(Builder):
-    target = Response
 
-    wait = lambda: one_of(an_integer(1, 500), None)
-    repeat = lambda: one_of(an_integer(2, 50), None)
-    copy = lambda: one_of(None, CopyBuilder().build())
-    decorate = lambda: one_of(None, a_string())
-    lookup = lambda: one_of(None, LookupBuilder().build())
-    shell_transform = lambda: one_of(None, a_string())
-    http_response = HttpResponseBuilder
+class SentEmailFactory(DataclassFactory[SentEmail]):
+    from_ = Use(lambda: [AddressFactory.build()])
+    to = Use(lambda: [AddressFactory.build(), AddressFactory.build()])
+    cc = Use(lambda: [AddressFactory.build(), AddressFactory.build()])
+    bcc = Use(lambda: [AddressFactory.build(), AddressFactory.build()])
 
 
-class InjectionResponseBuilder(Builder):
-    target = InjectionResponse
-    inject = a_string()
-
-
-class StubBuilder(Builder):
-    target = Stub
-
-    predicates = lambda: [PredicateBuilder().build(), PredicateBuilder().build()]
-    responses = lambda: [ResponseBuilder().build(), ResponseBuilder().build()]
-
-
-class ProxyBuilder(Builder):
-    target = Proxy
-
-    to = UrlBuilder
-    wait = lambda: one_of(None, an_integer(1, 1000))
-    inject_headers = lambda: one_of(None, {a_string(): a_string()})
-    mode = lambda: one_of(*Proxy.Mode)
-    decorate = lambda: one_of(None, a_string())
-
-
-class ImposterBuilder(Builder):
-    target = Imposter
-
-    stubs = lambda: [StubBuilder().build(), StubBuilder().build()]
-    port = lambda: one_of(None, an_integer(1, 5000))
-    protocol = one_of(*Imposter.Protocol)
-    name = lambda: one_of(None, a_string())
-    default_response = lambda: one_of(None, HttpResponseBuilder().build())
-    record_requests = a_boolean
-    mutual_auth = a_boolean
-    key = lambda: one_of(None, a_string())
-    cert = lambda: one_of(None, a_string())
-
-
-class HttpRequestBuilder(Builder):
-    target = HttpRequest
-
-    method = lambda: one_of(*Predicate.Method).name
-    path = lambda: UrlBuilder().build().path
-    query = lambda: {a_string(): a_string(), a_string(): a_string()}
-    headers = lambda: {a_string(): a_string(), a_string(): a_string()}
-    body = lambda: one_of(None, a_string())
-
-
-class AddressBuilder(Builder):
-    target = Address
-
-    address = EmailAddressBuilder
-    name = a_string
-
-
-class SentEmailBuilder(Builder):
-    target = SentEmail
-
-    from_ = lambda: [AddressBuilder().build()]
-    to = lambda: [AddressBuilder().build(), AddressBuilder().build()]
-    cc = lambda: [AddressBuilder().build(), AddressBuilder().build()]
-    bcc = lambda: [AddressBuilder().build(), AddressBuilder().build()]
-    subject = a_string
-    text = a_string
+class ImposterFactory(DataclassFactory[Imposter]):
+    stubs = Use(lambda: [StubFactory.build(), StubFactory.build()])
+    port = Use(lambda: random.choice([None, random.randint(1, 5000)]))  # noqa: S311
+    protocol = Use(lambda: random.choice(list(Imposter.Protocol)))  # noqa: S311
+    name = Use(lambda: random.choice([None, "test"]))  # noqa: S311
+    default_response = Use(lambda: random.choice([None, HttpResponseFactory.build()]))  # noqa: S311
+    key = Use(lambda: None)
+    cert = Use(lambda: None)
+    host = Use(lambda: None)
+    server_url = Use(lambda: None)
+
+
+class EmailMessageFactory:
+    @classmethod
+    def build(
+        cls,
+        *,
+        from_email: str | None = None,
+        to_email: str | None = None,
+        body_text: str | None = None,
+    ) -> EmailMessage:
+        msg = EmailMessage()
+        msg["From"] = from_email or fake.email()
+        msg["To"] = to_email or fake.email()
+        msg.set_content(body_text or fake.sentence())
+        return msg

@@ -121,7 +121,7 @@ class HadRequest(BaseMatcher):
             and self.path.matches(request.path)
             and self.query.matches(request.query)
             and self.headers.matches(request.headers)
-            and self.body.matches(request.body)
+            and self.body.matches(request.body or "")
             and self.json.matches(request.json)
         ]
 

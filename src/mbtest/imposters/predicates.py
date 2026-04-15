@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 from abc import ABC
+from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from mbtest.imposters.base import Injecting, JsonSerializable, JsonStructure
-
-if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Mapping
 
 
 @dataclass

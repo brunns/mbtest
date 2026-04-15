@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import Sequence
+from collections.abc import Iterable, MutableMapping, Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, TypeAlias, TypeVar, cast
-
-if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Iterable, MutableMapping
+from typing import Any, TypeAlias, TypeVar, cast
 
 _T = TypeVar("_T")
 

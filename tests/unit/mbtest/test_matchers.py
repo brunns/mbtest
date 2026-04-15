@@ -5,13 +5,13 @@ from brunns.matchers.matcher import mismatches_with
 from hamcrest import all_of, assert_that, contains_string, has_entries, has_string, not_
 
 from mbtest.matchers import email_sent, had_request
-from tests.utils.builders import HttpRequestBuilder, SentEmailBuilder
+from tests.utils.builders import HttpRequestFactory, SentEmailFactory
 
 
 def test_request_matcher():
     # Given
     server = MagicMock()
-    request = HttpRequestBuilder().with_path("/test").and_method("GET").build()
+    request = HttpRequestFactory.build(path="/test", method="GET")
     server.get_actual_requests.return_value = [request, request]
 
     # When
@@ -33,9 +33,7 @@ def test_request_matcher():
         mismatches_with(
             server,
             all_of(
-                contains_string(
-                    "found <0> matching requests: <[]>. All requests: <[mbtest.imposters.imposters.HttpRequest"
-                ),
+                contains_string("found <0> matching requests: <[]>. All requests: <[HttpRequest"),
                 contains_string("path='/test'"),
                 contains_string("method='GET'"),
             ),
@@ -46,12 +44,8 @@ def test_request_matcher():
 def test_request_matcher_with_json():
     # Given
     server = MagicMock()
-    request1 = (
-        HttpRequestBuilder().with_path("/test").and_method("GET").and_body(json.dumps({"a": "b", "c": "d"})).build()
-    )
-    request2 = (
-        HttpRequestBuilder().with_path("/test").and_method("GET").and_body(json.dumps({"e": "f", "g": "j"})).build()
-    )
+    request1 = HttpRequestFactory.build(path="/test", method="GET", body=json.dumps({"a": "b", "c": "d"}))
+    request2 = HttpRequestFactory.build(path="/test", method="GET", body=json.dumps({"e": "f", "g": "j"}))
     server.get_actual_requests.return_value = [request1, request2]
 
     # When
@@ -66,7 +60,7 @@ def test_request_matcher_with_json():
 def test_email_sent():
     # Given
     server = MagicMock()
-    request = SentEmailBuilder().with_text("sausages").build()
+    request = SentEmailFactory.build(text="sausages")
     server.get_actual_requests.return_value = [request, request]
 
     # When

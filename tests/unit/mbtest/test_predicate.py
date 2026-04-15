@@ -14,11 +14,11 @@ from mbtest.imposters.predicates import (
     TcpPredicate,
 )
 from tests.utils.builders import (
-    AndPredicateBuilder,
-    InjectionPredicateBuilder,
-    NotPredicateBuilder,
-    OrPredicateBuilder,
-    TcpPredicateBuilder,
+    AndPredicateFactory,
+    InjectionPredicateFactory,
+    NotPredicateFactory,
+    OrPredicateFactory,
+    TcpPredicateFactory,
 )
 
 logger = logging.getLogger(__name__)
@@ -109,7 +109,7 @@ def test_invalid_operator():
 
 
 def test_and_predicate_structure_roundtrip():
-    expected = AndPredicateBuilder().build()
+    expected = AndPredicateFactory.build()
     structure = expected.as_structure()
 
     # When
@@ -121,7 +121,7 @@ def test_and_predicate_structure_roundtrip():
 
 
 def test_or_predicate_structure_roundtrip():
-    expected = OrPredicateBuilder().build()
+    expected = OrPredicateFactory.build()
     structure = expected.as_structure()
 
     # When
@@ -133,7 +133,7 @@ def test_or_predicate_structure_roundtrip():
 
 
 def test_not_predicate_structure_roundtrip():
-    expected = NotPredicateBuilder().build()
+    expected = NotPredicateFactory.build()
     structure = expected.as_structure()
 
     # When
@@ -146,7 +146,7 @@ def test_not_predicate_structure_roundtrip():
 
 def test_tcp_predicate_structure_roundtrip():
     # Given
-    expected = TcpPredicateBuilder().build()
+    expected = TcpPredicateFactory.build()
     structure = expected.as_structure()
 
     # When
@@ -159,7 +159,7 @@ def test_tcp_predicate_structure_roundtrip():
 
 def test_injection_predicate_roundtrip():
     # Given
-    expected = InjectionPredicateBuilder().build()
+    expected = InjectionPredicateFactory.build()
     structure = expected.as_structure()
 
     # When

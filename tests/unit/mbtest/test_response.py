@@ -13,13 +13,13 @@ from mbtest.imposters.responses import (
     TcpResponse,
 )
 from tests.utils.builders import (
-    CopyBuilder,
-    FaultResponseBuilder,
-    HttpResponseBuilder,
-    InjectionResponseBuilder,
-    LookupBuilder,
-    ResponseBuilder,
-    TcpResponseBuilder,
+    CopyFactory,
+    FaultResponseFactory,
+    HttpResponseFactory,
+    InjectionResponseFactory,
+    LookupFactory,
+    ResponseFactory,
+    TcpResponseFactory,
 )
 
 logger = logging.getLogger(__name__)
@@ -70,7 +70,7 @@ def test_structure_wait():
 
 def test_response_structure_roundtrip():
     # Given
-    expected = ResponseBuilder(mode=None, copy=None, lookup=None).build()
+    expected = ResponseFactory.build(copy=None, lookup=None)
     structure = expected.as_structure()
 
     # When
@@ -83,11 +83,7 @@ def test_response_structure_roundtrip():
 
 def test_response_with_copy_and_lookup_structure_roundtrip():
     # Given
-    expected = ResponseBuilder(
-        mode=Response.Mode.TEXT,
-        copy=CopyBuilder().build(),
-        lookup=LookupBuilder().build(),
-    ).build()
+    expected = ResponseFactory.build(copy=CopyFactory.build(), lookup=LookupFactory.build())
     structure = expected.as_structure()
 
     # When
@@ -100,7 +96,7 @@ def test_response_with_copy_and_lookup_structure_roundtrip():
 
 def test_tcp_response_structure_roundtrip():
     # Given
-    expected = TcpResponseBuilder().build()
+    expected = TcpResponseFactory.build()
     structure = expected.as_structure()
 
     # When
@@ -113,7 +109,7 @@ def test_tcp_response_structure_roundtrip():
 
 def test_injection_response_structure_roundtrip():
     # Given
-    expected = InjectionResponseBuilder().build()
+    expected = InjectionResponseFactory.build()
     structure = expected.as_structure()
 
     # When
@@ -126,7 +122,7 @@ def test_injection_response_structure_roundtrip():
 
 def test_http_response_roundtrip():
     # Given
-    expected = HttpResponseBuilder().build()
+    expected = HttpResponseFactory.build()
     structure = expected.as_structure()
 
     # When
@@ -139,7 +135,7 @@ def test_http_response_roundtrip():
 
 def test_fault_response_roundtrip():
     # Given
-    expected = FaultResponseBuilder().build()
+    expected = FaultResponseFactory.build()
     structure = expected.as_structure()
 
     # When
@@ -153,9 +149,9 @@ def test_fault_response_roundtrip():
 def test_response_from_structure_without_behaviors():
     # Mountebank omits _behaviors when no behaviors are set on a live imposter
     # Given
-    expected = ResponseBuilder(
+    expected = ResponseFactory.build(
         copy=None, lookup=None, decorate=None, shell_transform=None, wait=None, repeat=None
-    ).build()
+    )
     structure = expected.as_structure()
     del structure["_behaviors"]
 

@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from pathlib import Path
+from pathlib import Path
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.behaviors.using import Using

@@ -2,9 +2,9 @@ import logging
 
 from mbtest.imposters.behaviors.using import Using
 from tests.utils.builders import (
-    UsingJsonpathBuilder,
-    UsingRegexBuilder,
-    UsingXpathBuilder,
+    UsingJsonpathFactory,
+    UsingRegexFactory,
+    UsingXpathFactory,
 )
 
 logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 def test_using_regex_from_structure():
     # Given
-    expected_using = UsingRegexBuilder(selector="selector", ignore_case=True).build()
+    expected_using = UsingRegexFactory.build(selector="selector", ignore_case=True)
     structure = expected_using.as_structure()
 
     # When
@@ -25,7 +25,7 @@ def test_using_regex_from_structure():
 
 def test_using_xpath_from_structure():
     # Given
-    expected_using = UsingXpathBuilder(selector="selector", ns="ns").build()
+    expected_using = UsingXpathFactory.build(selector="selector", ns="ns")
     structure = expected_using.as_structure()
 
     # When
@@ -38,7 +38,7 @@ def test_using_xpath_from_structure():
 
 def test_using_xpath_from_structure_no_ns():
     # Given
-    expected_using = UsingXpathBuilder(selector="selector", ns=None).build()
+    expected_using = UsingXpathFactory.build(selector="selector", ns=None)
     structure = expected_using.as_structure()
 
     # When
@@ -51,7 +51,7 @@ def test_using_xpath_from_structure_no_ns():
 
 def test_using_jsonpath_from_structure():
     # Given
-    expected_using = UsingJsonpathBuilder(selector="selector").build()
+    expected_using = UsingJsonpathFactory.build(selector="selector")
     structure = expected_using.as_structure()
 
     # When

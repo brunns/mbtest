@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from collections import abc
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from enum import Enum
 from json import JSONDecodeError, dumps, loads
 from pathlib import Path
-from typing import TYPE_CHECKING, NamedTuple, cast
+from typing import cast
 
 import httpx
 from yarl import URL
@@ -13,9 +14,6 @@ from yarl import URL
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.responses import HttpResponse, Proxy
 from mbtest.imposters.stubs import AddStub, Stub
-
-if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Iterable, Mapping, Sequence
 
 
 @dataclass(init=False)
@@ -205,30 +203,24 @@ class Request:
             return SentEmail.from_json(json)
         return HttpRequest.from_json(json)
 
-    def __repr__(self) -> str:  # pragma: no cover
-        state = ", ".join(f"{attr:s}={val!r:s}" for (attr, val) in vars(self).items())
-        return f"{self.__class__.__module__:s}.{self.__class__.__name__:s}({state:s})"
 
-
+@dataclass
 class HttpRequest(Request):
-    def __init__(
-        self,
-        method: str,
-        path: str,
-        query: Mapping[str, str],
-        headers: Mapping[str, str],
-        body: str,
-        **kwargs,  # noqa: ARG002
-    ) -> None:
-        self.method = method
-        self.path = path
-        self.query = query
-        self.headers = headers
-        self.body = body
+    method: str
+    path: str
+    query: Mapping[str, str]
+    headers: Mapping[str, str]
+    body: str | None = None
 
     @staticmethod
     def from_json(json: JsonStructure) -> HttpRequest:
-        return HttpRequest(**json)
+        return HttpRequest(
+            method=json["method"],
+            path=json["path"],
+            query=json.get("query", {}),
+            headers=json.get("headers", {}),
+            body=json.get("body"),
+        )
 
     @property
     def json(self) -> JsonStructure | None:
@@ -238,47 +230,37 @@ class HttpRequest(Request):
             return None
 
 
-class Address(NamedTuple):
+@dataclass
+class Address:
     address: str
     name: str
 
 
+@dataclass
 class SentEmail(Request):
-    def __init__(
-        self,
-        from_: Sequence[Address],
-        to: Sequence[Address],
-        cc: Sequence[Address],
-        bcc: Sequence[Address],
-        subject: str,
-        text: str,
-        **kwargs,  # noqa: ARG002
-    ) -> None:
-        self.from_ = from_
-        self.to = to
-        self.cc = cc
-        self.bcc = bcc
-        self.subject = subject
-        self.text = text
+    from_: list[Address]
+    to: list[Address]
+    cc: list[Address]
+    bcc: list[Address]
+    subject: str
+    text: str
 
     @staticmethod
     def from_json(json: JsonStructure) -> SentEmail:
-        email: Mapping[str, str | Sequence[Address]] = {
-            SentEmail._map_key(k): SentEmail._translate_value(v) for k, v in json.items()
-        }
-        return SentEmail(**email)  # type: ignore[arg-type]
+        return SentEmail(
+            from_=SentEmail._parse_addresses(json.get("from", {})),
+            to=SentEmail._parse_addresses(json.get("to", [])),
+            cc=SentEmail._parse_addresses(json.get("cc", [])),
+            bcc=SentEmail._parse_addresses(json.get("bcc", [])),
+            subject=json.get("subject", ""),
+            text=json.get("text", ""),
+        )
 
     @staticmethod
-    def _map_key(key: str) -> str:
-        return {"from": "from_"}.get(key, key)
-
-    @staticmethod
-    def _translate_value(value: JsonStructure) -> str | Sequence[Address]:
-        if isinstance(value, str):
-            return value
-        if "address" in value and "name" in value:
+    def _parse_addresses(value: JsonStructure) -> list[Address]:
+        if isinstance(value, dict):
             return [Address(**value)]
-        return [Address(**addr) if "address" in addr and "name" in addr else addr for addr in value]
+        return [Address(**addr) if isinstance(addr, dict) else addr for addr in value]
 
 
 def smtp_imposter(name: str = "smtp", *, record_requests: bool = True) -> Imposter:

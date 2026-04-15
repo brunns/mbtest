@@ -1,10 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Iterable
 
 from mbtest.imposters.base import JsonSerializable, JsonStructure
 from mbtest.imposters.predicates import BasePredicate, Predicate

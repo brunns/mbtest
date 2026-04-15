@@ -3,12 +3,12 @@ from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, instance_of
 
 from mbtest.imposters.stubs import AddStub
-from tests.utils.builders import StubBuilder
+from tests.utils.builders import StubFactory
 
 
 @pytest.mark.parametrize("index", [0, 1, None])
 def test_add_stubs_index(index):
-    stub = StubBuilder().build()
+    stub = StubFactory.build()
     add_stub_obj = AddStub(stub=stub, index=index)
     structure = add_stub_obj.as_structure()
     assert structure.get("index") == index

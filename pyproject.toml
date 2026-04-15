@@ -41,7 +41,6 @@ dev = [
     "pytest>=9.0",
     "pytest-docker~=3.1",
     "contexttimer>=0.3",
-    "brunns-builder>=1.1",
     "trustme>=0.9",
     "furl>=2.0",
     "pytest-cov>=2.5",
@@ -50,6 +49,7 @@ dev = [
     "furo",
     "ruff",
     "pyright==1.1.408",
+    "polyfactory>=3.3",
 ]
 
 [project.urls]
@@ -89,7 +89,7 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["ANN", "D", "N813", "TD", "FIX002", "FA100", "PLR0913", "COM812", "ISC001", "E731", "N818", "PERF203", "TRY003", "A005"]
+ignore = ["ANN", "D", "N813", "TD", "FIX002", "FA100", "PLR0913", "COM812", "ISC001", "E731", "N818", "PERF203", "TRY003", "A005", "TC003"]
 typing-extensions = false
 
 [tool.ruff.lint.mccabe]

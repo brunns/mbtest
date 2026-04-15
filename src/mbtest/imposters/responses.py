@@ -1,14 +1,11 @@
 from __future__ import annotations
 
 from abc import ABC
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from enum import Enum
 from http import HTTPStatus
-from typing import TYPE_CHECKING
 from xml.etree import ElementTree as ET  # nosec - We are creating, not parsing XML.
-
-if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Iterable, Mapping
 
 from yarl import URL
 
