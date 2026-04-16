@@ -19,7 +19,7 @@ class JsonSerializable(ABC):
 
     @abstractmethod
     def as_structure(self) -> JsonObject:  # pragma: no cover
-        """Converted to a JSON serializable structure.
+        """Convert to a JSON serializable structure.
 
         :returns: Structure suitable for JSON serialisation.
         """
@@ -28,7 +28,7 @@ class JsonSerializable(ABC):
     @classmethod
     @abstractmethod
     def from_structure(cls, structure: JsonObject) -> JsonSerializable:  # pragma: no cover
-        """Converted from a JSON serializable structure.
+        """Convert from a JSON serializable structure.
 
         :param structure: JSON structure to be converted.
 

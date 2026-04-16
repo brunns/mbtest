@@ -103,10 +103,9 @@ Running `make precommit` tells you if you're OK to commit. For more options, run
 ```sh
 version=`uv version --short`
 git pull -r
-git checkout -b "release-$version"
-make precommit && git commit -am"Release $version" && git push --set-upstream origin "release-$version"
-git tag "v$version" && git push origin "v$version"
-git co master && git rebase "release-$version" && git push
+make precommit && git commit -am "Release v$version"
+git tag "v$version"
+git push origin master --tags
 ```
 
 Pushing the tag triggers the release workflow, which builds, tests, publishes to PyPI via OIDC, and creates the GitHub release automatically.

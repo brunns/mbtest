@@ -10,7 +10,7 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "2026-04-08T10:47:51.033809Z"
+exclude-newer = "2026-04-09T14:54:45.810767Z"
 exclude-newer-span = "P7D"
 
 [options.exclude-newer-package]
@@ -736,7 +736,7 @@ wheels = [
 
 [[package]]
 name = "mbtest"
-version = "2.15.1"
+version = "2.16.0"
 source = { editable = "." }
 dependencies = [
     { name = "brunns-matchers" },
@@ -780,7 +780,7 @@ dev = [
     { name = "contexttimer", specifier = ">=0.3" },
     { name = "furl", specifier = ">=2.0" },
     { name = "furo" },
-    { name = "polyfactory", specifier = ">=3.3.0" },
+    { name = "polyfactory", specifier = ">=3.3" },
     { name = "pyright", specifier = "==1.1.408" },
     { name = "pytest", specifier = ">=9.0" },
     { name = "pytest-cov", specifier = ">=2.5" },
