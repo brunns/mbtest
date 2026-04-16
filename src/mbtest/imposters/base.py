@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import Iterable, MutableMapping, Sequence
+from collections.abc import Iterable, MutableMapping, MutableSequence, Sequence
 from dataclasses import dataclass
 from typing import Any, TypeAlias, TypeVar, cast
 
 _T = TypeVar("_T")
 
-JsonObject: TypeAlias = dict[str, "JsonValue"]
-JsonValue: TypeAlias = str | int | float | bool | None | list["JsonValue"] | JsonObject
+JsonObject: TypeAlias = MutableMapping[str, "JsonValue"]
+JsonValue: TypeAlias = str | int | float | bool | None | MutableSequence["JsonValue"] | JsonObject
 
 
 @dataclass
