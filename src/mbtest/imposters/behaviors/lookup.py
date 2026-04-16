@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
 
-from mbtest.imposters.base import JsonObject, JsonSerializable
+from mbtest.imposters.base import JsonObject, JsonSerializable, JsonValue  # noqa: F401
 from mbtest.imposters.behaviors.using import Using
 
 

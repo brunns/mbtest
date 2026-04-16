@@ -16,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from hamcrest.core.matcher import Matcher
     from yarl import URL
 
-    from mbtest.imposters.base import JsonObject
+    from mbtest.imposters.base import JsonObject, JsonValue  # noqa: F401
     from mbtest.imposters.imposters import Address, HttpRequest, Imposter, SentEmail
     from mbtest.server import MountebankServer
 

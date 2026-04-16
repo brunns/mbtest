@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import cast
 
-from mbtest.imposters.base import JsonObject, JsonSerializable
+from mbtest.imposters.base import JsonObject, JsonSerializable, JsonValue  # noqa: F401
 from mbtest.imposters.predicates import BasePredicate, Predicate
 from mbtest.imposters.responses import BaseResponse, Response
 
