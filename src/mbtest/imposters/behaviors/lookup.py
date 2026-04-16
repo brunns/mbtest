@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import cast
 
-from mbtest.imposters.base import JsonSerializable, JsonStructure
+from mbtest.imposters.base import JsonObject, JsonSerializable
 from mbtest.imposters.behaviors.using import Using
 
 
@@ -22,7 +23,7 @@ class Lookup(JsonSerializable):
     datasource_key_column: str
     into: str
 
-    def as_structure(self) -> JsonStructure:
+    def as_structure(self) -> JsonObject:
         return {
             "key": self.key.as_structure(),
             "fromDataSource": {"csv": {"path": str(self.datasource_path), "keyColumn": self.datasource_key_column}},
@@ -30,12 +31,14 @@ class Lookup(JsonSerializable):
         }
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> Lookup:
+    def from_structure(cls, structure: JsonObject) -> Lookup:
+        from_ds = cls.as_json_object(structure["fromDataSource"])
+        csv = cls.as_json_object(from_ds["csv"])
         return cls(
-            Key.from_structure(structure["key"]),
-            structure["fromDataSource"]["csv"]["path"],
-            structure["fromDataSource"]["csv"]["keyColumn"],
-            structure["into"],
+            Key.from_structure(cls.as_json_object(structure["key"])),
+            cast("str", csv["path"]),
+            cast("str", csv["keyColumn"]),
+            cast("str", structure["into"]),
         )
 
 
@@ -53,9 +56,13 @@ class Key(JsonSerializable):
     using: Using
     index: int = 0
 
-    def as_structure(self) -> JsonStructure:
+    def as_structure(self) -> JsonObject:
         return {"from": self.from_, "using": self.using.as_structure(), "index": self.index}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> Key:
-        return cls(structure["from"], Using.from_structure(structure["using"]), structure["index"])
+    def from_structure(cls, structure: JsonObject) -> Key:
+        return cls(
+            cast("str", structure["from"]),
+            Using.from_structure(cls.as_json_object(structure["using"])),
+            cast("int", structure["index"]),
+        )

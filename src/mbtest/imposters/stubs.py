@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import dataclass, field
+from typing import cast
 
-from mbtest.imposters.base import JsonSerializable, JsonStructure
+from mbtest.imposters.base import JsonObject, JsonSerializable
 from mbtest.imposters.predicates import BasePredicate, Predicate
 from mbtest.imposters.responses import BaseResponse, Response
 
@@ -28,17 +29,23 @@ class Stub(JsonSerializable):
         self.predicates = self.one_or_many(predicates) or [Predicate()]
         self.responses = self.one_or_many(responses) or [Response()]
 
-    def as_structure(self) -> JsonStructure:
+    def as_structure(self) -> JsonObject:
         return {
             "predicates": [predicate.as_structure() for predicate in self.predicates],
             "responses": [response.as_structure() for response in self.responses],
         }
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> Stub:
+    def from_structure(cls, structure: JsonObject) -> Stub:
         return cls(
-            [BasePredicate.from_structure(p) for p in structure.get("predicates", ())],
-            [BaseResponse.from_structure(r) for r in structure.get("responses", ())],
+            [
+                BasePredicate.from_structure(cls.as_json_object(p))
+                for p in cast("list[JsonObject]", structure.get("predicates", ()))
+            ],
+            [
+                BaseResponse.from_structure(cls.as_json_object(r))
+                for r in cast("list[JsonObject]", structure.get("responses", ()))
+            ],
         )
 
 
@@ -55,15 +62,15 @@ class AddStub(JsonSerializable):
     stub: Stub = field(default_factory=Stub)
     index: int | None = None
 
-    def as_structure(self) -> JsonStructure:
-        structure: dict[str, JsonStructure] = {"stub": self.stub.as_structure()}
+    def as_structure(self) -> JsonObject:
+        structure: JsonObject = {"stub": self.stub.as_structure()}
         if self.index is not None:
             structure["index"] = self.index
         return structure
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> AddStub:
+    def from_structure(cls, structure: JsonObject) -> AddStub:
         return cls(
-            stub=Stub.from_structure(structure.get("stub", {})),
-            index=structure.get("index"),
+            stub=Stub.from_structure(cls.as_json_object(structure.get("stub", {}))),
+            index=cast("int | None", structure.get("index")),
         )

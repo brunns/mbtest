@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
 from dataclasses import dataclass
+from typing import cast
 
-from mbtest.imposters.base import JsonSerializable, JsonStructure
+from mbtest.imposters.base import JsonObject, JsonSerializable, JsonValue  # noqa: F401
 from mbtest.imposters.behaviors.using import Using
 
 
@@ -17,13 +17,16 @@ class Copy(JsonSerializable):
     :param using: The configuration needed to select values from the response.
     """
 
-    from_: str | Mapping[str, str]
+    from_: str | JsonObject
     into: str
     using: Using
 
-    def as_structure(self) -> JsonStructure:
+    def as_structure(self) -> JsonObject:
         return {"from": self.from_, "into": self.into, "using": self.using.as_structure()}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> Copy:
-        return cls(structure["from"], structure["into"], Using.from_structure(structure["using"]))
+    def from_structure(cls, structure: JsonObject) -> Copy:
+        from_raw = cast("str | JsonObject", structure["from"])
+        return cls(
+            from_raw, cast("str", structure["into"]), Using.from_structure(cls.as_json_object(structure["using"]))
+        )

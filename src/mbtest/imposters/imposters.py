@@ -11,7 +11,7 @@ from typing import cast
 import httpx
 from yarl import URL
 
-from mbtest.imposters.base import JsonSerializable, JsonStructure
+from mbtest.imposters.base import JsonObject, JsonSerializable, JsonValue
 from mbtest.imposters.responses import HttpResponse, Proxy
 from mbtest.imposters.stubs import AddStub, Stub
 
@@ -88,8 +88,8 @@ class Imposter(JsonSerializable):
             return URL.build(scheme=self.protocol.value, host=self.host, port=self.port)
         return None
 
-    def as_structure(self) -> JsonStructure:
-        structure: dict[str, JsonStructure] = {"protocol": self.protocol.value, "recordRequests": self.record_requests}
+    def as_structure(self) -> JsonObject:
+        structure: JsonObject = {"protocol": self.protocol.value, "recordRequests": self.record_requests}
         self.add_if_true(structure, "port", self.port)
         self.add_if_true(structure, "name", self.name)
         if self.default_response:
@@ -101,19 +101,21 @@ class Imposter(JsonSerializable):
         return structure
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> Imposter:
+    def from_structure(cls, structure: JsonObject) -> Imposter:
         return cls(
-            stubs=[Stub.from_structure(stub) for stub in structure["stubs"]],
-            port=structure.get("port"),
-            protocol=structure["protocol"],
-            name=structure.get("name"),
-            default_response=HttpResponse.from_structure(structure["defaultResponse"])
+            stubs=[
+                Stub.from_structure(cls.as_json_object(stub)) for stub in cast("list[JsonValue]", structure["stubs"])
+            ],
+            port=cast("int | None", structure.get("port")),
+            protocol=cast("str", structure["protocol"]),
+            name=cast("str | None", structure.get("name")),
+            default_response=HttpResponse.from_structure(cls.as_json_object(structure["defaultResponse"]))
             if "defaultResponse" in structure
             else None,
-            record_requests=structure.get("recordRequests", True),
-            mutual_auth=structure.get("mutualAuth", False),
-            key=structure.get("key"),
-            cert=structure.get("cert"),
+            record_requests=cast("bool", structure.get("recordRequests", True)),
+            mutual_auth=cast("bool", structure.get("mutualAuth", False)),
+            key=cast("str | None", structure.get("key")),
+            cert=cast("str | None", structure.get("cert")),
         )
 
     def save(self, path: Path | str) -> None:
@@ -198,7 +200,7 @@ class Imposter(JsonSerializable):
 
 class Request:
     @staticmethod
-    def from_json(json: JsonStructure) -> Request:
+    def from_json(json: JsonObject) -> Request:
         if "envelopeFrom" in json:
             return SentEmail.from_json(json)
         return HttpRequest.from_json(json)
@@ -213,17 +215,17 @@ class HttpRequest(Request):
     body: str | None = None
 
     @staticmethod
-    def from_json(json: JsonStructure) -> HttpRequest:
+    def from_json(json: JsonObject) -> HttpRequest:
         return HttpRequest(
-            method=json["method"],
-            path=json["path"],
-            query=json.get("query", {}),
-            headers=json.get("headers", {}),
-            body=json.get("body"),
+            method=cast("str", json["method"]),
+            path=cast("str", json["path"]),
+            query=cast("Mapping[str, str]", json.get("query", {})),
+            headers=cast("Mapping[str, str]", json.get("headers", {})),
+            body=cast("str | None", json.get("body")),
         )
 
     @property
-    def json(self) -> JsonStructure | None:
+    def json(self) -> JsonObject | None:
         try:
             return loads(self.body) if self.body else None
         except JSONDecodeError:
@@ -246,21 +248,28 @@ class SentEmail(Request):
     text: str
 
     @staticmethod
-    def from_json(json: JsonStructure) -> SentEmail:
+    def from_json(json: JsonObject) -> SentEmail:
+        from_val = json.get("from")
         return SentEmail(
-            from_=Address(**json["from"]) if isinstance(json.get("from"), dict) else Address(address="", name=""),
+            from_=Address(**{k: cast("str", v) for k, v in JsonSerializable.as_json_object(from_val).items()})
+            if isinstance(from_val, dict)
+            else Address(address="", name=""),
             to=SentEmail._parse_addresses(json.get("to", [])),
             cc=SentEmail._parse_addresses(json.get("cc", [])),
             bcc=SentEmail._parse_addresses(json.get("bcc", [])),
-            subject=json.get("subject", ""),
-            text=json.get("text", ""),
+            subject=cast("str", json.get("subject", "")),
+            text=cast("str", json.get("text", "")),
         )
 
     @staticmethod
-    def _parse_addresses(value: JsonStructure) -> list[Address]:
+    def _parse_addresses(value: JsonValue) -> list[Address]:
         if isinstance(value, dict):
-            return [Address(**value)]
-        return [Address(**addr) if isinstance(addr, dict) else addr for addr in value]
+            return [Address(**{k: cast("str", v) for k, v in value.items()})]
+        return [
+            Address(**{k: cast("str", v) for k, v in addr.items()})
+            for addr in cast("list[JsonValue]", value)
+            if isinstance(addr, dict)
+        ]
 
 
 def smtp_imposter(name: str = "smtp", *, record_requests: bool = True) -> Imposter:

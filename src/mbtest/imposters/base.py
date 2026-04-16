@@ -7,8 +7,8 @@ from typing import Any, TypeAlias, TypeVar, cast
 
 _T = TypeVar("_T")
 
-# JsonStructure: TypeAlias = str | int | float | bool | None | list[JsonStructure] | dict[str, JsonStructure]
-JsonStructure: TypeAlias = Any  # TODO Pending a better solution to https://github.com/python/typing/issues/182
+JsonObject: TypeAlias = dict[str, "JsonValue"]
+JsonValue: TypeAlias = str | int | float | bool | None | list["JsonValue"] | JsonObject
 
 
 @dataclass
@@ -18,7 +18,7 @@ class JsonSerializable(ABC):
     """
 
     @abstractmethod
-    def as_structure(self) -> JsonStructure:  # pragma: no cover
+    def as_structure(self) -> JsonObject:  # pragma: no cover
         """Converted to a JSON serializable structure.
 
         :returns: Structure suitable for JSON serialisation.
@@ -27,7 +27,7 @@ class JsonSerializable(ABC):
 
     @classmethod
     @abstractmethod
-    def from_structure(cls, structure: JsonStructure) -> JsonSerializable:  # pragma: no cover
+    def from_structure(cls, structure: JsonObject) -> JsonSerializable:  # pragma: no cover
         """Converted from a JSON serializable structure.
 
         :param structure: JSON structure to be converted.
@@ -51,10 +51,15 @@ class JsonSerializable(ABC):
             return list(cast("Iterable[_T]", value))
         return cast("list[_T]", [value])
 
+    @staticmethod
+    def as_json_object(value: JsonValue) -> JsonObject:
+        """Narrow a JsonValue value to a JsonObject (dict[str, JsonValue])."""
+        return cast("JsonObject", value)
+
 
 @dataclass
 class Injecting(JsonSerializable, ABC):
     inject: str
 
-    def as_structure(self) -> JsonStructure:
+    def as_structure(self) -> JsonObject:
         return {"inject": self.inject}

@@ -5,11 +5,12 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from enum import Enum
 from http import HTTPStatus
+from typing import cast
 from xml.etree import ElementTree as ET  # nosec - We are creating, not parsing XML.
 
 from yarl import URL
 
-from mbtest.imposters.base import Injecting, JsonSerializable, JsonStructure
+from mbtest.imposters.base import Injecting, JsonObject, JsonSerializable, JsonValue
 from mbtest.imposters.behaviors import Copy, Lookup
 from mbtest.imposters.predicates import Predicate
 
@@ -17,8 +18,8 @@ from mbtest.imposters.predicates import Predicate
 @dataclass
 class BaseResponse(JsonSerializable, ABC):
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> BaseResponse:  # noqa: C901
-        if "is" in structure and "data" in structure["is"]:
+    def from_structure(cls, structure: JsonObject) -> BaseResponse:  # noqa: C901
+        if "is" in structure and "data" in cls.as_json_object(structure["is"]):
             return TcpResponse.from_structure(structure)
         if "is" in structure:
             return Response.from_structure(structure)
@@ -42,14 +43,14 @@ class HttpResponse(JsonSerializable):
 
     """
 
-    body: str | JsonStructure | ET.Element | bytes = ""
+    body: str | JsonObject | ET.Element | bytes = ""
     status_code: HTTPStatus | int | str = HTTPStatus.OK
     headers: Mapping[str, str] | None = None
     mode: Response.Mode
 
     def __init__(
         self,
-        body: str | JsonStructure | ET.Element | bytes = "",
+        body: str | JsonObject | ET.Element | bytes = "",
         status_code: HTTPStatus | int | str = HTTPStatus.OK,
         headers: Mapping[str, str] | None = None,
         mode: Response.Mode | None = None,
@@ -59,25 +60,25 @@ class HttpResponse(JsonSerializable):
         self.headers = headers
         self.mode = mode if mode is not None else Response.Mode.TEXT
 
-    def as_structure(self) -> JsonStructure:
+    def as_structure(self) -> JsonObject:
         if isinstance(self.body, ET.Element):
-            body_str: str | JsonStructure = ET.tostring(self.body, encoding="unicode")
+            body_str: str | JsonObject = ET.tostring(self.body, encoding="unicode")
         elif isinstance(self.body, bytes):
             body_str = self.body.decode("utf-8")
         else:
             body_str = self.body
-        is_structure: dict[str, JsonStructure] = {"statusCode": self.status_code, "_mode": self.mode.value}
+        is_structure: JsonObject = {"statusCode": self.status_code, "_mode": self.mode.value}
         self.add_if_true(is_structure, "body", body_str)
         self.add_if_true(is_structure, "headers", self.headers)
         return is_structure
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> HttpResponse:
+    def from_structure(cls, structure: JsonObject) -> HttpResponse:
         return cls(
-            body=structure.get("body", ""),
-            status_code=structure.get("statusCode", HTTPStatus.OK),
-            headers=structure.get("headers"),
-            mode=Response.Mode(structure.get("_mode", "text")),
+            body=cast("str | JsonObject", structure.get("body", "")),
+            status_code=cast("HTTPStatus | int | str", structure.get("statusCode", HTTPStatus.OK)),
+            headers=cast("Mapping[str, str] | None", structure.get("headers")),
+            mode=Response.Mode(cast("str", structure.get("_mode", "text"))),
         )
 
 
@@ -114,7 +115,7 @@ class Response(BaseResponse):
 
     def __init__(
         self,
-        body: str | JsonStructure = "",
+        body: str | JsonObject = "",
         status_code: HTTPStatus | int | str = HTTPStatus.OK,
         wait: int | str | None = None,
         repeat: int | None = None,
@@ -137,14 +138,14 @@ class Response(BaseResponse):
         self.lookup = self.one_or_many(lookup)
         self.shell_transform = shell_transform
 
-    def as_structure(self) -> JsonStructure:
+    def as_structure(self) -> JsonObject:
         return {
             "is": (self.http_response.as_structure()),
             "_behaviors": self._behaviors_as_structure(),
         }
 
-    def _behaviors_as_structure(self) -> JsonStructure:
-        behaviors: JsonStructure = {}
+    def _behaviors_as_structure(self) -> JsonObject:
+        behaviors: JsonObject = {}
         self.add_if_true(behaviors, "wait", self.wait)
         self.add_if_true(behaviors, "repeat", self.repeat)
         self.add_if_true(behaviors, "decorate", self.decorate)
@@ -156,20 +157,26 @@ class Response(BaseResponse):
         return behaviors
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> Response:
-        behaviors = structure.get("_behaviors", {})
+    def from_structure(cls, structure: JsonObject) -> Response:
+        behaviors = cls.as_json_object(structure["_behaviors"]) if "_behaviors" in structure else {}
         return cls(
-            http_response=HttpResponse.from_structure(structure["is"]),
-            wait=behaviors.get("wait"),
-            repeat=behaviors.get("repeat"),
-            decorate=behaviors.get("decorate"),
-            shell_transform=behaviors.get("shellTransform"),
-            copy=[Copy.from_structure(c) for c in behaviors["copy"]] if "copy" in behaviors else None,
-            lookup=[Lookup.from_structure(lk) for lk in behaviors["lookup"]] if "lookup" in behaviors else None,
+            http_response=HttpResponse.from_structure(cls.as_json_object(structure["is"])),
+            wait=cast("int | str | None", behaviors.get("wait")),
+            repeat=cast("int | None", behaviors.get("repeat")),
+            decorate=cast("str | None", behaviors.get("decorate")),
+            shell_transform=cast("str | None", behaviors.get("shellTransform")),
+            copy=[Copy.from_structure(cls.as_json_object(c)) for c in cast("list[JsonValue]", behaviors["copy"])]
+            if "copy" in behaviors
+            else None,
+            lookup=[
+                Lookup.from_structure(cls.as_json_object(lk)) for lk in cast("list[JsonValue]", behaviors["lookup"])
+            ]
+            if "lookup" in behaviors
+            else None,
         )
 
     @property
-    def body(self) -> str | JsonStructure:
+    def body(self) -> str | JsonObject | ET.Element | bytes:
         return self.http_response.body
 
     @property
@@ -189,12 +196,12 @@ class Response(BaseResponse):
 class TcpResponse(BaseResponse):
     data: str
 
-    def as_structure(self) -> JsonStructure:
+    def as_structure(self) -> JsonObject:
         return {"is": {"data": self.data}}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> TcpResponse:
-        return cls(data=structure["is"]["data"])
+    def from_structure(cls, structure: JsonObject) -> TcpResponse:
+        return cls(data=cast("str", cls.as_json_object(structure["is"])["data"]))
 
 
 @dataclass
@@ -210,12 +217,12 @@ class FaultResponse(BaseResponse):
 
     fault: FaultResponse.Fault
 
-    def as_structure(self) -> JsonStructure:
+    def as_structure(self) -> JsonObject:
         return {"fault": self.fault.name}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> FaultResponse:
-        return cls(fault=cls.Fault(structure["fault"]))
+    def from_structure(cls, structure: JsonObject) -> FaultResponse:
+        return cls(fault=cls.Fault(cast("str", structure["fault"])))
 
 
 @dataclass
@@ -239,8 +246,8 @@ class Proxy(BaseResponse):
     predicate_generators: list[PredicateGenerator] = field(default_factory=list)
     decorate: str | None = None
 
-    def as_structure(self) -> JsonStructure:
-        proxy: dict[str, JsonStructure] = {"to": str(self.to), "mode": self.mode.value}
+    def as_structure(self) -> JsonObject:
+        proxy: JsonObject = {"to": str(self.to), "mode": self.mode.value}
         self.add_if_true(proxy, "injectHeaders", self.inject_headers)
         self.add_if_true(proxy, "predicateGenerators", [pg.as_structure() for pg in self.predicate_generators])
         return {
@@ -248,25 +255,26 @@ class Proxy(BaseResponse):
             "_behaviors": self._behaviors_as_structure(),
         }
 
-    def _behaviors_as_structure(self) -> JsonStructure:
-        behaviors: JsonStructure = {}
+    def _behaviors_as_structure(self) -> JsonObject:
+        behaviors: JsonObject = {}
         self.add_if_true(behaviors, "wait", self.wait)
         self.add_if_true(behaviors, "decorate", self.decorate)
         return behaviors
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> Proxy:
-        proxy_structure = structure["proxy"]
-        behaviors = structure.get("_behaviors", {})
+    def from_structure(cls, structure: JsonObject) -> Proxy:
+        proxy_structure = cls.as_json_object(structure["proxy"])
+        behaviors = cls.as_json_object(structure["_behaviors"]) if "_behaviors" in structure else {}
         return cls(
-            to=URL(proxy_structure["to"]),
-            inject_headers=proxy_structure.get("injectHeaders"),
-            mode=Proxy.Mode(proxy_structure["mode"]),
+            to=URL(cast("str", proxy_structure["to"])),
+            inject_headers=cast("Mapping[str, str] | None", proxy_structure.get("injectHeaders")),
+            mode=Proxy.Mode(cast("str", proxy_structure["mode"])),
             predicate_generators=[
-                PredicateGenerator.from_structure(pg) for pg in proxy_structure.get("predicateGenerators", [])
+                PredicateGenerator.from_structure(cls.as_json_object(pg))
+                for pg in cast("list[JsonValue]", proxy_structure.get("predicateGenerators", []))
             ],
-            wait=behaviors.get("wait"),
-            decorate=behaviors.get("decorate"),
+            wait=cast("int | None", behaviors.get("wait")),
+            decorate=cast("str | None", behaviors.get("decorate")),
         )
 
 
@@ -278,25 +286,26 @@ class PredicateGenerator(JsonSerializable):
     """
 
     path: bool = False
-    query: bool | Mapping[str, str] = False
+    query: bool | JsonObject = False
     operator: Predicate.Operator = Predicate.Operator.EQUALS
     case_sensitive: bool = True
 
-    def as_structure(self) -> JsonStructure:
-        matches: dict[str, str] = {}
+    def as_structure(self) -> JsonObject:
+        matches: JsonObject = {}
         self.add_if_true(matches, "path", self.path)
         self.add_if_true(matches, "query", self.query)
         return {"caseSensitive": self.case_sensitive, "matches": matches}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> PredicateGenerator:
+    def from_structure(cls, structure: JsonObject) -> PredicateGenerator:
+        matches = cls.as_json_object(structure["matches"])
         return cls(
-            path=structure["matches"].get("path", None),
-            query=structure["matches"].get("query", None),
-            operator=Predicate.Operator[structure["operator"]]
+            path=cast("bool", matches.get("path", None)),
+            query=cast("bool | JsonObject", matches.get("query", None)),
+            operator=Predicate.Operator[cast("str", structure["operator"])]
             if "operator" in structure
             else Predicate.Operator.EQUALS,
-            case_sensitive=structure.get("caseSensitive", False),
+            case_sensitive=cast("bool", structure.get("caseSensitive", False)),
         )
 
 
@@ -310,5 +319,5 @@ class InjectionResponse(BaseResponse, Injecting):
     """
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> InjectionResponse:
-        return cls(inject=structure["inject"])
+    def from_structure(cls, structure: JsonObject) -> InjectionResponse:
+        return cls(inject=cast("str", structure["inject"]))

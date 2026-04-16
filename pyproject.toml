@@ -97,5 +97,6 @@ max-complexity = 5
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101", "N802", "PLR2004"]
+"tests/utils/builders.py" = ["S311"]
 "src/mbtest/imposters/base.py" = ["ERA001"]
 "docs/*" = ["ERA001", "A001", "PTH", "SIM115", "INP001"]

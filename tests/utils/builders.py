@@ -38,17 +38,19 @@ fake = Faker()
 class UsingRegexFactory(DataclassFactory[UsingRegex]): ...
 
 
-class UsingXpathFactory(DataclassFactory[UsingXpath]): ...
+class UsingXpathFactory(DataclassFactory[UsingXpath]):
+    ns = Use(lambda: None)
 
 
 class UsingJsonpathFactory(DataclassFactory[UsingJsonpath]): ...
 
 
 def _random_using():
-    return random.choice([UsingRegexFactory.build(), UsingXpathFactory.build(), UsingJsonpathFactory.build()])  # noqa: S311
+    return random.choice([UsingRegexFactory.build(), UsingXpathFactory.build(), UsingJsonpathFactory.build()])
 
 
 class CopyFactory(DataclassFactory[Copy]):
+    from_ = Use(fake.word)
     using = Use(_random_using)
 
 
@@ -60,7 +62,7 @@ class InjectionPredicateFactory(DataclassFactory[InjectionPredicate]): ...
 
 class KeyFactory(DataclassFactory[Key]):
     using = Use(_random_using)
-    index = Use(lambda: random.randint(0, 50))  # noqa: S311
+    index = Use(lambda: random.randint(0, 50))
 
 
 class LookupFactory(DataclassFactory[Lookup]):
@@ -68,7 +70,8 @@ class LookupFactory(DataclassFactory[Lookup]):
     datasource_path = Use(str)  # from_structure always returns str, so keep consistent
 
 
-class PredicateFactory(DataclassFactory[Predicate]): ...
+class PredicateFactory(DataclassFactory[Predicate]):
+    body = Use(lambda: random.choice([None, fake.word()]))
 
 
 class AndPredicateFactory(DataclassFactory[AndPredicate]):
@@ -90,7 +93,7 @@ class TcpResponseFactory(DataclassFactory[TcpResponse]): ...
 
 class HttpResponseFactory(DataclassFactory[HttpResponse]):
     body = Use(str)
-    status_code = Use(lambda: random.choice(list(http.HTTPStatus)))  # noqa: S311
+    status_code = Use(lambda: random.choice(list(http.HTTPStatus)))
 
 
 class FaultResponseFactory(DataclassFactory[FaultResponse]): ...
@@ -101,8 +104,8 @@ class InjectionResponseFactory(DataclassFactory[InjectionResponse]): ...
 
 class ResponseFactory(DataclassFactory[Response]):
     http_response = Use(HttpResponseFactory.build)
-    copy = Use(lambda: random.choice([None, CopyFactory.build()]))  # noqa: S311
-    lookup = Use(lambda: random.choice([None, LookupFactory.build()]))  # noqa: S311
+    copy = Use(lambda: random.choice([None, CopyFactory.build()]))
+    lookup = Use(lambda: random.choice([None, LookupFactory.build()]))
 
 
 class StubFactory(DataclassFactory[Stub]):
@@ -119,7 +122,7 @@ class AddressFactory(DataclassFactory[Address]): ...
 
 
 class HttpRequestFactory(DataclassFactory[HttpRequest]):
-    method = Use(lambda: random.choice(list(Predicate.Method)).name)  # noqa: S311
+    method = Use(lambda: random.choice(list(Predicate.Method)).name)
     query = Use(dict)
     headers = Use(dict)
 
@@ -133,10 +136,10 @@ class SentEmailFactory(DataclassFactory[SentEmail]):
 
 class ImposterFactory(DataclassFactory[Imposter]):
     stubs = Use(lambda: [StubFactory.build(), StubFactory.build()])
-    port = Use(lambda: random.choice([None, random.randint(1, 5000)]))  # noqa: S311
-    protocol = Use(lambda: random.choice(list(Imposter.Protocol)))  # noqa: S311
-    name = Use(lambda: random.choice([None, "test"]))  # noqa: S311
-    default_response = Use(lambda: random.choice([None, HttpResponseFactory.build()]))  # noqa: S311
+    port = Use(lambda: random.choice([None, random.randint(1, 5000)]))
+    protocol = Use(lambda: random.choice(list(Imposter.Protocol)))
+    name = Use(lambda: random.choice([None, "test"]))
+    default_response = Use(lambda: random.choice([None, HttpResponseFactory.build()]))
     key = Use(lambda: None)
     cert = Use(lambda: None)
     host = Use(lambda: None)

@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import abc
-from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import Enum
 from typing import cast
 
-from mbtest.imposters.base import JsonSerializable, JsonStructure
+from mbtest.imposters.base import JsonObject, JsonSerializable, JsonValue  # noqa: F401
 
 
 @dataclass
@@ -29,12 +28,12 @@ class Using(JsonSerializable, abc.ABC):
     def method(self) -> Using.Method:  # pragma: no cover
         raise NotImplementedError
 
-    def as_structure(self) -> JsonStructure:
+    def as_structure(self) -> JsonObject:
         return {"method": self.method.value, "selector": self.selector}
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> Using:
-        method = cls.Method(structure["method"])
+    def from_structure(cls, structure: JsonObject) -> Using:
+        method = cls.Method(cast("str", structure["method"]))
         return cast(
             "type[Using]",
             {
@@ -62,7 +61,7 @@ class UsingRegex(Using):
     def method(self) -> Using.Method:
         return Using.Method.REGEX
 
-    def as_structure(self) -> JsonStructure:
+    def as_structure(self) -> JsonObject:
         structure = super().as_structure()
         structure["options"] = {
             "ignoreCase": self.ignore_case,
@@ -71,11 +70,12 @@ class UsingRegex(Using):
         return structure
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> UsingRegex:
+    def from_structure(cls, structure: JsonObject) -> UsingRegex:
+        options = cls.as_json_object(structure["options"])
         return cls(
-            selector=structure["selector"],
-            ignore_case=structure["options"]["ignoreCase"],
-            multiline=structure["options"]["multiline"],
+            selector=cast("str", structure["selector"]),
+            ignore_case=cast("bool", options["ignoreCase"]),
+            multiline=cast("bool", options["multiline"]),
         )
 
 
@@ -88,23 +88,23 @@ class UsingXpath(Using):
     :param ns: The ns object maps namespace aliases to URLs
     """
 
-    ns: Mapping[str, str] | None = None
+    ns: JsonObject | None = None
 
     @property
     def method(self) -> Using.Method:
         return Using.Method.XPATH
 
-    def as_structure(self) -> JsonStructure:
+    def as_structure(self) -> JsonObject:
         structure = super().as_structure()
         if self.ns:
             structure["ns"] = self.ns
         return structure
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> UsingXpath:
+    def from_structure(cls, structure: JsonObject) -> UsingXpath:
         return cls(
-            selector=structure["selector"],
-            ns=structure.get("ns"),
+            selector=cast("str", structure["selector"]),
+            ns=cast("JsonObject | None", structure.get("ns")),
         )
 
 
@@ -121,5 +121,5 @@ class UsingJsonpath(Using):
         return Using.Method.JSONPATH
 
     @classmethod
-    def from_structure(cls, structure: JsonStructure) -> UsingJsonpath:
-        return cls(selector=structure["selector"])
+    def from_structure(cls, structure: JsonObject) -> UsingJsonpath:
+        return cls(selector=cast("str", structure["selector"]))

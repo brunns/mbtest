@@ -16,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from hamcrest.core.matcher import Matcher
     from yarl import URL
 
-    from mbtest.imposters.base import JsonStructure
+    from mbtest.imposters.base import JsonObject
     from mbtest.imposters.imposters import Address, HttpRequest, Imposter, SentEmail
     from mbtest.server import MountebankServer
 
@@ -83,7 +83,7 @@ class HadRequest(BaseMatcher):
         self.query: Matcher[Mapping[str, str]] = wrap_matcher(query)
         self.headers: Matcher[Mapping[str, str]] = wrap_matcher(headers)
         self.body: Matcher[str] = wrap_matcher(body)
-        self.json: Matcher[JsonStructure] = ANYTHING
+        self.json: Matcher[JsonObject] = ANYTHING
         self.times: Matcher[int] = wrap_matcher(times)
 
     def describe_to(self, description: Description) -> None:
@@ -122,7 +122,7 @@ class HadRequest(BaseMatcher):
             and self.query.matches(request.query)
             and self.headers.matches(request.headers)
             and self.body.matches(request.body or "")
-            and self.json.matches(request.json)
+            and self.json.matches(request.json or {})
         ]
 
         if isinstance(self.times, IsAnything):
@@ -165,11 +165,11 @@ class HadRequest(BaseMatcher):
     def and_body(self, body: str | Matcher[str]) -> HadRequest:
         return self.with_body(body)
 
-    def with_json(self, json: JsonStructure | Matcher[JsonStructure]) -> HadRequest:
+    def with_json(self, json: JsonObject | Matcher[JsonObject]) -> HadRequest:
         self.json = wrap_matcher(json)
         return self
 
-    def and_json(self, json: JsonStructure | Matcher[JsonStructure]) -> HadRequest:
+    def and_json(self, json: JsonObject | Matcher[JsonObject]) -> HadRequest:
         return self.with_json(json)
 
     def with_times(self, times: int | Matcher[int]) -> HadRequest:
