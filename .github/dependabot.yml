@@ -30,3 +30,17 @@ updates:
       - "brunns"
     cooldown:
       default-days: 7
+
+  - package-ecosystem: "docker"
+    directory: "/tests"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "chore(docker)"
+    assignees:
+      - "brunns"
+    cooldown:
+      default-days: 7
