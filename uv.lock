@@ -786,8 +786,8 @@ dev = [
     { name = "pytest-cov", specifier = ">=2.5" },
     { name = "pytest-docker", specifier = "~=3.1" },
     { name = "ruff" },
-    { name = "sphinx", specifier = ">=3.0" },
-    { name = "sphinx-autodoc-typehints", specifier = ">=1.10" },
+    { name = "sphinx", specifier = ">=8.0" },
+    { name = "sphinx-autodoc-typehints", specifier = ">=3.0" },
     { name = "trustme", specifier = ">=0.9" },
 ]
 
