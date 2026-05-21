@@ -13,10 +13,6 @@ resolution-markers = [
 exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
 exclude-newer-span = "P7D"
 
-[options.exclude-newer-package]
-brunns-matchers = false
-mbtest = false
-
 [[package]]
 name = "accessible-pygments"
 version = "0.0.5"
@@ -797,11 +793,11 @@ dev = [
     { name = "furl", specifier = ">=2.0" },
     { name = "furo", specifier = ">=2025.12.19" },
     { name = "polyfactory", specifier = ">=3.3" },
-    { name = "pyright", specifier = "==1.1.409" },
+    { name = "pyright", specifier = ">=1.1.409" },
     { name = "pytest", specifier = ">=9.0" },
     { name = "pytest-cov", specifier = ">=2.5" },
-    { name = "pytest-docker", specifier = "~=3.1" },
-    { name = "ruff" },
+    { name = "pytest-docker", specifier = ">=3.1" },
+    { name = "ruff", specifier = ">=0.15" },
     { name = "sphinx", specifier = ">=8.0" },
     { name = "sphinx-autodoc-typehints", specifier = ">=3.0" },
     { name = "trustme", specifier = ">=0.9" },
