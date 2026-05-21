@@ -1,10 +1,13 @@
 import logging
+from http import HTTPStatus
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from brunns.matchers.mock import call_has_args as with_args
 from brunns.matchers.mock import has_call
-from hamcrest import assert_that, contains_exactly, contains_string
+from brunns.matchers.url import is_url
+from hamcrest import assert_that, contains_exactly, contains_string, has_entries
+from respx import Router
 
 from mbtest.imposters import Imposter, Response, Stub
 from mbtest.server import ExecutingMountebankServer, MountebankServer
@@ -12,9 +15,10 @@ from mbtest.server import ExecutingMountebankServer, MountebankServer
 logger = logging.getLogger(__name__)
 
 
-def test_server_default_options():
+def test_server_default_options(httpx2_mock: Router):
     # Given
-    with patch("subprocess.Popen") as popen, patch("httpx2.get"):
+    httpx2_mock.get().respond(status_code=HTTPStatus.OK)
+    with patch("subprocess.Popen") as popen:
         # When
         ExecutingMountebankServer(port=1234)
 
@@ -39,34 +43,36 @@ def test_server_default_options():
         )
 
 
-def test_get_replayable_imposter():
+def test_get_replayable_imposter(httpx2_mock: Router):
     # Given
     server = MountebankServer(port=2525)
     imposter = Imposter(Stub(responses=Response(body="hello")), port=4567)
     imposter.attach("localhost", 4567, server.server_url)
 
-    mock_response = MagicMock()
-    mock_response.json.return_value = {
-        "protocol": "http",
-        "port": 4567,
-        "stubs": [{"responses": [{"is": {"statusCode": 200, "body": "hello"}}], "predicates": []}],
-    }
+    httpx2_mock.get().respond(
+        status_code=HTTPStatus.OK,
+        json={
+            "protocol": "http",
+            "port": 4567,
+            "stubs": [{"responses": [{"is": {"statusCode": 200, "body": "hello"}}], "predicates": []}],
+        },
+    )
 
-    with patch("httpx2.get", return_value=mock_response) as mock_get:
-        # When
-        result = server.get_replayable_imposter(imposter)
+    # When
+    result = server.get_replayable_imposter(imposter)
 
     # Then
     assert result.port == 4567
     assert len(result.stubs) == 1
-    called_url = str(mock_get.call_args[0][0])
-    assert "replayable=true" in called_url
-    assert "removeProxies=true" in called_url
+
+    call = httpx2_mock.calls.last
+    assert_that(call.request.url, is_url().with_query(has_entries(replayable="true", removeProxies="true")))
 
 
-def test_server_non_default_options():
+def test_server_non_default_options(httpx2_mock: Router):
     # Given
-    with patch("subprocess.Popen") as popen, patch("httpx2.get"):
+    httpx2_mock.get().respond(status_code=HTTPStatus.OK)
+    with patch("subprocess.Popen") as popen:
         # When
         ExecutingMountebankServer(
             executable=Path("somepath/mb"),

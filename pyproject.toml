@@ -34,6 +34,7 @@ dependencies = [
 
 [tool.uv]
 exclude-newer = "7 days"
+exclude-newer-package = { pytest-httpx2 = false }  # TODO: remove this when possible.
 
 [dependency-groups]
 dev = [
@@ -49,6 +50,7 @@ dev = [
     "ruff>=0.15",
     "pyright>=1.1.409",
     "polyfactory>=3.3",
+    "pytest-httpx2>=1.0",
 ]
 
 [project.urls]
