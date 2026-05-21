@@ -8,7 +8,7 @@ from operator import attrgetter
 from threading import Lock
 from typing import TYPE_CHECKING, ClassVar, Final
 
-import httpx
+import httpx2 as httpx
 from yarl import URL
 
 from mbtest.imposters import Imposter

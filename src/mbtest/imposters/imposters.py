@@ -8,7 +8,7 @@ from json import JSONDecodeError, dumps, loads
 from pathlib import Path
 from typing import cast
 
-import httpx
+import httpx2 as httpx
 from yarl import URL
 
 from mbtest.imposters.base import JsonObject, JsonSerializable, JsonValue

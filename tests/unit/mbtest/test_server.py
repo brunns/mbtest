@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def test_server_default_options():
     # Given
-    with patch("subprocess.Popen") as popen, patch("httpx.get"):
+    with patch("subprocess.Popen") as popen, patch("httpx2.get"):
         # When
         ExecutingMountebankServer(port=1234)
 
@@ -52,7 +52,7 @@ def test_get_replayable_imposter():
         "stubs": [{"responses": [{"is": {"statusCode": 200, "body": "hello"}}], "predicates": []}],
     }
 
-    with patch("httpx.get", return_value=mock_response) as mock_get:
+    with patch("httpx2.get", return_value=mock_response) as mock_get:
         # When
         result = server.get_replayable_imposter(imposter)
 
@@ -66,7 +66,7 @@ def test_get_replayable_imposter():
 
 def test_server_non_default_options():
     # Given
-    with patch("subprocess.Popen") as popen, patch("httpx.get"):
+    with patch("subprocess.Popen") as popen, patch("httpx2.get"):
         # When
         ExecutingMountebankServer(
             executable=Path("somepath/mb"),
