@@ -29,7 +29,7 @@ dependencies = [
     "Deprecated>=1.2",
     "brunns-matchers>=3.0",
     "yarl>=1.9",
-    "httpx2[http2]>=2.0",
+    "httpx2>=2.0",
 ]
 
 [tool.uv]
