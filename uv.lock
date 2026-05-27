@@ -612,15 +612,15 @@ wheels = [
 
 [[package]]
 name = "httpcore2"
-version = "2.0.0"
+version = "2.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "certifi" },
     { name = "h11" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c5/18/e51f5729684acaaab4d1cfca0777ac0f86440c65d2814992442ed5ef02e1/httpcore2-2.0.0.tar.gz", hash = "sha256:403692e0a0e8ea6de90993cdea815b2454d2ff5426e61d2a244846c12506af76", size = 63864, upload-time = "2026-05-12T17:59:22.073Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1a/7e/8ab39aab1d392845b6512009a9be57d24a5bd4ec7a22d02e513d0645e7a8/httpcore2-2.2.0.tar.gz", hash = "sha256:10e0e142f1ecc1c1cb2a9ebbce82e57f16169f61d163ea336abf36799e89294b", size = 63533, upload-time = "2026-05-17T05:29:55.836Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ae/67/784fd58a5b4dbe8b2aee0cafc6959cb8b53c1b7e9d6e4281f8a4c6935c10/httpcore2-2.0.0-py3-none-any.whl", hash = "sha256:4bd78675c48edafd522c5224a18e3a5f6e71dbe95a73497177d432072a7b6b43", size = 79673, upload-time = "2026-05-12T17:59:18.996Z" },
+    { url = "https://files.pythonhosted.org/packages/39/22/64de17e7956e8c002f7558ed667d924c2a288344aeff4bd8ff5dc5fdb70b/httpcore2-2.2.0-py3-none-any.whl", hash = "sha256:ce859f268bf8d34fa2d7753e09e4dd5194f557e1b3038439b68a89b2999572fa", size = 79288, upload-time = "2026-05-17T05:29:52.56Z" },
 ]
 
 [[package]]
@@ -640,7 +640,7 @@ wheels = [
 
 [[package]]
 name = "httpx2"
-version = "2.0.0"
+version = "2.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -648,9 +648,9 @@ dependencies = [
     { name = "httpcore2" },
     { name = "idna" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/70/95/868b3df4aa6f9cecb42aaf82a55a5a2c8ef40df76d709b812e1553d6a928/httpx2-2.0.0.tar.gz", hash = "sha256:f354249d2a9edce26e08fd2ad2276e98317b5763f673bb0d90f3ce9382cc2aed", size = 79506, upload-time = "2026-05-12T17:59:23.174Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f4/aa/c3119de1aa7ad870a01aaddbf3bc3445ed9a681c31d45e3838fd8b7bc155/httpx2-2.2.0.tar.gz", hash = "sha256:f3428d59b1752b8f5629826277262fb4d65e3a683f48af8a5b16c4d012e0b801", size = 80477, upload-time = "2026-05-17T05:29:57.376Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e9/25/66215a750faeb79b698286c0d0b94894482cfae10371ae4968ef6e165a28/httpx2-2.0.0-py3-none-any.whl", hash = "sha256:dfb5ae245f3985681296a000453f1e5fffee322eb531feabcdaf1557ad978b6a", size = 73424, upload-time = "2026-05-12T17:59:20.403Z" },
+    { url = "https://files.pythonhosted.org/packages/be/e0/e0a52596c14194e428c20de4903f4abec38c0dfb5364d20f1d4a2b6266ef/httpx2-2.2.0-py3-none-any.whl", hash = "sha256:12347ebd2daeaefd50b529359778fff767082a09c5826752c963e71269722ff0", size = 74083, upload-time = "2026-05-17T05:29:54.543Z" },
 ]
 
 [[package]]
