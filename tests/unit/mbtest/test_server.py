@@ -6,7 +6,7 @@ from unittest.mock import patch
 from brunns.matchers.mock import call_has_args as with_args
 from brunns.matchers.mock import has_call
 from brunns.matchers.url import is_url
-from hamcrest import assert_that, contains_exactly, contains_string, has_entries
+from hamcrest import assert_that, contains_exactly, contains_string, has_entries, has_length
 from respx import Router
 
 from mbtest.imposters import Imposter, Response, Stub
@@ -63,7 +63,7 @@ def test_get_replayable_imposter(httpx2_mock: Router):
 
     # Then
     assert result.port == 4567
-    assert len(result.stubs) == 1
+    assert_that(result.stubs, has_length(1))
 
     call = httpx2_mock.calls.last
     assert_that(call.request.url, is_url().with_query(has_entries(replayable="true", removeProxies="true")))
