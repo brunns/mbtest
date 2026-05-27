@@ -34,7 +34,6 @@ dependencies = [
 
 [tool.uv]
 exclude-newer = "7 days"
-exclude-newer-package = { pytest-httpx2 = false }  # TODO: remove this when possible.
 
 [dependency-groups]
 dev = [
