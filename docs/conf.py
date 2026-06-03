@@ -20,13 +20,13 @@ sys.path.insert(0, os.path.abspath("../src/"))
 # -- Project information -----------------------------------------------------
 
 project = "mbtest"
-copyright = "2020, Simon Brunning"
+copyright = "2020-2026, Simon Brunning"
 author = "Simon Brunning"
 
 # The short X.Y version
-version = "2.16"
+version = "2.17"
 # The full version, including alpha/beta/rc tags
-release = "2.16.0"
+release = "2.17.0"
 
 
 # -- General configuration ---------------------------------------------------

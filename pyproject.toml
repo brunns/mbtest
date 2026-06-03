@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "mbtest"
-version = "2.16.0"
+version = "2.17.0"
 description = "Python wrapper & utils for the Mountebank over the wire test double tool."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -31,6 +31,8 @@ dependencies = [
     "yarl>=1.9",
     "httpx2>=2.0",
 ]
+import-names = ["mbtest"]
+import-namespaces = ["mbtest"]
 
 [tool.uv]
 exclude-newer = "7 days"
@@ -57,8 +59,8 @@ Homepage = "https://github.com/brunns/mbtest/"
 Repository = "https://github.com/brunns/mbtest/"
 Issues = "https://github.com/brunns/mbtest/issues"
 
-[tool.setuptools]
-package-dir = {"" = "src"}
+[tool.hatch.build.targets.wheel]
+packages = ["src/mbtest"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
