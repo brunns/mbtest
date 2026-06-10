@@ -32,7 +32,6 @@ dependencies = [
     "httpx2>=2.0",
 ]
 import-names = ["mbtest"]
-import-namespaces = ["mbtest"]
 
 [tool.uv]
 exclude-newer = "7 days"
