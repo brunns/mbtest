@@ -1,3 +1,4 @@
+# Copyright 2018-2026 Simon Brunning
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -8,7 +9,7 @@ from typing import Any, TypeAlias, TypeVar, cast
 _T = TypeVar("_T")
 
 JsonObject: TypeAlias = MutableMapping[str, "JsonValue"]
-JsonValue: TypeAlias = str | int | float | bool | None | MutableSequence["JsonValue"] | JsonObject
+JsonValue: TypeAlias = str | int | float | bool | MutableSequence["JsonValue"] | JsonObject | None
 
 
 @dataclass

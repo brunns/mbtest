@@ -1,3 +1,4 @@
+# Copyright 2018-2026 Simon Brunning
 import pytest
 from brunns.matchers.object import has_identical_properties_to
 from hamcrest import assert_that, instance_of

@@ -1,3 +1,4 @@
+# Copyright 2018-2026 Simon Brunning
 import logging
 import platform
 from pathlib import Path

@@ -1,3 +1,4 @@
+# Copyright 2018-2026 Simon Brunning
 from collections.abc import Mapping, Sequence
 from functools import singledispatch
 from xml.etree import ElementTree as ET

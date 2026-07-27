@@ -1,3 +1,4 @@
+# Copyright 2018-2026 Simon Brunning
 from __future__ import annotations
 
 import abc

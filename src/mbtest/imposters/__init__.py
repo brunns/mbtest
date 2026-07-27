@@ -1,3 +1,4 @@
+# Copyright 2018-2026 Simon Brunning
 from .behaviors import Copy, Key, Lookup, UsingJsonpath, UsingRegex, UsingXpath
 from .imposters import Imposter, smtp_imposter
 from .predicates import InjectionPredicate, Predicate, TcpPredicate

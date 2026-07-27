@@ -1,3 +1,4 @@
+# Copyright 2018-2026 Simon Brunning
 import http
 import random
 from email.message import EmailMessage
