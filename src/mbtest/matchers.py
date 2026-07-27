@@ -25,6 +25,7 @@ ANYTHING = anything()
 
 
 def had_request(
+    *,
     method: str | Matcher[str] = ANYTHING,
     path: furl | URL | str | Matcher[furl | URL | str] = ANYTHING,
     query: Mapping[str, str] | Matcher[Mapping[str, str]] = ANYTHING,
@@ -63,6 +64,7 @@ class HadRequest(BaseMatcher):
 
     def __init__(
         self,
+        *,
         method: str | Matcher[str] = ANYTHING,
         path: furl | URL | str | Matcher[furl | URL | str] = ANYTHING,
         query: Mapping[str, str] | Matcher[Mapping[str, str]] = ANYTHING,

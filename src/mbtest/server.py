@@ -33,10 +33,11 @@ def mock_server(
     request: FixtureRequest,
     executable: str | Path = DEFAULT_MB_EXECUTABLE,
     port: int = 2525,
+    *,
     timeout: int = 5,
-    debug: bool = True,  # noqa: FBT001,FBT002
-    allow_injection: bool = True,  # noqa: FBT001,FBT002
-    local_only: bool = True,  # noqa: FBT001,FBT002
+    debug: bool = True,
+    allow_injection: bool = True,
+    local_only: bool = True,
     data_dir: str | None = ".mbdb",
 ) -> MountebankServer:
     """`Pytest fixture <https://docs.pytest.org/en/latest/fixture.html>`_, making available a mock server, running one
@@ -269,10 +270,11 @@ class ExecutingMountebankServer(MountebankServer):
         self,
         executable: str | Path = DEFAULT_MB_EXECUTABLE,
         port: int = 2525,
+        *,
         timeout: float = 5,
-        debug: bool = True,  # noqa: FBT001,FBT002
-        allow_injection: bool = True,  # noqa: FBT001,FBT002
-        local_only: bool = True,  # noqa: FBT001,FBT002
+        debug: bool = True,
+        allow_injection: bool = True,
+        local_only: bool = True,
         data_dir: str | None = ".mbdb",
     ) -> None:
         super().__init__(port)

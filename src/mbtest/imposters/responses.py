@@ -116,6 +116,7 @@ class Response(BaseResponse):
 
     def __init__(
         self,
+        *,
         body: str | JsonObject = "",
         status_code: HTTPStatus | int | str = HTTPStatus.OK,
         wait: int | str | None = None,
@@ -126,7 +127,6 @@ class Response(BaseResponse):
         decorate: str | None = None,
         lookup: Lookup | Iterable[Lookup] | None = None,
         shell_transform: str | Iterable[str] | None = None,
-        *,
         http_response: HttpResponse | None = None,
     ) -> None:
         self.http_response = http_response or HttpResponse(

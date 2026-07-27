@@ -100,6 +100,7 @@ class Predicate(LogicallyCombinablePredicate):
 
     def __init__(
         self,
+        *,
         path: str | None = None,
         method: Predicate.Method | str | None = None,
         query: Mapping[str, str | int | bool] | None = None,
@@ -109,7 +110,6 @@ class Predicate(LogicallyCombinablePredicate):
         jsonpath: str | None = None,
         form: Mapping[str, str] | None = None,
         operator: Predicate.Operator | str = Operator.EQUALS,
-        *,
         case_sensitive: bool = True,
     ) -> None:
         self.path = path
