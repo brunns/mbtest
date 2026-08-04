@@ -20,7 +20,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     labels:
       - "dependencies"
       - "github-actions"
@@ -30,6 +30,10 @@ updates:
       - "brunns"
     cooldown:
       default-days: 7
+    groups:
+      all_gha:
+        patterns:
+          - "*"
 
   - package-ecosystem: "docker"
     directory: "/tests"
