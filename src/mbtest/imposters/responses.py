@@ -117,7 +117,7 @@ class Response(BaseResponse):
     def __init__(
         self,
         *,
-        body: str | JsonObject = "",
+        body: str | bytes | JsonObject = "",
         status_code: HTTPStatus | int | str = HTTPStatus.OK,
         wait: int | str | None = None,
         repeat: int | None = None,
