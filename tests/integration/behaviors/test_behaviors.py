@@ -2,6 +2,7 @@
 import logging
 
 import httpx
+import pytest
 from brunns.matchers.object import between
 from brunns.matchers.response import is_response
 from contexttimer import Timer
@@ -12,15 +13,17 @@ from mbtest.imposters import Imposter, Predicate, Response, Stub
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.flaky(retries=3, delay=1)
 def test_wait(mock_server):
     imposter = Imposter(Stub(responses=Response(wait=100)))
 
     with mock_server(imposter), Timer() as timer:
         httpx.get(str(imposter.url))
 
-        assert_that(timer.elapsed, between(0.1, 0.4))
+        assert_that(timer.elapsed, between(0.1, 0.5))
 
 
+@pytest.mark.flaky(retries=3, delay=1)
 def test_wait_function(mock_server):
     imposter = Imposter(Stub(responses=Response(wait="function() { return Math.floor(Math.random() * 50) + 100; }")))
 

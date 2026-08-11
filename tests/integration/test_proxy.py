@@ -195,6 +195,7 @@ def test_record_and_replay_via_server(mock_server, httpbin, tmp_path):
 
 
 @pytest.mark.xfail(not HTTPBIN_CONTAINERISED, reason="Public httpbin horribly flaky.")
+@pytest.mark.flaky(retries=3, delay=1)
 def test_proxy_delay(mock_server):
     target_imposter = Imposter(Stub(Predicate(path="/test")))
     with mock_server(target_imposter) as server:

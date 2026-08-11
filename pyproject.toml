@@ -51,6 +51,7 @@ dev = [
     "pyright>=1.1.409",
     "polyfactory>=3.3",
     "pytest-httpx2>=1.0",
+    "pytest-retry>=1.7",
 ]
 
 [project.urls]
