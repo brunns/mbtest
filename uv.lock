@@ -81,16 +81,16 @@ wheels = [
 
 [[package]]
 name = "brunns-matchers"
-version = "3.2.0"
+version = "3.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "brunns-row" },
     { name = "deprecated" },
     { name = "pyhamcrest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/20/b7/15a674fd1e3891acfae1a130febd5612726e9cba0bfdc9687ce124c22fe1/brunns_matchers-3.2.0.tar.gz", hash = "sha256:aa7fb078b98a37fe00c1bc86b96ec7a82e5eb5295c18154c28e1e31bac7dba63", size = 147098, upload-time = "2026-06-03T08:07:03.679Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3e/0b/e35200af16c5ba62d3847d08a684474e03c56ac8652acbba1cad90f163d4/brunns_matchers-3.3.0.tar.gz", hash = "sha256:9baa7971d830de13d44d66d61f1c0794108d69dd0858ac20e2c99663293be86c", size = 146293, upload-time = "2026-07-29T06:59:30.586Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a1/1f/4995f374a7f1d5d381d4c525725f0544442d63b6f00cb0b5cd39c0729e2d/brunns_matchers-3.2.0-py3-none-any.whl", hash = "sha256:84264d8076192efb9f6a7afd60cca94cd43d2b94b60d0c9dd332f9b3b1b1a257", size = 29594, upload-time = "2026-06-03T08:07:02.333Z" },
+    { url = "https://files.pythonhosted.org/packages/f1/06/3cce3151240124bb6a07f82b64d6641c1aa113d7a1298402549d0bbcb3e4/brunns_matchers-3.3.0-py3-none-any.whl", hash = "sha256:f126330ca3a6c811b53536bc949e795411481c1a626fc34312055ced51fccac3", size = 30778, upload-time = "2026-07-29T06:59:29.429Z" },
 ]
 
 [[package]]
