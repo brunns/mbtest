@@ -16,6 +16,9 @@ updates:
       - "brunns"
     cooldown:
       default-days: 7
+    groups:
+      dev:
+        dependency-type: "development"
 
   - package-ecosystem: "github-actions"
     directory: "/"
