@@ -1,34 +1,60 @@
 version: 2
+
 updates:
 
+  # Production dependencies
   - package-ecosystem: "uv"
     directory: "/"
     allow:
-      - dependency-type: "all"
+      - dependency-type: "production"
     schedule:
       interval: "weekly"
     labels:
+      - "production"
       - "dependencies"
       - "python"
     commit-message:
-      prefix: "chore(deps)"
+      prefix: "chore (production deps)"
     assignees:
       - "brunns"
     cooldown:
       default-days: 7
     groups:
-      dev:
-        dependency-type: "development"
+      boto:
+        patterns:
+          - "boto*"
 
+  # Development dependencies
+  - package-ecosystem: "uv"
+    directory: "/"
+    allow:
+      - dependency-type: "development"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "development"
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "chore (development deps)"
+    assignees:
+      - "brunns"
+    cooldown:
+      default-days: 7
+    groups:
+      development:
+        patterns:
+          - "*"
+
+  # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
     labels:
-      - "dependencies"
       - "github-actions"
     commit-message:
-      prefix: "chore(ci)"
+      prefix: "chore (gha)"
     assignees:
       - "brunns"
     cooldown:
@@ -38,16 +64,20 @@ updates:
         patterns:
           - "*"
 
+  # Docker images
   - package-ecosystem: "docker"
     directory: "/tests"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     labels:
-      - "dependencies"
       - "docker"
     commit-message:
-      prefix: "chore(docker)"
+      prefix: "chore (docker)"
     assignees:
       - "brunns"
     cooldown:
       default-days: 7
+    groups:
+      all:
+        patterns:
+          - "*"
