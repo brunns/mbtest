@@ -41,7 +41,7 @@ format: ## Format code
 
 .PHONY: docs
 docs:  ## Generate documentation
-	uv run sphinx-build docs build_docs --color -W -bhtml
+	uv run --group docs sphinx-build docs build_docs --color -W -bhtml
 
 .PHONY: precommit
 precommit: precommit-test typecheck lint docs ## Pre-commit targets

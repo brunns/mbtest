@@ -202,4 +202,4 @@ jobs:
       - name: Check types
         run: uv run pyright src/
       - name: Build docs
-        run: uv run sphinx-build docs build_docs --color -W -bhtml
+        run: uv run --group docs sphinx-build docs build_docs --color -W -bhtml

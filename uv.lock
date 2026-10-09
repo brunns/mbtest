@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.10"
 resolution-markers = [
     "python_full_version >= '3.14'",
@@ -91,6 +91,11 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/3e/0b/e35200af16c5ba62d3847d08a684474e03c56ac8652acbba1cad90f163d4/brunns_matchers-3.3.0.tar.gz", hash = "sha256:9baa7971d830de13d44d66d61f1c0794108d69dd0858ac20e2c99663293be86c", size = 146293, upload-time = "2026-07-29T06:59:30.586Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f1/06/3cce3151240124bb6a07f82b64d6641c1aa113d7a1298402549d0bbcb3e4/brunns_matchers-3.3.0-py3-none-any.whl", hash = "sha256:f126330ca3a6c811b53536bc949e795411481c1a626fc34312055ced51fccac3", size = 30778, upload-time = "2026-07-29T06:59:29.429Z" },
+]
+
+[package.optional-dependencies]
+html = [
+    { name = "beautifulsoup4" },
 ]
 
 [[package]]
@@ -888,7 +893,7 @@ name = "mbtest"
 version = "2.17.0"
 source = { editable = "." }
 dependencies = [
-    { name = "brunns-matchers" },
+    { name = "brunns-matchers", extra = ["html"] },
     { name = "deprecated" },
     { name = "httpx2" },
     { name = "pyhamcrest" },
@@ -899,7 +904,6 @@ dependencies = [
 dev = [
     { name = "contexttimer" },
     { name = "furl" },
-    { name = "furo" },
     { name = "polyfactory" },
     { name = "pyright" },
     { name = "pytest" },
@@ -908,18 +912,21 @@ dev = [
     { name = "pytest-httpx2" },
     { name = "pytest-retry" },
     { name = "ruff" },
+    { name = "trustme" },
+]
+docs = [
+    { name = "furo" },
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "9.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
     { name = "sphinx", version = "9.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "sphinx-autodoc-typehints", version = "3.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx-autodoc-typehints", version = "3.6.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
     { name = "sphinx-autodoc-typehints", version = "3.10.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "trustme" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "brunns-matchers", specifier = ">=3.0" },
+    { name = "brunns-matchers", extras = ["html"], specifier = ">=3.0" },
     { name = "deprecated", specifier = ">=1.2" },
     { name = "httpx2", specifier = ">=2.0" },
     { name = "pyhamcrest", specifier = ">=2.0" },
@@ -930,7 +937,6 @@ requires-dist = [
 dev = [
     { name = "contexttimer", specifier = ">=0.3" },
     { name = "furl", specifier = ">=2.0" },
-    { name = "furo", specifier = ">=2025.12.19" },
     { name = "polyfactory", specifier = ">=3.3" },
     { name = "pyright", specifier = ">=1.1.409" },
     { name = "pytest", specifier = ">=9.0" },
@@ -939,9 +945,12 @@ dev = [
     { name = "pytest-httpx2", specifier = ">=1.0" },
     { name = "pytest-retry", specifier = ">=1.7" },
     { name = "ruff", specifier = ">=0.15" },
+    { name = "trustme", specifier = ">=0.9" },
+]
+docs = [
+    { name = "furo", specifier = ">=2025.12.19" },
     { name = "sphinx", specifier = ">=8.0" },
     { name = "sphinx-autodoc-typehints", specifier = ">=3.0" },
-    { name = "trustme", specifier = ">=0.9" },
 ]
 
 [[package]]
