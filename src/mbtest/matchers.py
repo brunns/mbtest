@@ -134,53 +134,81 @@ class HadRequest(BaseMatcher):
         return self.times.matches(len(self.matching_requests))
 
     def with_method(self, method: str | Matcher[str]) -> HadRequest:
+        """Matches the HTTP method of recorded requests.
+
+        :param method: Expected HTTP method string or a matcher for the method.
+        :return: This matcher instance for chaining.
+        """
         self.method = wrap_matcher(method)
         return self
 
-    def and_method(self, method: str | Matcher[str]) -> HadRequest:
-        return self.with_method(method)
+    and_method = with_method
 
     def with_path(self, path: furl | URL | str | Matcher[furl | URL | str]) -> HadRequest:
+        """Matches the path of recorded requests.
+
+        :param path: Expected path string/object or a matcher for the path.
+        :return: This matcher instance for chaining.
+        """
         self.path = wrap_matcher(path)
         return self
 
-    def and_path(self, path: furl | URL | str | Matcher[furl | URL | str]) -> HadRequest:
-        return self.with_path(path)
+    and_path = with_path
 
     def with_query(self, query: Mapping[str, str] | Matcher[Mapping[str, str]]) -> HadRequest:
+        """Matches the query parameters of recorded requests.
+
+        :param query: Expected query mapping or a matcher for query parameters.
+        :return: This matcher instance for chaining.
+        """
         self.query = wrap_matcher(query)
         return self
 
-    def and_query(self, query: Mapping[str, str] | Matcher[Mapping[str, str]]) -> HadRequest:
-        return self.with_query(query)
+    and_query = with_query
 
     def with_headers(self, headers: Mapping[str, str] | Matcher[Mapping[str, str]]) -> HadRequest:
+        """Matches the headers of recorded requests.
+
+        :param headers: Expected headers mapping or a matcher for headers.
+        :return: This matcher instance for chaining.
+        """
         self.headers = wrap_matcher(headers)
         return self
 
-    def and_headers(self, headers: Mapping[str, str] | Matcher[Mapping[str, str]]) -> HadRequest:
-        return self.with_headers(headers)
+    and_headers = with_headers
 
     def with_body(self, body: str | Matcher[str]) -> HadRequest:
+        """Matches the raw body text of recorded requests.
+
+        :param body: Expected body string or a matcher for the body.
+        :return: This matcher instance for chaining.
+        """
         self.body = wrap_matcher(body)
         return self
 
-    def and_body(self, body: str | Matcher[str]) -> HadRequest:
-        return self.with_body(body)
+    and_body = with_body
 
     def with_json(self, json: JsonObject | Matcher[JsonObject]) -> HadRequest:
+        """Matches the JSON payload of recorded requests.
+
+        :param json: Expected JSON object or a matcher for the JSON payload.
+        :return: This matcher instance for chaining.
+        """
         self.json = wrap_matcher(json)
         return self
 
-    def and_json(self, json: JsonObject | Matcher[JsonObject]) -> HadRequest:
-        return self.with_json(json)
+    and_json = with_json
 
     def with_times(self, times: int | Matcher[int]) -> HadRequest:
+        """Matches the count of recorded requests matching the criteria.
+
+        :param times: Expected count integer or a matcher for the count.
+        :return: This matcher instance for chaining.
+        """
         self.times = wrap_matcher(times)
         return self
 
-    def and_times(self, times: int | Matcher[int]) -> HadRequest:
-        return self.with_times(times)
+    and_times = with_times
 
 
 def email_sent(
@@ -272,29 +300,45 @@ class EmailSent(BaseMatcher):
         ]
 
     def with_from_(self, from_: Address | Matcher[Address]) -> EmailSent:
+        """Matches the sender address of sent emails.
+
+        :param from_: Expected sender address or a matcher for the sender.
+        :return: This matcher instance for chaining.
+        """
         self.from_ = wrap_matcher(from_)
         return self
 
-    def and_from_(self, from_: Address | Matcher[Address]) -> EmailSent:
-        return self.with_from_(from_)
+    and_from_ = with_from_
 
     def with_to(self, to: Sequence[Address] | Matcher[Sequence[Address]]) -> EmailSent:
+        """Matches the recipient addresses of sent emails.
+
+        :param to: Expected sequence of recipient addresses or a matcher for them.
+        :return: This matcher instance for chaining.
+        """
         self.to = wrap_matcher(to)
         return self
 
-    def and_to(self, to: Sequence[Address] | Matcher[Sequence[Address]]) -> EmailSent:
-        return self.with_to(to)
+    and_to = with_to
 
     def with_subject(self, subject: str | Matcher[str]) -> EmailSent:
+        """Matches the subject line of sent emails.
+
+        :param subject: Expected subject string or a matcher for the subject.
+        :return: This matcher instance for chaining.
+        """
         self.subject = wrap_matcher(subject)
         return self
 
-    def and_subject(self, subject: str | Matcher[str]) -> EmailSent:
-        return self.with_subject(subject)
+    and_subject = with_subject
 
     def with_body_text(self, body_text: str | Matcher[str]) -> EmailSent:
+        """Matches the plain text body of sent emails.
+
+        :param body_text: Expected body text string or a matcher for the body text.
+        :return: This matcher instance for chaining.
+        """
         self.body_text = wrap_matcher(body_text)
         return self
 
-    def and_body_text(self, body_text: str | Matcher[str]) -> EmailSent:
-        return self.with_body_text(body_text)
+    and_body_text = with_body_text
