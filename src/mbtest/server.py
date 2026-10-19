@@ -7,7 +7,7 @@ import time
 from collections import abc
 from operator import attrgetter
 from threading import Lock
-from typing import TYPE_CHECKING, ClassVar, Final
+from typing import TYPE_CHECKING, ClassVar, Final, Self
 
 import httpx2 as httpx
 from yarl import URL
@@ -132,11 +132,11 @@ class MountebankServer:
         self.imposters_path = imposters_path
         self._running_imposters: MutableSequence[Imposter] = []
 
-    def __call__(self, imposters: Imposter | Iterable[Imposter]) -> MountebankServer:
+    def __call__(self, imposters: Imposter | Iterable[Imposter]) -> Self:
         self.imposters = imposters
         return self
 
-    def __enter__(self) -> MountebankServer:
+    def __enter__(self) -> Self:
         self.add_imposters(self.imposters)
         return self
 
