@@ -20,11 +20,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v7.0.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.2.0
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           python-version: ${{ matrix.python }}
           enable-cache: true
@@ -67,11 +67,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v7.0.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.2.0
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           python-version: ${{ matrix.python }}
           enable-cache: true
@@ -99,11 +99,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v7.0.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.2.0
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           python-version: ${{ matrix.python }}
           enable-cache: true
@@ -131,11 +131,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v7.0.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.2.0
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           python-version: ${{ matrix.python }}
           enable-cache: true
@@ -161,11 +161,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v7.0.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.2.0
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           python-version: ${{ matrix.python }}
           enable-cache: true
@@ -191,7 +191,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.2.0
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           python-version: ${{ matrix.python }}
           enable-cache: true
